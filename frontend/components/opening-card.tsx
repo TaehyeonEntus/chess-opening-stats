@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { WinRateBar } from "@/components/win-rate-bar"
+import { Chessboard } from "react-chessboard"
 import type { OpeningStatView } from "@/lib/types"
 
 interface OpeningCardProps {
@@ -20,16 +21,14 @@ export function OpeningCard({ stat }: OpeningCardProps) {
               <Badge variant="outline" className="font-mono text-xs">
                 {stat.eco}
               </Badge>
-              {stat.color !== "all" && (
-                <span
-                  className={`inline-flex h-4 w-4 items-center justify-center rounded-full border ${
-                    stat.color === "white"
-                      ? "border-foreground/20 bg-background"
-                      : "border-foreground/20 bg-foreground"
-                  }`}
-                  aria-label={stat.color === "white" ? "White pieces" : "Black pieces"}
-                />
-              )}
+              <span
+                className={`inline-flex h-4 w-4 items-center justify-center rounded-full border ${
+                  stat.color === "white"
+                    ? "border-foreground/20 bg-background"
+                    : "border-foreground/20 bg-foreground"
+                }`}
+                aria-label={stat.color === "white" ? "White pieces" : "Black pieces"}
+              />
             </div>
           </div>
           <div className="text-right">
@@ -41,6 +40,18 @@ export function OpeningCard({ stat }: OpeningCardProps) {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
+        <div className="mb-4 flex justify-center">
+          <div className="pointer-events-none aspect-square w-full max-w-[200px]">
+            <Chessboard options={{
+                position: stat.epd,
+                allowDragging: false,
+                boardOrientation: stat.color,
+                darkSquareStyle: { backgroundColor: "#779954" },
+                lightSquareStyle: { backgroundColor: "#e9edcc" },
+            }}
+            />
+          </div>
+        </div>
         <WinRateBar winRate={stat.winRate} drawRate={stat.drawRate} lossRate={stat.lossRate} />
         <div className="mt-3 flex justify-between text-xs tabular-nums text-muted-foreground">
           <span className="flex items-center gap-1">

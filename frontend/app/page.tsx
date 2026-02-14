@@ -1,79 +1,40 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Header } from "@/components/header"
 import { OpeningGrid } from "@/components/opening-grid"
-import { BoardExplorer } from "@/components/board-explorer"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { Opening, OpeningResult } from "@/lib/types"
-import { fetchOpeningMaster, fetchOpeningResults } from "@/lib/api"
-import { BarChart3, SquareMousePointer } from "lucide-react"
-
-type ViewMode = "stats" | "board"
+import { provideAllOpeningResult } from "@/lib/provide/provideFacade"
+import {OpeningStatView} from "@/lib/types";
 
 export default function HomePage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [openings, setOpenings] = useState<Opening[]>([])
-  const [results, setResults] = useState<OpeningResult[]>([])
+  const [openings, setOpenings] = useState<OpeningStatView[]>([])
   const [loading, setLoading] = useState(true)
-  const [viewMode, setViewMode] = useState<ViewMode>("stats")
 
   useEffect(() => {
-    async function loadData() {
+    async function load() {
       setLoading(true)
-      const [masterData, resultData] = await Promise.all([
-        fetchOpeningMaster(),
-        fetchOpeningResults(isLoggedIn ? "demo-player" : undefined),
-      ])
-      setOpenings(masterData)
-      setResults(resultData)
+      const data = await provideAllOpeningResult()
+      setOpenings(data)
       setLoading(false)
     }
-    loadData()
-  }, [isLoggedIn])
+
+    load()
+  }, [])
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header
-        isLoggedIn={isLoggedIn}
-        playerName={isLoggedIn ? "DemoPlayer" : undefined}
-        onToggleLogin={() => setIsLoggedIn((prev) => !prev)}
-      />
-      <main className="mx-auto max-w-7xl px-4 py-6 lg:px-6">
-        <div className="mb-6 flex items-center justify-between">
-          <Tabs
-            value={viewMode}
-            onValueChange={(v) => setViewMode(v as ViewMode)}
-          >
-            <TabsList>
-              <TabsTrigger value="stats" className="gap-1.5">
-                <BarChart3 className="h-4 w-4" />
-                Opening Stats
-              </TabsTrigger>
-              <TabsTrigger value="board" className="gap-1.5">
-                <SquareMousePointer className="h-4 w-4" />
-                Board Explorer
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {loading ? (
-          <LoadingSkeleton />
-        ) : viewMode === "stats" ? (
-          <OpeningGrid
-            openings={openings}
-            results={results}
-            isLoggedIn={isLoggedIn}
-          />
-        ) : (
-          <BoardExplorer openings={openings} results={results} />
-        )}
-      </main>
-    </div>
+      <div className="min-h-screen bg-background">
+        <main className="mx-auto max-w-7xl px-4 py-6 lg:px-6">
+          {loading ? (
+              <LoadingSkeleton />
+          ) : (
+              <OpeningGrid stats={openings} />
+          )}
+        </main>
+      </div>
   )
 }
+
+
 
 function LoadingSkeleton() {
   return (
