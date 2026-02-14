@@ -1,35 +1,55 @@
 package com.chessopeningstats.backend.infra.repository;
 
-import com.chessopeningstats.backend.domain.Account;
-import com.chessopeningstats.backend.domain.Game;
+import com.chessopeningstats.backend.application.stat.dto.Stat;
 import com.chessopeningstats.backend.domain.GamePlayer;
-import com.chessopeningstats.backend.domain.GamePlayerColor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 public interface GamePlayerRepository extends JpaRepository<GamePlayer, Long> {
-    Optional<GamePlayer> findByGameAndAccount(Game game, Account account);
-
     @Query("""
-                select gp.result, count(gp)
+                select new com.chessopeningstats.backend.application.stat.dto.Stat(
+                    o.eco,
+                    o.epd,
+                    o.name,
+                    gp.color,
+                    sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.WIN then 1 else 0 end),
+                    sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.DRAW then 1 else 0 end),
+                    sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.LOSE then 1 else 0 end)
+                )
                 from GamePlayer gp
-                where gp.account.id in :accountIds
-                group by gp.result
+                    join gp.account a
+                    join PlayerAccount pa on pa.account = a
+                    join gp.game g
+                    join g.opening o
+                where pa.player.id = :playerId
+                group by
+                    o.eco,
+                    o.epd,
+                    o.name,
+                    gp.color
             """)
-    List<Object[]> findStatByAccountIds(Collection<Long> accountIds);
+    List<Stat> findAllStatsByPlayerId(long playerId);
 
     @Query("""
-                select gp.result, count(gp)
+                select new com.chessopeningstats.backend.application.stat.dto.Stat(
+                    o.eco,
+                    o.epd,
+                    o.name,
+                    gp.color,
+                    sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.WIN then 1 else 0 end),
+                    sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.DRAW then 1 else 0 end),
+                    sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.LOSE then 1 else 0 end)
+                )
                 from GamePlayer gp
                     join gp.game g
-                    join g.gameOpenings go
-                    join go.opening o
-                where (gp.account.id in :accountIds) and (o.epd in :epds)
-                group by gp.result
+                    join g.opening o
+                group by
+                    o.eco,
+                    o.epd,
+                    o.name,
+                    gp.color
             """)
-    List<Object[]> findOpeningStatByAccountIds(Collection<Long> accountIds, List<String> epds);
+    List<Stat> findAllStats();
 }

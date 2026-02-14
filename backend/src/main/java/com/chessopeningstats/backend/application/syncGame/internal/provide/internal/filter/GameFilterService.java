@@ -24,6 +24,8 @@ public class GameFilterService {
             return false;
         else if(dto.getGameTime() == GameTime.UNKNOWN)
             return false;
+        else if(dto.getPgn().isBlank())
+            return false;
         else
             return true;
     }

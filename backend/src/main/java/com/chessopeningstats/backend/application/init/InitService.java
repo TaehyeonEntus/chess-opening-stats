@@ -28,7 +28,7 @@ public class InitService {
 
     @Transactional
     @EventListener(ApplicationReadyEvent.class)
-    public void init(){
+    public void init() {
         openingLoadService.loadOpening();
 
         Player p1 = Player.builder()
@@ -46,6 +46,10 @@ public class InitService {
                 .password(passwordEncoder.encode("3"))
                 .nickname("carlsen").build();
 
+        Player p4 = Player.builder()
+                .username("4")
+                .password(passwordEncoder.encode("4"))
+                .nickname("woodward").build();
 
 
         Account a1 = Account.builder()
@@ -66,6 +70,12 @@ public class InitService {
                 .lastPlayedAt(Instant.ofEpochMilli(1L))
                 .build();
 
+        Account a4 = Account.builder()
+                .username("mraquariyaz67")
+                .platform(Platform.LICHESS)
+                .lastPlayedAt(Instant.ofEpochMilli(1L))
+                .build();
+
         PlayerAccount pa1 = PlayerAccount.builder()
                 .player(p1)
                 .account(a1)
@@ -81,16 +91,25 @@ public class InitService {
                 .account(a3)
                 .build();
 
+        PlayerAccount pa4 = PlayerAccount.builder()
+                .player(p4)
+                .account(a4)
+                .build();
+
         playerRepository.save(p1);
         playerRepository.save(p2);
         playerRepository.save(p3);
+        playerRepository.save(p4);
+
 
         accountRepository.save(a1);
         accountRepository.save(a2);
         accountRepository.save(a3);
+        accountRepository.save(a4);
 
         playerAccountRepository.save(pa1);
         playerAccountRepository.save(pa2);
         playerAccountRepository.save(pa3);
+        playerAccountRepository.save(pa4);
     }
 }

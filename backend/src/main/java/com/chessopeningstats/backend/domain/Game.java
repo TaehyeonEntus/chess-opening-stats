@@ -38,8 +38,11 @@ public class Game extends BaseEntity {
     @Column(nullable = false)
     private Instant playedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Opening opening;
+
     @Default
-    @OneToMany(mappedBy = "game",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
     private Set<GameOpening> gameOpenings = new HashSet<>();
 
     @Default

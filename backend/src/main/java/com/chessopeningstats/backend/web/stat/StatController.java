@@ -2,12 +2,14 @@ package com.chessopeningstats.backend.web.stat;
 
 import com.chessopeningstats.backend.application.stat.StatService;
 import com.chessopeningstats.backend.application.stat.dto.Stat;
+import com.chessopeningstats.backend.exception.PlayerNotFoundException;
+import com.chessopeningstats.backend.infra.repository.PlayerRepository;
 import com.chessopeningstats.backend.security.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,26 +20,20 @@ import java.util.List;
 public class StatController {
     private final AuthService authService;
     private final StatService statService;
+    private final PlayerRepository playerRepository;
+
+    @GetMapping("/all")
+    public List<Stat> getAllStat(){
+        return statService.getAllStats();
+    }
 
     @GetMapping("/player")
-    public Stat getPlayerStat(Authentication authentication) {
-        return statService.getStatByPlayerId(authService.getPlayerIdFromAuthentication(authentication));
+    public List<Stat> getPlayerStat(Authentication authentication) {
+        return statService.getStatsByPlayerId(authService.getPlayerIdFromAuthentication(authentication));
     }
 
-    @GetMapping("/account")
-    public Stat getAccountStat(@RequestParam List<Long> accountId){
-        if(accountId.isEmpty()) return new Stat(0,0,0);
-        return statService.getStatByAccountIds(accountId);
-    }
-
-    @GetMapping("/player/opening")
-    public Stat getPlayerStatByEpds(Authentication authentication, @RequestParam List<String> epd){
-        return statService.getOpeningStatByPlayerId(authService.getPlayerIdFromAuthentication(authentication), epd);
-    }
-
-    @GetMapping("/account/opening")
-    public Stat getAccountStatByEpds(@RequestParam List<Long> accountId, @RequestParam List<String> epd){
-        if(accountId.isEmpty() || epd.isEmpty()) return new Stat(0,0,0);
-        return statService.getOpeningStatByAccountIds(accountId, epd);
+    @GetMapping("/player/{nickname}")
+    public List<Stat> getPlayerStatByNickname(@PathVariable String nickname) {
+        return statService.getStatsByPlayerId(playerRepository.findByNickname(nickname).orElseThrow(PlayerNotFoundException::new).getId());
     }
 }

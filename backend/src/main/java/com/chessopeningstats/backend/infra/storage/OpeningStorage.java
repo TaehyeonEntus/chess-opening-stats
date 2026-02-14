@@ -5,10 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -23,10 +22,10 @@ public class OpeningStorage {
         openings.forEach(this::storeOne);
     }
 
-    public Set<Opening> loadOpeningsByEpds(Collection<String> epds){
+    public List<Opening> loadOpeningsByEpds(Collection<String> epds){
         return epds.parallelStream()
                 .map(openingMap::get)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+                .toList();
     }
 }

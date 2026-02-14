@@ -4,14 +4,13 @@ import com.chessopeningstats.backend.domain.Account;
 import com.chessopeningstats.backend.exception.PlayerNotFoundException;
 import com.chessopeningstats.backend.exception.RemoteApiServerException;
 import com.chessopeningstats.backend.infra.client.fetchGameClient.FetchGameClient;
-
-import java.time.Instant;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -21,17 +20,17 @@ public class LichessFetchGameClient implements FetchGameClient<LichessGameDto> {
 
     @Override
     public List<LichessGameDto> fetchGames(Account account) {
-        Instant lastPlayedAt = account.getLastPlayedAt();
+        long since = account.getLastPlayedAt().toEpochMilli();
 
         return lichessFetchGameWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/games/user/{username}")
                         .queryParam("pgnInJson", true)
-                        .queryParam("moves",true)
                         .queryParam("rated",true)
                         .queryParam("perfType","ultraBullet,bullet,blitz,rapid,classical,correspondence")
-                        .queryParam("max", 100)
-                        .queryParam("since", lastPlayedAt.toEpochMilli())
+                        .queryParam("max", 2000)
+                        .queryParam("moves",true)
+                        .queryParam("since", since)
                         .build(account.getUsername())
                 )
                 .retrieve()
