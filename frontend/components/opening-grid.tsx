@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect, useCallback } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Select,
@@ -18,10 +18,13 @@ interface OpeningGridProps {
   stats: OpeningStatView[]
 }
 
+const ITEMS_PER_PAGE = 20;
+
 export function OpeningGrid({ stats }: OpeningGridProps) {
   const [colorFilter, setColorFilter] = useState<ColorFilter>("all")
   const [sortBy, setSortBy] = useState<SortBy>("totalGames")
   const [search, setSearch] = useState("")
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
 
   const filtered = useMemo(() => {
     let list = [...stats]
@@ -57,6 +60,25 @@ export function OpeningGrid({ stats }: OpeningGridProps) {
 
     return list
   }, [stats, colorFilter, search, sortBy])
+
+  // 필터나 정렬 조건이 바뀌면 보여주는 개수 초기화
+  useEffect(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+  }, [colorFilter, search, sortBy]);
+
+  const handleScroll = useCallback(() => {
+    if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 50) {
+      return;
+    }
+    setVisibleCount(prev => Math.min(prev + ITEMS_PER_PAGE, filtered.length));
+  }, [filtered.length]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
+  const visibleItems = filtered.slice(0, visibleCount);
 
   return (
       <div className="flex flex-col gap-6">
@@ -99,7 +121,7 @@ export function OpeningGrid({ stats }: OpeningGridProps) {
         </div>
 
         {/* 결과 영역 */}
-        {filtered.length === 0 ? (
+        {visibleItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-sm text-muted-foreground">
                 No openings found matching your search.
@@ -107,14 +129,14 @@ export function OpeningGrid({ stats }: OpeningGridProps) {
             </div>
         ) : (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((stat) => (
+              {visibleItems.map((stat) => (
                   <OpeningCard key={`${stat.epd}-${stat.color}`} stat={stat} />
               ))}
             </div>
         )}
 
         <p className="text-center text-xs text-muted-foreground">
-          Showing {filtered.length} of {stats.length} openings
+          Showing {visibleItems.length} of {filtered.length} openings
         </p>
       </div>
   )
