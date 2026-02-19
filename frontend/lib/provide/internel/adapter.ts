@@ -1,15 +1,22 @@
 import type {OpeningResult, OpeningStatView} from "../../types"
+import { calculateRatesFromCounts } from "@/lib/stats"
 
 export function calcOpeningRates(totalGames: number, wins: number, draws: number, losses: number) {
+    const rates = calculateRatesFromCounts(wins, draws, losses)
+
     return {
         totalGames : totalGames,
-        winRate: totalGames > 0 ? Math.round((wins / totalGames) * 1000) / 10 : 0,
-        drawRate: totalGames > 0 ? Math.round((draws / totalGames) * 1000) / 10 : 0,
-        lossRate: totalGames > 0 ? Math.round((losses / totalGames) * 1000) / 10 : 0,
+        winRate: rates.winRate,
+        drawRate: rates.drawRate,
+        lossRate: rates.lossRate,
     }
 }
 
 export function adaptOpeningResult(results: OpeningResult[]): OpeningStatView[] {
+    if (!Array.isArray(results)) {
+        console.error("adaptOpeningResult: results is not an array", results);
+        return [];
+    }
     return results
         .map((result): OpeningStatView => ({
             ...result,
