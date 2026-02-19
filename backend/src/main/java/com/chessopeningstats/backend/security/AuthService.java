@@ -1,7 +1,7 @@
 package com.chessopeningstats.backend.security;
 
-import com.chessopeningstats.backend.application.player.PlayerService;
-import com.chessopeningstats.backend.domain.Player;
+import com.chessopeningstats.backend.application.domain.AccountService;
+import com.chessopeningstats.backend.domain.Account;
 import com.chessopeningstats.backend.exception.NicknameAlreadyExistsException;
 import com.chessopeningstats.backend.exception.PasswordMismatchException;
 import com.chessopeningstats.backend.exception.UsernameAlreadyExistsException;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthenticationManager authManager;
-    private final PlayerService playerService;
+    private final AccountService accountService;
     private final PasswordEncoder encoder;
     private final JwtTokenProvider tokenProvider;
 
@@ -44,13 +44,13 @@ public class AuthService {
         checkUsernameAvailable(request.getUsername());
         checkNicknameAvailable(request.getNickname());
 
-        Player player = Player.builder()
+        Account account = Account.builder()
                 .username(request.getUsername())
                 .password(encoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
                 .build();
 
-        playerService.create(player);
+        accountService.saveAccount(account);
     }
 
 
@@ -60,17 +60,17 @@ public class AuthService {
     }
 
     private void checkUsernameAvailable(String username) {
-        if (playerService.existsByUsername(username))
+        if (accountService.existsByUsername(username))
             throw new UsernameAlreadyExistsException();
     }
 
     private void checkNicknameAvailable(String nickname) {
-        if (playerService.existsByNickname(nickname))
+        if (accountService.existsByNickname(nickname))
             throw new NicknameAlreadyExistsException();
     }
 
-    public long getPlayerIdFromAuthentication(Authentication authentication){
+    public long getAccountId(Authentication authentication){
         CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
-        return Long.parseLong(userDetails.getPlayerId());
+        return Long.parseLong(userDetails.getAccountId());
     }
 }

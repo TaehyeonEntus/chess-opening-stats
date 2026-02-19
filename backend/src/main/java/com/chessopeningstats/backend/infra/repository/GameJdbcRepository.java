@@ -21,7 +21,7 @@ public class GameJdbcRepository {
         }
 
         jdbcTemplate.batchUpdate("""
-            insert into GAME (UUID, PLAYED_AT, TIME, TYPE, OPENING_ID, CREATED_AT, UPDATED_AT)
+            insert into GAME (UUID, PLAYED_AT, TIME, TYPE, LAST_MATCHED_OPENING_ID, CREATED_AT, UPDATED_AT)
             values (?, ?, ?, ?, ?, now(), now())
             on duplicate key update
                 id = id
@@ -30,10 +30,10 @@ public class GameJdbcRepository {
             ps.setTimestamp(2, Timestamp.from(game.getPlayedAt()));
             ps.setString(3, game.getTime().name());
             ps.setString(4, game.getType().name());
-            if(game.getOpening() == null)
+            if(game.getLastMatchedOpening() == null)
                 ps.setNull(5, java.sql.Types.BIGINT);
             else
-                ps.setLong(5, game.getOpening().getId());
+                ps.setLong(5, game.getLastMatchedOpening().getId());
         });
     }
 

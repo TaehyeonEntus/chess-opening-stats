@@ -1,5 +1,6 @@
 package com.chessopeningstats.backend.domain;
 
+import com.chessopeningstats.backend.domain.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder.Default;
 import lombok.*;
@@ -39,7 +40,7 @@ public class Game extends BaseEntity {
     private Instant playedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Opening opening;
+    private Opening lastMatchedOpening;
 
     @Default
     @OneToMany(mappedBy = "game", fetch = FetchType.LAZY)

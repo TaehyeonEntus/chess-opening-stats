@@ -1,12 +1,11 @@
 package com.chessopeningstats.backend.infra.client.fetchGameClient.chesscom;
 
-import com.chessopeningstats.backend.domain.Account;
+import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.exception.PlayerNotFoundException;
 import com.chessopeningstats.backend.exception.RemoteApiServerException;
 import com.chessopeningstats.backend.infra.client.fetchGameClient.FetchGameClient;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,10 +26,10 @@ public class ChessComFetchGameClient implements FetchGameClient<ChessComGameDto>
     private final WebClient chessComFetchGameWebClient;
 
     @Override
-    public List<ChessComGameDto> fetchGames(Account account) {
-        Instant lastPlayedAt = account.getLastPlayedAt();
+    public List<ChessComGameDto> fetchGames(Player Player) {
+        Instant lastPlayedAt = Player.getLastPlayedAt();
 
-        return getRelevantArchiveUrls(account.getUsername(), lastPlayedAt)
+        return getRelevantArchiveUrls(Player.getUsername(), lastPlayedAt)
                 .flatMap(this::fetchGamesFromUrl, 10)  // 동시 10개만 요청
                 .flatMapIterable(ChessComArchiveResponse::getGames)
                 .filter(dto -> isAfterLastSyncTime(dto, lastPlayedAt))
@@ -60,9 +59,23 @@ public class ChessComFetchGameClient implements FetchGameClient<ChessComGameDto>
     private Mono<ChessComArchiveResponse> fetchGamesFromUrl(String url) {
         return chessComFetchGameWebClient.get()
                 .uri(url)
-                .retrieve()
-                .bodyToMono(ChessComArchiveResponse.class);
+                .exchangeToMono(response -> {
+                    if (response.statusCode().is2xxSuccessful()) {
+                        return response.bodyToMono(ChessComArchiveResponse.class);
+                    }
+
+                    if (response.statusCode().value() == 404) {
+                        return Mono.empty(); // 데이터 없음 → 정상 처리
+                    }
+
+                    if (response.statusCode().value() == 429) {
+                        return Mono.error(new RemoteApiServerException("Rate limit 발생"));
+                    }
+
+                    return response.createException().flatMap(Mono::error);
+                });
     }
+
 
     // 중복 아카이브 검사
     private boolean isRelevantArchive(String url, Instant lastPlayedAt) {

@@ -1,9 +1,9 @@
 package com.chessopeningstats.backend.infra.client.fetchGameClient;
 
-import com.chessopeningstats.backend.domain.Account;
+import com.chessopeningstats.backend.domain.Player;
 
 import java.util.List;
 
 public interface FetchGameClient<T> {
-    List<T> fetchGames(Account account);
+    List<T> fetchGames(Player Player);
 }

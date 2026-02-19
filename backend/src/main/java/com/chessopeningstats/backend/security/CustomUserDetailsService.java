@@ -1,8 +1,8 @@
 package com.chessopeningstats.backend.security;
 
-import com.chessopeningstats.backend.domain.Player;
-import com.chessopeningstats.backend.exception.PlayerNotFoundException;
-import com.chessopeningstats.backend.infra.repository.PlayerRepository;
+import com.chessopeningstats.backend.domain.Account;
+import com.chessopeningstats.backend.exception.AccountNotFoundException;
+import com.chessopeningstats.backend.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,16 +15,16 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final PlayerRepository playerRepository;
+    private final AccountRepository AccountRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        return playerRepository.findByUsername(username)
+        return AccountRepository.findByUsername(username)
                 .map(this::createUserDetails)
-                .orElseThrow(PlayerNotFoundException::new);
+                .orElseThrow(AccountNotFoundException::new);
     }
 
-    private UserDetails createUserDetails(Player player) {
-        return new CustomUserDetails(player, Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
+    private UserDetails createUserDetails(Account account) {
+        return new CustomUserDetails(account, Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
     }
 }

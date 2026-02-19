@@ -1,18 +1,19 @@
 package com.chessopeningstats.backend.domain;
 
+import com.chessopeningstats.backend.domain.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.Builder.Default;
 import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
-import lombok.Builder.Default;
 
 @Getter
 @Setter
@@ -23,12 +24,8 @@ import lombok.Builder.Default;
 @Table(
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_player_username",
-                        columnNames = {"username"}
-                ),
-                @UniqueConstraint(
-                        name = "uk_player_nickname",
-                        columnNames = {"nickname"}
+                        name = "uk_username_platform",
+                        columnNames = {"username", "platform"}
                 )
         }
 )
@@ -38,20 +35,18 @@ public class Player extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 64)
-    private String username;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false, length = 64)
-    private String nickname;
-
     @Default
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY)
-    private Set<PlayerAccount> playerAccounts = new HashSet<>();
+    private Set<AccountPlayer> accountPlayers = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
+    private Platform platform;
+
+    @Column(nullable = false, length = 128)
+    private String username;
 
     @Default
-    @Column(name = "last_synced_at", nullable = false)
-    private Instant lastSyncedAt = Instant.EPOCH;
+    @Column(name = "last_played_at", nullable = false)
+    private Instant lastPlayedAt = Instant.EPOCH;
 }

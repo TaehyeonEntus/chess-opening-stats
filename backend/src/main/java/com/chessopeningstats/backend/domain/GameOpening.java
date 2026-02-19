@@ -1,5 +1,6 @@
 package com.chessopeningstats.backend.domain;
 
+import com.chessopeningstats.backend.domain.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,7 @@ import lombok.*;
                 )
         }
 )
-public class GameOpening extends BaseEntity{
+public class GameOpening extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

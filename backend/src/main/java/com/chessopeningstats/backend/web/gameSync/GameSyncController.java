@@ -1,6 +1,6 @@
 package com.chessopeningstats.backend.web.gameSync;
 
-import com.chessopeningstats.backend.application.syncGame.GameSyncFacade;
+import com.chessopeningstats.backend.application.usecase.syncGame.GameSyncFacade;
 import com.chessopeningstats.backend.security.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +16,9 @@ public class GameSyncController {
     private final GameSyncFacade gameSyncFacade;
     private final AuthService authService;
 
-
     @GetMapping("/sync")
-    public ResponseEntity<?> syncPlayer(Authentication authentication) {
-        long playerId = authService.getPlayerIdFromAuthentication(authentication);
-        gameSyncFacade.sync(playerId);
+    public ResponseEntity<?> syncAccount(Authentication authentication) {
+        gameSyncFacade.sync(authService.getAccountId(authentication));
         return ResponseEntity.ok().body("synchronized successfully");
     }
 }

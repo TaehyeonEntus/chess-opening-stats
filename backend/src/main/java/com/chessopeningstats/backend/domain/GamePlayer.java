@@ -1,5 +1,6 @@
 package com.chessopeningstats.backend.domain;
 
+import com.chessopeningstats.backend.domain.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,8 +13,8 @@ import lombok.*;
 @Table(
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_account_game",
-                        columnNames = {"account_id", "game_id"}
+                        name = "uk_game_player",
+                        columnNames = {"game_id", "player_id"}
                 )
         }
 )
@@ -26,7 +27,7 @@ public class GamePlayer extends BaseEntity {
     private Game game;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Account account;
+    private Player player;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
@@ -35,7 +36,5 @@ public class GamePlayer extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
     private GamePlayerResult result;
-
-
 }
 

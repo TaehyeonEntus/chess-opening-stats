@@ -1,18 +1,19 @@
 package com.chessopeningstats.backend.domain;
 
+import com.chessopeningstats.backend.domain.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.Builder.Default;
 import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
+import lombok.Builder.Default;
 
 @Getter
 @Setter
@@ -23,8 +24,12 @@ import lombok.Builder;
 @Table(
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_username_platform",
-                        columnNames = {"username", "platform"}
+                        name = "uk_account_username",
+                        columnNames = {"username"}
+                ),
+                @UniqueConstraint(
+                        name = "uk_account_nickname",
+                        columnNames = {"nickname"}
                 )
         }
 )
@@ -34,18 +39,20 @@ public class Account extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Default
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
-    private Set<PlayerAccount> playerAccounts = new HashSet<>();
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 32)
-    private Platform platform;
-
-    @Column(nullable = false, length = 128)
+    @Column(nullable = false, length = 64)
     private String username;
 
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false, length = 64)
+    private String nickname;
+
     @Default
-    @Column(name = "last_played_at", nullable = false)
-    private Instant lastPlayedAt = Instant.EPOCH;
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private Set<AccountPlayer> accountPlayers = new HashSet<>();
+
+    @Default
+    @Column(name = "last_synced_at", nullable = false)
+    private Instant lastSyncedAt = Instant.EPOCH;
 }

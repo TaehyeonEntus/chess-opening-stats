@@ -1,9 +1,7 @@
 package com.chessopeningstats.backend.security.jwt;
 
-import com.chessopeningstats.backend.application.player.PlayerService;
-import com.chessopeningstats.backend.domain.Player;
-import com.chessopeningstats.backend.exception.PlayerNotFoundException;
-import com.chessopeningstats.backend.infra.repository.PlayerRepository;
+import com.chessopeningstats.backend.application.domain.AccountService;
+import com.chessopeningstats.backend.domain.Account;
 import com.chessopeningstats.backend.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,8 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -26,12 +22,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
-    private final PlayerRepository playerRepository;
+    private final AccountService accountService;
     private final SecretKey key;
     private final long validityInMilliseconds;
 
-    public JwtTokenProvider(PlayerRepository playerRepository, @Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long validityInMilliseconds) {
-        this.playerRepository = playerRepository;
+    public JwtTokenProvider(AccountService accountService, @Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long validityInMilliseconds) {
+        this.accountService = accountService;
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.validityInMilliseconds = validityInMilliseconds;
     }
@@ -47,7 +43,7 @@ public class JwtTokenProvider {
         Date validity = new Date(now + this.validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(userDetails.getPlayerId())
+                .setSubject(userDetails.getAccountId())
                 .claim("auth", authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
@@ -61,14 +57,14 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        Player player = playerRepository.findById(Long.parseLong(claims.getSubject())).orElseThrow(PlayerNotFoundException::new);
+        Account account = accountService.getAccount(Long.parseLong(claims.getSubject()));
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("auth").toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        CustomUserDetails userDetails = new CustomUserDetails(player, authorities);
+        CustomUserDetails userDetails = new CustomUserDetails(account, authorities);
 
         return new UsernamePasswordAuthenticationToken(userDetails, token, authorities);
     }

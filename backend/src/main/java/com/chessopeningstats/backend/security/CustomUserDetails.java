@@ -1,6 +1,6 @@
 package com.chessopeningstats.backend.security;
 
-import com.chessopeningstats.backend.domain.Player;
+import com.chessopeningstats.backend.domain.Account;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,21 +10,21 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
-    private final Player player;
+    private final Account account;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public String getPlayerId(){
-        return String.valueOf(player.getId());
+    public String getAccountId(){
+        return String.valueOf(account.getId());
     }
 
     @Override
     public @Nullable String getPassword() {
-        return player.getPassword();
+        return account.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return player.getUsername();
+        return account.getUsername();
     }
 
     @Override

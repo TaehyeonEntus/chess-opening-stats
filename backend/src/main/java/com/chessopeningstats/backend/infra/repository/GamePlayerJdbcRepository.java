@@ -20,12 +20,12 @@ public class GamePlayerJdbcRepository {
         }
 
         jdbcTemplate.batchUpdate("""
-                    insert into GAME_PLAYER (ACCOUNT_ID, GAME_ID, COLOR, RESULT, CREATED_AT, UPDATED_AT)
+                    insert into GAME_PLAYER (PLAYER_ID, GAME_ID, COLOR, RESULT, CREATED_AT, UPDATED_AT)
                     values (?, ?, ?, ?, now(), now())
                     on duplicate key update
                         id = id
                 """, gamePlayerRows, 1000, (ps, gamePlayerRow) -> {
-            ps.setLong(1, gamePlayerRow.accountId());
+            ps.setLong(1, gamePlayerRow.playerId());
             ps.setLong(2, gamePlayerRow.gameId());
             ps.setString(3, gamePlayerRow.color().name());
             ps.setString(4, gamePlayerRow.result().name());
@@ -34,7 +34,7 @@ public class GamePlayerJdbcRepository {
 
     public record GamePlayerRow(
             long gameId,
-            long accountId,
+            long playerId,
             GamePlayerColor color,
             GamePlayerResult result
     ) {

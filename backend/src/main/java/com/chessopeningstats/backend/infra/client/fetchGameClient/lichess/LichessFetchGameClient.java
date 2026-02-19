@@ -1,6 +1,6 @@
 package com.chessopeningstats.backend.infra.client.fetchGameClient.lichess;
 
-import com.chessopeningstats.backend.domain.Account;
+import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.exception.PlayerNotFoundException;
 import com.chessopeningstats.backend.exception.RemoteApiServerException;
 import com.chessopeningstats.backend.infra.client.fetchGameClient.FetchGameClient;
@@ -19,8 +19,8 @@ public class LichessFetchGameClient implements FetchGameClient<LichessGameDto> {
     private final WebClient lichessFetchGameWebClient;
 
     @Override
-    public List<LichessGameDto> fetchGames(Account account) {
-        long since = account.getLastPlayedAt().toEpochMilli();
+    public List<LichessGameDto> fetchGames(Player Player) {
+        long since = Player.getLastPlayedAt().toEpochMilli();
 
         return lichessFetchGameWebClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -31,11 +31,11 @@ public class LichessFetchGameClient implements FetchGameClient<LichessGameDto> {
                         .queryParam("max", 2000)
                         .queryParam("moves",true)
                         .queryParam("since", since)
-                        .build(account.getUsername())
+                        .build(Player.getUsername())
                 )
                 .retrieve()
                 .onStatus(HttpStatus.NOT_FOUND::equals,
-                        response -> Mono.error(new PlayerNotFoundException("Lichess에서 플레이어를 찾을 수 없습니다: " + account.getUsername())))
+                        response -> Mono.error(new PlayerNotFoundException("Lichess에서 플레이어를 찾을 수 없습니다: " + Player.getUsername())))
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(),
                         response -> Mono.error(new RemoteApiServerException("Lichess API 서버 에러: " + response.statusCode())))
                 .bodyToFlux(LichessGameDto.class)

@@ -1,11 +1,11 @@
 package com.chessopeningstats.backend.batch.job;
 
-import com.chessopeningstats.backend.application.syncGame.GameSyncFacade;
+import com.chessopeningstats.backend.application.usecase.syncGame.GameSyncFacade;
 import com.chessopeningstats.backend.batch.BatchListener;
-import com.chessopeningstats.backend.domain.Player;
+import com.chessopeningstats.backend.domain.Account;
 import com.chessopeningstats.backend.exception.BusinessException;
 import com.chessopeningstats.backend.exception.handler.BatchExceptionHandler;
-import com.chessopeningstats.backend.infra.repository.PlayerRepository;
+import com.chessopeningstats.backend.infra.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.Job;
@@ -26,7 +26,7 @@ public class GameSyncBatchConfig {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
-    private final PlayerRepository playerRepository;
+    private final AccountRepository accountRepository;
     private final GameSyncFacade gameSyncFacade;
 
     @Bean
@@ -45,11 +45,11 @@ public class GameSyncBatchConfig {
 
     @Bean
     public Step gameSyncStep(
-            ListItemReader<Player> playerReader,
-            ItemWriter<Player> playerWriter
+            ListItemReader<Account> playerReader,
+            ItemWriter<Account> playerWriter
     ) {
         return new StepBuilder("gameSyncStep", jobRepository)
-                .<Player, Player>chunk(1)
+                .<Account, Account>chunk(1)
                 .transactionManager(transactionManager)
                 .reader(playerReader)
                 .writer(playerWriter)
@@ -61,16 +61,15 @@ public class GameSyncBatchConfig {
 
     @Bean
     @StepScope
-    public ListItemReader<Player> playerReader() {
-        return new ListItemReader<>(playerRepository.findAll());
-    }
+    public ListItemReader<Account> accountReader() {
+        return new ListItemReader<>(accountRepository.findAll());}
 
     @Bean
     @StepScope
-    public ItemWriter<Player> playerWriter() {
-        return players -> {
-            for (Player player : players) {
-                gameSyncFacade.sync(player.getId());
+    public ItemWriter<Account> accountWriter() {
+        return accounts -> {
+            for (Account account : accounts) {
+                gameSyncFacade.sync(account.getId());
             }
         };
     }
