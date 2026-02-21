@@ -19,21 +19,21 @@ export interface ChangePasswordRequest {
 }
 
 export function login(request: LoginRequest): Promise<void> {
-  return apiClient.post<void>("/api/auth/login", request)
+  return apiClient.post<void>("/auth/login", request)
 }
 
 export function logout(): Promise<void> {
-  return apiClient.post<void>("/api/auth/logout")
+  return apiClient.post<void>("/auth/logout")
 }
 
 export function register(request: RegisterRequest): Promise<string> {
-  return apiClient.post<string>("/api/auth/register", request)
+  return apiClient.post<string>("/auth/register", request)
 }
 
 export function changePassword(request: ChangePasswordRequest): Promise<void> {
-  return apiClient.post<void>("/api/auth/changePassword", request)
+  return apiClient.post<void>("/auth/changePassword", request)
 }
 
 export function deleteAccount(): Promise<void> {
-  return apiClient.post<void>("/api/auth/delete")
+  return apiClient.post<void>("/auth/delete")
 }

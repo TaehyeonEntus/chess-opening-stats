@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 
 // 1. 기본 설정 (Base Instance)
 const axiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080",
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.chessopeningstat.com",
     headers: {
         "Content-Type": "application/json",
     },

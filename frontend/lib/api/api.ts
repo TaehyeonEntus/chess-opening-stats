@@ -24,29 +24,29 @@ export function deleteAccount(): Promise<void> {
 }
 
 export function fetchAllOpeningResult(): Promise<OpeningResult[]> {
-  return apiClient.get<OpeningStatsResponse>("/api/stat/account").then(response => response.openingStats)
+  return apiClient.get<OpeningStatsResponse>("/stat/account").then(response => response.openingStats)
 }
 
 export function fetchSummary(): Promise<SummaryResponse> {
-  return apiClient.get<SummaryResponse>("/api/stat/account/summary")
+  return apiClient.get<SummaryResponse>("/stat/account/summary")
 }
 
 export function syncAccount(): Promise<void> {
-  return apiClient.post<void>("/api/sync")
+  return apiClient.post<void>("/sync")
 }
 
 export function addPlayer(request: AddPlayerRequest): Promise<string> {
-  return apiClient.post<string>("/api/player/add", request)
+  return apiClient.post<string>("/player/add", request)
 }
 
 export function deletePlayer(request: DeletePlayerRequest): Promise<void> {
-  return apiClient.post<void>("/api/player/delete", request)
+  return apiClient.post<void>("/player/delete", request)
 }
 
 export function fetchAccountInfo(): Promise<AccountInfoResponse> {
-  return apiClient.get<AccountInfoResponse>("/api/account/info")
+  return apiClient.get<AccountInfoResponse>("/account/info")
 }
 
 export function logout(): Promise<void> {
-  return apiClient.post<void>("/api/auth/logout")
+  return apiClient.post<void>("/auth/logout")
 }
