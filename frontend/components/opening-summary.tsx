@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslations } from "next-intl"
 import { Card, CardContent } from "@/components/ui/card"
 import type { DisplaySummary, ColorFilter, Stat } from "@/lib/types"
 import { calculateRatesFromCounts } from "@/lib/stats"
@@ -10,6 +13,7 @@ interface OpeningSummaryProps {
 }
 
 export function OpeningSummary({ summary, colorFilter }: OpeningSummaryProps) {
+  const t = useTranslations("opening")
   const {
     totalGames,
     totalWins,
@@ -29,12 +33,20 @@ export function OpeningSummary({ summary, colorFilter }: OpeningSummaryProps) {
       ? "bg-zinc-900 text-white"
       : "bg-gradient-to-r from-white via-zinc-400 to-zinc-900 text-black"
 
+  const summaryTitle =
+    colorFilter === "white"
+      ? t("whiteStats")
+      : colorFilter === "black"
+      ? t("blackStats")
+      : t("overallStats")
+
   return (
     <Card className="relative overflow-hidden">
       <div className={`absolute right-0 top-0 h-1 w-full ${colorIndicator}`} />
       <CardContent className="p-0">
         <div className="grid grid-cols-1 divide-y lg:grid-cols-3 lg:divide-x lg:divide-y-0">
           <SummaryOverallSection
+            title={summaryTitle}
             totalGames={totalGames}
             totalWins={totalWins}
             totalDraws={totalDraws}
@@ -44,9 +56,9 @@ export function OpeningSummary({ summary, colorFilter }: OpeningSummaryProps) {
             lossRate={lossRate}
           />
 
-          <FeaturedOpeningSection title="Best Win Rate" openings={bestWinRateOpenings} />
+          <FeaturedOpeningSection title={t("bestWinRate")} openings={bestWinRateOpenings} />
 
-          <FeaturedOpeningSection title="Most Played" openings={mostPlayedOpenings} />
+          <FeaturedOpeningSection title={t("mostPlayed")} openings={mostPlayedOpenings} />
         </div>
       </CardContent>
     </Card>
@@ -54,6 +66,7 @@ export function OpeningSummary({ summary, colorFilter }: OpeningSummaryProps) {
 }
 
 interface SummaryOverallSectionProps {
+  title: string
   totalGames: number
   totalWins: number
   totalDraws: number
@@ -64,6 +77,7 @@ interface SummaryOverallSectionProps {
 }
 
 function SummaryOverallSection({
+  title,
   totalGames,
   totalWins,
   totalDraws,
@@ -72,22 +86,23 @@ function SummaryOverallSection({
   drawRate,
   lossRate,
 }: SummaryOverallSectionProps) {
+  const t = useTranslations("opening")
   return (
     <section className="flex h-full min-w-0 flex-col gap-6 p-6">
-      <h3 className="text-lg font-semibold">Overall Stats</h3>
+      <h3 className="text-lg font-semibold">{title}</h3>
 
       <div className="flex flex-col gap-1">
-        <span className="text-sm text-muted-foreground">Total Games</span>
+        <span className="text-sm text-muted-foreground">{t("totalGames")}</span>
         <span className="text-3xl font-semibold tabular-nums">{totalGames.toLocaleString()}</span>
       </div>
 
       <div className="space-y-3">
-        <span className="text-sm font-medium text-muted-foreground">Results Distribution</span>
+        <span className="text-sm font-medium text-muted-foreground">{t("resultsDistribution")}</span>
         <div className="space-y-2 text-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span>Wins</span>
+              <span>{t("wins")}</span>
             </div>
             <span className="tabular-nums">
               {totalWins.toLocaleString()} ({winRate}%)
@@ -96,7 +111,7 @@ function SummaryOverallSection({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-amber-400" />
-              <span>Draws</span>
+              <span>{t("draws")}</span>
             </div>
             <span className="tabular-nums">
               {totalDraws.toLocaleString()} ({drawRate}%)
@@ -105,7 +120,7 @@ function SummaryOverallSection({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-rose-500" />
-              <span>Losses</span>
+              <span>{t("losses")}</span>
             </div>
             <span className="tabular-nums">
               {totalLosses.toLocaleString()} ({lossRate}%)
@@ -123,6 +138,7 @@ interface FeaturedOpeningSectionProps {
 }
 
 function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps) {
+  const t = useTranslations("opening")
   const topOpening = openings[0]
   const otherOpenings = openings.slice(1, 3)
 
@@ -131,13 +147,13 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
       <section className="flex h-full min-w-0 flex-col p-6">
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-lg font-semibold">{title}</h3>
-          {title === "Best Win Rate" && (
+          {title === t("bestWinRate") && (
             <p className="max-w-[10rem] text-right text-xs text-muted-foreground">
-              Based on openings with at least 30 games.
+              {t("bestWinRateNote")}
             </p>
           )}
         </div>
-        <div className="mt-6 text-sm text-muted-foreground">No data available</div>
+        <div className="mt-6 text-sm text-muted-foreground">{t("noDataAvailable")}</div>
       </section>
     )
   }
@@ -148,9 +164,9 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
     <section className="flex h-full min-w-0 flex-col gap-6 p-6">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-lg font-semibold">{title}</h3>
-        {title === "Best Win Rate" && (
+        {title === t("bestWinRate") && (
           <p className="max-w-[10rem] text-right text-xs text-muted-foreground">
-            Based on openings with at least 30 games.
+            {t("bestWinRateNote")}
           </p>
         )}
       </div>
@@ -184,11 +200,11 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
                 }`}
                 title={topOpening.color}
               />
-              <span>{topOpeningRates.totalGames.toLocaleString()} games</span>
+              <span>{topOpeningRates.totalGames.toLocaleString()} {t("games")}</span>
             </div>
           </div>
           <div className="flex items-center gap-3 text-xs tabular-nums">
-            <span className="font-medium text-foreground">{topOpeningRates.winRate}% WR</span>
+            <span className="font-medium text-foreground">{topOpeningRates.winRate}% {t("winRate")}</span>
             <span className="text-emerald-600">{topOpening.wins}W</span>
             <span className="text-amber-500">{topOpening.draws}D</span>
             <span className="text-rose-500">{topOpening.losses}L</span>
@@ -197,7 +213,7 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
       </div>
 
       <div className="flex flex-col gap-3">
-        <h4 className="text-xs font-semibold uppercase text-muted-foreground">Runner-ups</h4>
+        <h4 className="text-xs font-semibold uppercase text-muted-foreground">{t("runnerUps")}</h4>
         <div className="grid gap-2">
           {otherOpenings.map((op, index) => {
             const opRates = calculateRatesFromCounts(op.wins, op.draws, op.losses)
@@ -216,17 +232,17 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
                       }`}
                       title={op.color}
                     />
-                    <span>{opRates.totalGames.toLocaleString()} games</span>
+                    <span>{opRates.totalGames.toLocaleString()} {t("games")}</span>
                   </div>
                 </div>
                 <div className="text-right text-xs tabular-nums">
-                  <div className="font-medium">{opRates.winRate}% WR</div>
+                  <div className="font-medium">{opRates.winRate}% {t("winRate")}</div>
                 </div>
               </div>
             )
           })}
           {otherOpenings.length === 0 && (
-            <div className="text-sm text-muted-foreground">No other openings</div>
+            <div className="text-sm text-muted-foreground">{t("noOtherOpenings")}</div>
           )}
         </div>
       </div>

@@ -32,6 +32,7 @@ export interface OpeningStatView {
 export type Color = "white" | "black"
 export type ColorFilter = "all" | "white" | "black"
 export type SortBy = "winRate" | "totalGames" | "name"
+export type Platform = "CHESS_COM" | "LICHESS"
 
 // Summary API types
 export interface WinRate {
@@ -52,6 +53,7 @@ export interface Stat {
 }
 
 export interface SummaryResponse {
+    nickname: string
     bestWinRateOpenings: Stat[]
     mostPlayedOpenings: Stat[]
     winRates: WinRate[]
@@ -73,4 +75,17 @@ export interface DisplaySummary {
     lossRate: number;
     bestWinRateOpenings: Stat[];
     mostPlayedOpenings: Stat[];
+}
+
+// Account Info API types (MyPage)
+export interface PlayerInfo {
+    username: string
+    platform: Platform
+    lastPlayedAt: string // ISO 8601 datetime string
+}
+
+export interface AccountInfoResponse {
+    nickname: string
+    lastSyncedAt: string // ISO 8601 datetime string
+    players: PlayerInfo[]
 }

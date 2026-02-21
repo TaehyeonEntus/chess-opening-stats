@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { useTranslations } from "next-intl"
 import { OpeningCard } from "@/components/opening-card"
 import type { OpeningStatView } from "@/lib/types"
 
@@ -11,6 +12,7 @@ interface OpeningGridProps {
 const ITEMS_PER_PAGE = 20
 
 export function OpeningGrid({ stats }: OpeningGridProps) {
+  const t = useTranslations("opening")
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
@@ -52,7 +54,7 @@ export function OpeningGrid({ stats }: OpeningGridProps) {
       {visibleItems.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <p className="text-sm text-muted-foreground">
-            No openings found matching your search.
+            {t("noOpeningsFoundSearch")}
           </p>
         </div>
       ) : (
@@ -64,7 +66,7 @@ export function OpeningGrid({ stats }: OpeningGridProps) {
       )}
 
       <p className="text-center text-xs text-muted-foreground">
-        Showing {visibleItems.length} of {stats.length} openings
+        {t("showingResults", { visible: visibleItems.length, total: stats.length })}
       </p>
 
       {visibleItems.length < stats.length && (

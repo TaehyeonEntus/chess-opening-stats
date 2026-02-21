@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { WinRateBar } from "@/components/win-rate-bar"
@@ -41,6 +42,7 @@ function getBoardVisibilityObserver() {
 }
 
 export function OpeningCard({ stat }: OpeningCardProps) {
+  const t = useTranslations("opening")
   const boardRef = useRef<HTMLDivElement | null>(null)
   const [isBoardVisible, setIsBoardVisible] = useState(false)
 
@@ -88,7 +90,7 @@ export function OpeningCard({ stat }: OpeningCardProps) {
                     ? "border-foreground/20 bg-white"
                     : "border-foreground/20 bg-black"
                 }`}
-                aria-label={stat.color === "white" ? "White pieces" : "Black pieces"}
+                aria-label={stat.color === "white" ? t("white") : t("black")}
               />
             </div>
           </div>
@@ -98,13 +100,13 @@ export function OpeningCard({ stat }: OpeningCardProps) {
                 <p className="text-2xl font-bold tabular-nums text-foreground">
                   {stat.winRate}%
                 </p>
-                <p className="text-xs text-muted-foreground">win rate</p>
+                <p className="text-xs text-muted-foreground">{t("winRate")}</p>
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold tabular-nums text-foreground">
                   {stat.totalGames}
                 </p>
-                <p className="text-xs text-muted-foreground">games</p>
+                <p className="text-xs text-muted-foreground">{t("games")}</p>
               </div>
             </div>
           </div>

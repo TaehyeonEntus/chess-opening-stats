@@ -6,7 +6,7 @@ const axiosInstance = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
-    timeout: 5000
+    withCredentials: true,
 });
 
 // 2. 공통 요청 함수 (제네릭 활용)
