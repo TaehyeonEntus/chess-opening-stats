@@ -1,6 +1,7 @@
 package com.chessopeningstats.backend.infra.client.fetchOpeningClient;
 
 import com.chessopeningstats.backend.domain.Opening;
+import com.chessopeningstats.backend.infra.repository.OpeningRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -17,9 +18,12 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class OpeningFetchClient {
+    private final OpeningRepository openingRepository;
     public List<Opening> fetchOpenings() {
-        List<Opening> openings = new ArrayList<>();
+        if(openingRepository.count() != 0)
+            return openingRepository.findAll();
 
+        List<Opening> openings = new ArrayList<>();
         try (Reader reader = new InputStreamReader(new ClassPathResource("opening.tsv").getInputStream(), StandardCharsets.UTF_8);
              CSVParser csvParser = new CSVParser(reader, CSVFormat.Builder.create()
                      .setDelimiter('\t') // 탭 구분자 명시
