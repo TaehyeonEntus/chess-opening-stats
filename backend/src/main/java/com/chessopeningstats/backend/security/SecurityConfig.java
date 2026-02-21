@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll() // 인증 관련 경로는 모두 허용
+                        .requestMatchers("/auth/**").permitAll() // 인증 관련 경로는 모두 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
@@ -59,7 +59,7 @@ public class SecurityConfig {
 
         // 허용할 출처 설정 (프론트엔드 주소)
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000"  // React 개발 서버
+                "https://www.chessopeningstat.com"
         ));
 
         // 허용할 HTTP 메서드

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
@@ -29,6 +29,8 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
+                .domain(".chessopeningstat.com")
+                .sameSite("None")
                 .maxAge(60 * 60 * 24 * 7)
                 .build();
 
@@ -50,6 +52,8 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
                 .secure(true)
+                .domain(".chessopeningstat.com")
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
@@ -68,6 +72,8 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
                 .secure(true)
+                .domain(".chessopeningstat.com")
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
