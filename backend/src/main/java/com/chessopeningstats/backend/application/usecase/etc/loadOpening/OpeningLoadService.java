@@ -29,7 +29,7 @@ public class OpeningLoadService {
     }
 
     private void ingestOpenings(Collection<Opening> openings) {
-        if(openingRepository.count() != 0)
+        if(openingRepository.count() == 0)
             openingRepository.saveAll(openings);
     }
 
