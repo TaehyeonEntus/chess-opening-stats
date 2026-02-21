@@ -49,7 +49,7 @@ public class Account extends BaseEntity {
     private String nickname;
 
     @Default
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AccountPlayer> accountPlayers = new HashSet<>();
 
     @Default

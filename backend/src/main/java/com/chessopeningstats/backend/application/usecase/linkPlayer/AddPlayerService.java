@@ -1,4 +1,4 @@
-package com.chessopeningstats.backend.application.usecase.addPlayer;
+package com.chessopeningstats.backend.application.usecase.linkPlayer;
 
 import com.chessopeningstats.backend.application.domain.AccountPlayerService;
 import com.chessopeningstats.backend.application.domain.AccountService;
@@ -7,9 +7,10 @@ import com.chessopeningstats.backend.domain.Account;
 import com.chessopeningstats.backend.domain.AccountPlayer;
 import com.chessopeningstats.backend.domain.Platform;
 import com.chessopeningstats.backend.domain.Player;
+import com.chessopeningstats.backend.exception.PlayerAlreadyLinkedException;
 import com.chessopeningstats.backend.exception.PlayerNotFoundException;
 import com.chessopeningstats.backend.infra.client.checkPlayerClient.CheckPlayerClientRegistry;
-import com.chessopeningstats.backend.application.usecase.addPlayer.dto.AddPlayerRequest;
+import com.chessopeningstats.backend.application.usecase.linkPlayer.dto.AddPlayerRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,18 +26,22 @@ public class AddPlayerService {
     @Transactional
     public void addPlayerOnAccount(long accountId, AddPlayerRequest request) {
         Account account = accountService.getAccount(accountId);
-        Player player = getOrCreatePlayer(request);
+        Player player = this.getOrCreatePlayer(request);
 
-        accountPlayerService.saveAccountPlayer(AccountPlayer.of(account, player));
+        if (accountPlayerService.existsByAccountAndPlayer(account.getId(), player.getId()))
+            throw new PlayerAlreadyLinkedException();
+        else
+            accountPlayerService.saveAccountPlayer(AccountPlayer.of(account, player));
     }
 
-    private Player getOrCreatePlayer(AddPlayerRequest request){
+    @Transactional
+    public Player getOrCreatePlayer(AddPlayerRequest request) {
         String username = request.getUsername();
         Platform platform = request.getPlatform();
 
-        if(existsByUsernameAndPlatform(username, platform))
-            return getByUsernameAndPlatform(username, platform);
-        else if(checkPlayerAvailable(username,platform))
+        if (playerService.existsByUsernameAndPlatform(username, platform))
+            return playerService.getPlayerByUsernameAndPlatform(username, platform);
+        else if (checkPlayerAvailable(username, platform))
             return playerService.savePlayer(Player.builder()
                     .username(username)
                     .platform(platform)
@@ -45,16 +50,7 @@ public class AddPlayerService {
             throw new PlayerNotFoundException();
     }
 
-
-    private boolean existsByUsernameAndPlatform(String username, Platform platform){
-        return playerService.existsByUsernameAndPlatform(username, platform);
-    }
-
-    private Player getByUsernameAndPlatform(String username, Platform platform) {
-        return playerService.getPlayerByUsernameAndPlatform(username, platform);
-    }
-
-    private boolean checkPlayerAvailable(String username, Platform platform){
+    private boolean checkPlayerAvailable(String username, Platform platform) {
         return clientRegistry.getClient(platform).checkPlayer(username);
     }
 }

@@ -25,11 +25,16 @@ public enum ErrorCode {
     // Domain - GamePlayer
     GAME_PLAYER_NOT_FOUND(404, "GP001", "게임 플레이어를 찾을 수 없습니다."),
 
+    // Security
+    USERNAME_ALREADY_EXISTS(409, "S001", "이미 존재하는 아이디 입니다."),
+    NICKNAME_ALREADY_EXISTS(409, "S002", "이미 존재하는 닉네임 입니다."),
+    INVALID_PASSWORD(400, "S003", "비밀번호가 올바르지 않습니다."),
+    PASSWORD_MISMATCH(400, "S004", "비밀번호가 일치하지 않습니다."),
+
     // Application
     UNSUPPORTED_PLATFORM(400, "A001", "지원하지 않는 플랫폼입니다."),
-    PASSWORD_MISMATCH(400, "A002", "비밀번호가 일치하지 않습니다."),
-    USERNAME_ALREADY_EXISTS(409, "A003", "이미 존재하는 아이디 입니다."),
-    NICKNAME_ALREADY_EXISTS(409, "A003", "이미 존재하는 닉네임 입니다."),
+    SYNC_ALREADY_RUNNING(409, "A004", "이미 동기화 작업이 진행 중입니다."),
+    PLAYER_ALREADY_LINKED(409, "A005", "이미 연동된 계정입니다."),
 
     // Infra
     REMOTE_API_TIMEOUT(504, "I001", "외부 API 호출 시간이 초과되었습니다."),

@@ -105,8 +105,8 @@ public interface GamePlayerRepository extends JpaRepository<GamePlayer, Long> {
                     o.epd,
                     o.name,
                     gp.color
-                having count(*) >= 30
-                order by (sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.WIN then 1.0 else 0.0 end) / count(*)) desc
+                having count(*) >= 10
+                order by (sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.WIN then 1.0 else 0.0 end) / count(*)) desc, count(*) desc
             """)
     List<OpeningStat> getAllBestWinRateOpeningStats(GamePlayerColor color, Pageable pageable);
 
@@ -132,8 +132,8 @@ public interface GamePlayerRepository extends JpaRepository<GamePlayer, Long> {
                     o.epd,
                     o.name,
                     gp.color
-                having count(*) >= 30
-                order by (sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.WIN then 1.0 else 0.0 end) / count(*)) desc
+                having count(*) >= 10
+                order by (sum(case when gp.result = com.chessopeningstats.backend.domain.GamePlayerResult.WIN then 1.0 else 0.0 end) / count(*)) desc, count(*) desc
             """)
     List<OpeningStat> getAccountBestWinRateOpeningStats(long accountId, GamePlayerColor color, Pageable pageable);
 

@@ -1,13 +1,16 @@
 package com.chessopeningstats.backend.security.web;
 
 import com.chessopeningstats.backend.security.AuthService;
+import com.chessopeningstats.backend.security.web.dto.ChangePasswordRequest;
 import com.chessopeningstats.backend.security.web.dto.LoginRequest;
 import com.chessopeningstats.backend.security.web.dto.RegisterRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,25 +23,64 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        String jwt = authService.login(request);
-
-        ResponseCookie cookie = ResponseCookie.from("accessToken", jwt)
-                .httpOnly(true)      // 🔥 JS 접근 차단
-                .secure(false)       // HTTPS에서만 전송 (개발 중이면 false 가능)
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+        String token = authService.login(request);
+        ResponseCookie cookie = ResponseCookie.from("accessToken", token)
+                .httpOnly(true)
+                .secure(true)
                 .path("/")
-                .sameSite("Strict")  // CSRF 방어
-                .maxAge(60 * 60)     // 1시간
+                .maxAge(60 * 60 * 24 * 7)
                 .build();
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request){
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
-        return ResponseEntity.ok().body("registered successfully");
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        authService.logout();
+
+        ResponseCookie cookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<?> delete(Authentication authentication, HttpServletResponse response){
+        authService.delete(authService.getAccountId(authentication));
+
+        authService.logout();
+
+        ResponseCookie cookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request, Authentication authentication){
+        authService.changePassword(authService.getAccountId(authentication), request);
+        return ResponseEntity.ok().build();
     }
 }

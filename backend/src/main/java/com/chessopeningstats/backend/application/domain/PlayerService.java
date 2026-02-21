@@ -20,6 +20,7 @@ public class PlayerService {
         return playerRepository.findById(playerId).orElseThrow(PlayerNotFoundException::new);
     }
 
+
     public Player getPlayerByUsernameAndPlatform(String username, Platform platform) {
         return playerRepository.findByUsernameAndPlatform(username, platform).orElseThrow(PlayerNotFoundException::new);
     }

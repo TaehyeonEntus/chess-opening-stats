@@ -5,7 +5,7 @@ import com.chessopeningstats.backend.security.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +16,7 @@ public class GameSyncController {
     private final GameSyncFacade gameSyncFacade;
     private final AuthService authService;
 
-    @GetMapping("/sync")
+    @PostMapping("/sync")
     public ResponseEntity<?> syncAccount(Authentication authentication) {
         gameSyncFacade.sync(authService.getAccountId(authentication));
         return ResponseEntity.ok().body("synchronized successfully");

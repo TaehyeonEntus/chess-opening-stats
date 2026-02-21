@@ -1,7 +1,6 @@
 package com.chessopeningstats.backend.web.provideStat;
 
 import com.chessopeningstats.backend.application.usecase.provideStat.StatProvideService;
-import com.chessopeningstats.backend.application.usecase.provideStat.dto.OpeningStat;
 import com.chessopeningstats.backend.application.usecase.provideStat.dto.OpeningStatsResponse;
 import com.chessopeningstats.backend.application.usecase.provideStat.dto.SummaryResponse;
 import com.chessopeningstats.backend.security.AuthService;
@@ -10,8 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/stat")
@@ -27,7 +24,7 @@ public class StatProvideController {
 
     @GetMapping("/all/summary")
     public SummaryResponse getAllSummaries(){
-        return statProvideService.getAllSummary();
+        return statProvideService.getAllSummaries();
     }
 
     @GetMapping("/account")

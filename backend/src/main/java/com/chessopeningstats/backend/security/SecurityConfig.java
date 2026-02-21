@@ -46,9 +46,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/stat/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll() // 인증 관련 경로는 모두 허용
-                        .requestMatchers("/h2-console/**").permitAll() // H2 Console 접근 허용 (개발용)
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);

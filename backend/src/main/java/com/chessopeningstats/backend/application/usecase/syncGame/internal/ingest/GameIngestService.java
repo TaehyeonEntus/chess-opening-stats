@@ -96,7 +96,6 @@ public class GameIngestService {
 
     @Transactional
     public void updateAccountLatestSyncedAt(Account account, Instant syncedAt) {
-        if (account.getLastSyncedAt().isBefore(syncedAt))
-            account.setLastSyncedAt(syncedAt);
+        accountService.updateLastSyncedAt(account.getId(), syncedAt);
     }
 }

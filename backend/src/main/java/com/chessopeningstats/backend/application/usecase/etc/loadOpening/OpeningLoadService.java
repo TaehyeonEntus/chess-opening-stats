@@ -18,6 +18,7 @@ public class OpeningLoadService {
     private final OpeningRepository openingRepository;
     private final OpeningStorage openingStorage;
 
+    @Transactional
     public void loadOpening() {
         ingestOpenings(fetchOpenings());
         storeOpenings();
