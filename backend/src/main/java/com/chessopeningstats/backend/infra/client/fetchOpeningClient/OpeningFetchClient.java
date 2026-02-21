@@ -20,9 +20,6 @@ import java.util.List;
 public class OpeningFetchClient {
     private final OpeningRepository openingRepository;
     public List<Opening> fetchOpenings() {
-        if(openingRepository.count() != 0)
-            return openingRepository.findAll();
-
         List<Opening> openings = new ArrayList<>();
         try (Reader reader = new InputStreamReader(new ClassPathResource("opening.tsv").getInputStream(), StandardCharsets.UTF_8);
              CSVParser csvParser = new CSVParser(reader, CSVFormat.Builder.create()
