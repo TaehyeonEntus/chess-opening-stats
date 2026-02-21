@@ -20,7 +20,7 @@ public class GamePlayerJdbcRepository {
         }
 
         jdbcTemplate.batchUpdate("""
-                    insert into GAME_PLAYER (PLAYER_ID, GAME_ID, COLOR, RESULT, CREATED_AT, UPDATED_AT)
+                    insert into game_player (PLAYER_ID, GAME_ID, COLOR, RESULT, CREATED_AT, UPDATED_AT)
                     values (?, ?, ?, ?, now(), now())
                     on duplicate key update
                         id = id

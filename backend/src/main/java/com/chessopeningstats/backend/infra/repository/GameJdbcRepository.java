@@ -21,7 +21,7 @@ public class GameJdbcRepository {
         }
 
         jdbcTemplate.batchUpdate("""
-            insert into GAME (UUID, PLAYED_AT, TIME, TYPE, LAST_MATCHED_OPENING_ID, CREATED_AT, UPDATED_AT)
+            insert into game (uuid, played_at, time, type, last_matched_opening_id, created_at, updated_at)
             values (?, ?, ?, ?, ?, now(), now())
             on duplicate key update
                 id = id
@@ -64,7 +64,7 @@ public class GameJdbcRepository {
         // 4️⃣ JOIN 조회
         List<Map.Entry<String, Long>> entries = jdbcTemplate.query("""
             SELECT g.uuid, g.id
-            FROM GAME g
+            FROM game g
             JOIN temp_uuid t ON g.uuid = t.uuid
         """, (rs, rowNum) ->
                 Map.entry(
