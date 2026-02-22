@@ -34,8 +34,6 @@ public class GameAnalyzeService {
     public AnalyzedGameDto analyzeOne(NormalizedGameDto dto) {
         List<Opening> openings = openingAnalyzeService.analyzeOpening(dto.getPgn());
 
-        Instant playedAt = dto.getPlayedAt();
-
         Game game = Game.builder()
                 .id(dto.getUuid())
                 .time(dto.getGameTime())
@@ -61,7 +59,7 @@ public class GameAnalyzeService {
                 .game(game)
                 .gamePlayer(gamePlayer)
                 .gameOpenings(gameOpenings)
-                .playedAt(playedAt)
+                .playedAt(dto.getPlayedAt())
                 .build();
     }
 

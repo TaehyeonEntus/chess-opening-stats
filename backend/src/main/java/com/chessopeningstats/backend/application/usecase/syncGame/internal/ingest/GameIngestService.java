@@ -41,7 +41,8 @@ public class GameIngestService {
         Set<Game> games = dtos.stream()
                 .map(AnalyzedGameDto::getGame)
                 .collect(Collectors.toSet());
-        gameJdbcRepository.upsertGames(games);
+        if(!games.isEmpty())
+            gameJdbcRepository.upsertGames(games);
 
         // GamePlayer
         Set<GamePlayerJdbcRepository.GamePlayerRow> gamePlayerRows =
@@ -55,7 +56,8 @@ public class GameIngestService {
                                 )
                         )
                         .collect(Collectors.toSet());
-        gamePlayerJdbcRepository.upsertGamePlayers(gamePlayerRows);
+        if(!gamePlayerRows.isEmpty())
+            gamePlayerJdbcRepository.upsertGamePlayers(gamePlayerRows);
 
         // GameOpening
         Set<GameOpeningJdbcRepository.GameOpeningRow> gameOpeningRows =
@@ -70,7 +72,8 @@ public class GameIngestService {
                                 )
                         )
                         .collect(Collectors.toSet());
-        gameOpeningJdbcRepository.upsertGameOpenings(gameOpeningRows);
+        if(!gameOpeningRows.isEmpty())
+            gameOpeningJdbcRepository.upsertGameOpenings(gameOpeningRows);
 
         updatePlayerLatestPlayedAt(player, dtos);
         updateAccountLatestSyncedAt(account, fetchedAt);

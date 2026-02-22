@@ -15,15 +15,9 @@ public class GamePlayerJdbcRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public void upsertGamePlayers(Collection<GamePlayerRow> gamePlayerRows) {
-        if (gamePlayerRows == null || gamePlayerRows.isEmpty()) {
-            return;
-        }
-
         jdbcTemplate.batchUpdate("""
                     insert into game_player (player_id, game_id, color, result, created_at, updated_at)
                     values (?, ?, ?, ?, now(), now())
-                    on duplicate key update
-                        id = id
                 """, gamePlayerRows, 1000, (ps, gamePlayerRow) -> {
             ps.setLong(1, gamePlayerRow.playerId());
             ps.setString(2, gamePlayerRow.gameId());
@@ -37,6 +31,5 @@ public class GamePlayerJdbcRepository {
             long playerId,
             GamePlayerColor color,
             GamePlayerResult result
-    ) {
-    }
+    ) { }
 }
