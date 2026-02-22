@@ -25,13 +25,13 @@ public class GameOpeningJdbcRepository {
             on duplicate key update
                 id = id
         """, gameOpeningRows, 2000, (ps, gameOpeningRow) -> {
-            ps.setLong(1, gameOpeningRow.gameId());
+            ps.setString(1, gameOpeningRow.gameId());
             ps.setLong(2, gameOpeningRow.openingId());
         });
     }
 
     public record GameOpeningRow(
-            long gameId,
+            String gameId,
             long openingId
     ) {
     }

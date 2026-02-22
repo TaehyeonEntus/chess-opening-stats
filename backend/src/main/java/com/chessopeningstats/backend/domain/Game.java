@@ -15,18 +15,10 @@ import java.util.Set;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_game_uuid", columnNames = "uuid")
-        }
-)
+@Table
 public class Game extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column(nullable = false, length = 128)
-    private String uuid;
+    private String id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)

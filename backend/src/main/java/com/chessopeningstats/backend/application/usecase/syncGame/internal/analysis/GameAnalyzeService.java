@@ -37,7 +37,7 @@ public class GameAnalyzeService {
         Instant playedAt = dto.getPlayedAt();
 
         Game game = Game.builder()
-                .uuid(dto.getUuid())
+                .id(dto.getUuid())
                 .time(dto.getGameTime())
                 .type(dto.getGameType())
                 .lastMatchedOpening(openings.isEmpty()?null:openings.getLast())
@@ -46,11 +46,13 @@ public class GameAnalyzeService {
 
         Set<GameOpening> gameOpenings = openings.stream()
                 .map(opening -> GameOpening.builder()
+                        .game(game)
                         .opening(opening)
                         .build())
                 .collect(Collectors.toSet());
 
         GamePlayer gamePlayer = GamePlayer.builder()
+                .game(game)
                 .color(dto.getGamePlayerColor())
                 .result(dto.getGamePlayerResult())
                 .build();

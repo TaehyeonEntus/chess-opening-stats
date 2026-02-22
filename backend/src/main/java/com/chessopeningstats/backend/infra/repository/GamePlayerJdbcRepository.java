@@ -26,14 +26,14 @@ public class GamePlayerJdbcRepository {
                         id = id
                 """, gamePlayerRows, 1000, (ps, gamePlayerRow) -> {
             ps.setLong(1, gamePlayerRow.playerId());
-            ps.setLong(2, gamePlayerRow.gameId());
+            ps.setString(2, gamePlayerRow.gameId());
             ps.setString(3, gamePlayerRow.color().name());
             ps.setString(4, gamePlayerRow.result().name());
         });
     }
 
     public record GamePlayerRow(
-            long gameId,
+            String gameId,
             long playerId,
             GamePlayerColor color,
             GamePlayerResult result

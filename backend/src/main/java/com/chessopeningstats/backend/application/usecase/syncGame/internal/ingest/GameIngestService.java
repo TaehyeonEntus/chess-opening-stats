@@ -43,18 +43,12 @@ public class GameIngestService {
                 .collect(Collectors.toSet());
         gameJdbcRepository.upsertGames(games);
 
-        // 종속되는 테이블들이 참조할 ID를 찾기 위해 uuid to id 맵 구성
-        Map<String, Long> uuidToIdMap =
-                gameJdbcRepository.findIdsByUuid(games.stream()
-                        .map(Game::getUuid)
-                        .collect(Collectors.toSet()));
-
         // GamePlayer
         Set<GamePlayerJdbcRepository.GamePlayerRow> gamePlayerRows =
                 dtos.stream()
                         .map(dto ->
                                 new GamePlayerJdbcRepository.GamePlayerRow(
-                                        uuidToIdMap.get(dto.getGame().getUuid()),
+                                        dto.getGame().getId(),
                                         playerId,
                                         dto.getGamePlayer().getColor(),
                                         dto.getGamePlayer().getResult()
@@ -70,7 +64,7 @@ public class GameIngestService {
                                 .stream()
                                 .map(gameOpening ->
                                         new GameOpeningJdbcRepository.GameOpeningRow(
-                                                uuidToIdMap.get(dto.getGame().getUuid()),
+                                                gameOpening.getGame().getId(),
                                                 gameOpening.getOpening().getId()
                                         )
                                 )
