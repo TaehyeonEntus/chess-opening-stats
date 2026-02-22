@@ -1,10 +1,7 @@
 package com.chessopeningstats.backend.application.usecase.syncGame;
 
 import com.chessopeningstats.backend.application.domain.AccountService;
-import com.chessopeningstats.backend.application.domain.PlayerService;
-import com.chessopeningstats.backend.application.usecase.syncGame.internal.analysis.GameAnalyzeService;
-import com.chessopeningstats.backend.application.usecase.syncGame.internal.ingest.GameIngestService;
-import com.chessopeningstats.backend.application.usecase.syncGame.internal.provide.GameProvideServiceRegistry;
+import com.chessopeningstats.backend.application.usecase.syncGame.dto.RunningStatusResponse;
 import com.chessopeningstats.backend.domain.Account;
 import com.chessopeningstats.backend.domain.AccountPlayer;
 import com.chessopeningstats.backend.domain.Player;
@@ -14,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -26,12 +22,15 @@ public class GameSyncFacade {
     @LogExecutionTime
     public void sync(long accountId) {
         Account account = accountService.getAccount(accountId);
-        List<Player> players = account.getAccountPlayers().stream()
+        List<Long> playerIdList = account.getAccountPlayers().stream()
                 .map(AccountPlayer::getPlayer)
+                .map(Player::getId)
                 .toList();
 
-        for (Player player : players) {
-            gameSyncAsyncExecutor.sync(account.getId(), player.getId());
-        }
+        gameSyncAsyncExecutor.sync(accountId, playerIdList);
+    }
+
+    public RunningStatusResponse isRunning(long accountId){
+        return RunningStatusResponse.of(gameSyncAsyncExecutor.isRunning(accountId));
     }
 }

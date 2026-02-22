@@ -15,14 +15,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class GameIngestService {
     private final GameJdbcRepository gameJdbcRepository;
     private final GamePlayerJdbcRepository gamePlayerJdbcRepository;

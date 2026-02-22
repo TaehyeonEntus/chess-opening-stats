@@ -31,35 +31,41 @@ public class GameSyncAsyncExecutor {
     private final ConcurrentHashMap<Long, Boolean> runningTasks = new ConcurrentHashMap<>();
 
     @Async
-    public void sync(long accountId, long playerId) {
-        if (runningTasks.putIfAbsent(playerId, true) != null)
-            throw new SyncAlreadyRunningException();
-
+    public void sync(long accountId, List<Long> playerIdList) {
+        if (runningTasks.putIfAbsent(accountId, true) != null)
+            return;
         try {
-            Instant fetchedAt = Instant.now();
-            Account account = accountService.getAccount(accountId);
-            Player player = playerService.getPlayer(playerId);
-
-            // 1. fetch
-
-            List<NormalizedGameDto> normalizedGameDtos = gameProvideServiceRegistry
-                    .getService(player.getPlatform())
-                    .provideGames(player);
-
-            // skip if empty
-            if (normalizedGameDtos.isEmpty()) {
-                accountService.updateLastSyncedAt(account.getId(), fetchedAt);
-                return;
-            }
-
-            // 2. analyze
-            Set<AnalyzedGameDto> analyzedGameDtos = gameAnalyzeService.analyzeAll(normalizedGameDtos);
-
-            // 3. ingest (Transaction)
-            gameIngestService.ingestAll(account.getId(), player.getId(), analyzedGameDtos, fetchedAt);
-
+            playerIdList.forEach(playerId -> syncOne(accountId, playerId));
         } finally {
-            runningTasks.remove(playerId);
+            runningTasks.remove(accountId);
         }
+    }
+
+    public void syncOne(long accountId, long playerId) {
+        Instant fetchedAt = Instant.now();
+
+        Account account = accountService.getAccount(accountId);
+        Player player = playerService.getPlayer(playerId);
+
+        // 1. fetch
+        List<NormalizedGameDto> normalizedGameDtos = gameProvideServiceRegistry
+                .getService(player.getPlatform())
+                .provideGames(player);
+
+        // skip if empty
+        if (normalizedGameDtos.isEmpty()) {
+            accountService.updateLastSyncedAt(account.getId(), fetchedAt);
+            return;
+        }
+
+        // 2. analyze
+        Set<AnalyzedGameDto> analyzedGameDtos = gameAnalyzeService.analyzeAll(normalizedGameDtos);
+
+        // 3. ingest (Transaction)
+        gameIngestService.ingestAll(account.getId(), player.getId(), analyzedGameDtos, fetchedAt);
+    }
+
+    public boolean isRunning(long accountId){
+        return runningTasks.containsKey(accountId);
     }
 }
