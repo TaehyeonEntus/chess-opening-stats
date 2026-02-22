@@ -64,7 +64,7 @@
       "linkAccount": "Link Account"
     },
     "syncInProgress": "Sync is already in progress",
-    "syncSuccess": "Sync completed successfully!",
+    "syncSuccess": "Sync request accepted. It may take a moment for data to update.",
     "syncFailed": "Sync failed. Please try again later.",
     "syncFailedTryAgain": "Sync failed. Please try again later.",
     "myPage": "My Page",

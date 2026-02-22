@@ -64,7 +64,7 @@
       "linkAccount": "계정 연동하기"
     },
     "syncInProgress": "이미 동기화 작업이 진행 중입니다",
-    "syncSuccess": "갱신이 완료되었습니다!",
+    "syncSuccess": "갱신 요청이 접수되었습니다. 반영까지 잠시 시간이 걸릴 수 있습니다.",
     "syncFailed": "갱신에 실패했습니다",
     "syncFailedTryAgain": "갱신에 실패했습니다. 잠시 후 다시 시도해주세요.",
     "myPage": "마이페이지",

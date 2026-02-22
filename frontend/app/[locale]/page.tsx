@@ -376,7 +376,6 @@ export default function HomePage() {
       setSyncing(true)
       setError(null)
       await provideSyncAccount()
-      await loadData(false)
     } catch (err) {
       console.error("Failed to sync account players", err)
       if (err instanceof AxiosError) {

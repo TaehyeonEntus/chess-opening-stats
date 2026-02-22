@@ -75,7 +75,6 @@ export default function MyPage() {
     try {
       setSyncing(true)
       await syncAccount()
-      await loadAccountInfo()
       toast.success(tHome("syncSuccess"))
     } catch (err) {
       if (err instanceof AxiosError && err.response?.status === 409) {
