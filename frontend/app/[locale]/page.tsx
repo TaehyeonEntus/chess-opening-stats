@@ -36,9 +36,10 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { provideAddPlayer, provideAllOpeningResult, provideSummary, provideSyncAccount } from "@/lib/provide/provideFacade"
+import { provideAddPlayer, provideAllOpeningResult, provideSummary } from "@/lib/provide/provideFacade"
 import { logout, changePassword, deleteAccount } from "@/lib/api/auth"
 import { fetchAccountInfo, deletePlayer } from "@/lib/api/api"
+import { runSyncFlow } from "@/lib/sync/runSyncFlow"
 import { calculateRatesFromCounts } from "@/lib/stats"
 import { AxiosError } from "axios"
 import { toast } from "sonner"
@@ -375,24 +376,11 @@ export default function HomePage() {
     try {
       setSyncing(true)
       setError(null)
-      await provideSyncAccount()
+      await runSyncFlow()
+      setMyPageOpen(false)
+      window.location.reload()
     } catch (err) {
       console.error("Failed to sync account players", err)
-      if (err instanceof AxiosError) {
-        const status = err.response?.status
-        const responseData = err.response?.data as { message?: string } | string | undefined
-        const responseMessage =
-          typeof responseData === "string"
-            ? responseData
-            : typeof responseData?.message === "string"
-            ? responseData.message
-            : null
-
-        if (status === 409) {
-          toast.warning(responseMessage ?? t("syncInProgress"))
-          return
-        }
-      }
       setError(t("syncFailedTryAgain"))
     } finally {
       setSyncing(false)
@@ -419,10 +407,7 @@ export default function HomePage() {
       // 계정 연동 후 자동 갱신
       toast.success(tPlayer("addSuccess"))
       await handleSync()
-      // 마이페이지가 열려 있으면 계정 정보도 갱신
-      if (accountInfo) {
-        await loadAccountInfo()
-      }
+      return
     } catch (err) {
       console.error("Failed to add player", err)
       if (err instanceof AxiosError) {

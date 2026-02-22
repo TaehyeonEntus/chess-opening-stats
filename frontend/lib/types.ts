@@ -89,3 +89,7 @@ export interface AccountInfoResponse {
     lastSyncedAt: string // ISO 8601 datetime string
     players: PlayerInfo[]
 }
+
+export interface SyncStatusResponse {
+    running: boolean
+}

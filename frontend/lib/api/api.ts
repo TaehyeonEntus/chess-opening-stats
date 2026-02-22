@@ -1,4 +1,4 @@
-import type { OpeningResult, SummaryResponse, OpeningStatsResponse, Platform, AccountInfoResponse } from "@/lib/types"
+import type { OpeningResult, SummaryResponse, OpeningStatsResponse, Platform, AccountInfoResponse, SyncStatusResponse } from "@/lib/types"
 import { apiClient } from "@/lib/api/apiClient"
 import { changePassword as authChangePassword, deleteAccount as authDeleteAccount } from "@/lib/api/auth"
 import type { ChangePasswordRequest } from "@/lib/api/auth"
@@ -33,6 +33,10 @@ export function fetchSummary(): Promise<SummaryResponse> {
 
 export function syncAccount(): Promise<void> {
   return apiClient.post<void>("/sync")
+}
+
+export function fetchSyncStatus(): Promise<SyncStatusResponse> {
+  return apiClient.get<SyncStatusResponse>("/sync/status")
 }
 
 export function addPlayer(request: AddPlayerRequest): Promise<string> {

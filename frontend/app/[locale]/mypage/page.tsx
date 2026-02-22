@@ -12,7 +12,8 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ArrowLeft, RefreshCw, Trash2, KeyRound, User, Loader2, LogOut, Eye, EyeOff } from "lucide-react"
 import type { Platform, AccountInfoResponse } from "@/lib/types"
-import { fetchAccountInfo, syncAccount, logout, changePassword, deleteAccount, deletePlayer } from "@/lib/api/api"
+import { fetchAccountInfo, logout, changePassword, deleteAccount, deletePlayer } from "@/lib/api/api"
+import { runSyncFlow } from "@/lib/sync/runSyncFlow"
 import { toast } from "sonner"
 import { AxiosError } from "axios"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -74,14 +75,10 @@ export default function MyPage() {
   const handleSync = async () => {
     try {
       setSyncing(true)
-      await syncAccount()
-      toast.success(tHome("syncSuccess"))
+      await runSyncFlow()
+      window.location.reload()
     } catch (err) {
-      if (err instanceof AxiosError && err.response?.status === 409) {
-        toast.warning(err.response.data?.message || tHome("syncInProgress"))
-      } else {
-        toast.error(tHome("syncFailed"))
-      }
+      toast.error(tHome("syncFailed"))
       console.error(err)
     } finally {
       setSyncing(false)
