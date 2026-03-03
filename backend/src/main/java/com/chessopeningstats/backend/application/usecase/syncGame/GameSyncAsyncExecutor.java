@@ -8,6 +8,7 @@ import com.chessopeningstats.backend.application.usecase.syncGame.internal.provi
 import com.chessopeningstats.backend.domain.Account;
 import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.infra.repository.GamePlayerRepository;
+import com.chessopeningstats.backend.util.LogExecutionTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,10 @@ public class GameSyncAsyncExecutor {
     private final ConcurrentHashMap<Long, Boolean> runningTasks = new ConcurrentHashMap<>();
 
     @Async
+    @LogExecutionTime
     public void sync(long accountId, List<Long> playerIdList) {
         if (runningTasks.putIfAbsent(accountId, true) != null)
             return;
-
         try {
             playerIdList.forEach(playerId -> syncOne(accountId, playerId));
         } finally {

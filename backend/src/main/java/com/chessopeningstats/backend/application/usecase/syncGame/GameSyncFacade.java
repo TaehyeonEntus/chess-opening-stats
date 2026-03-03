@@ -19,7 +19,6 @@ public class GameSyncFacade {
     private final GameSyncAsyncExecutor gameSyncAsyncExecutor;
     private final AccountService accountService;
 
-    @LogExecutionTime
     public void sync(long accountId) {
         Account account = accountService.getAccount(accountId);
         List<Long> playerIdList = account.getAccountPlayers()
