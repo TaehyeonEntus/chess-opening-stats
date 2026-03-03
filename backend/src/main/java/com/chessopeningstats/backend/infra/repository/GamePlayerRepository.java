@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface GamePlayerRepository extends JpaRepository<GamePlayer, Long> {
@@ -183,4 +184,11 @@ public interface GamePlayerRepository extends JpaRepository<GamePlayer, Long> {
                 order by count(*) desc
             """)
     List<OpeningStat> getAccountMostPlayedOpeningStats(long accountId, GamePlayerColor color, Pageable pageable);
+
+    @Query("""
+            select max(gp.game.playedAt)
+            from GamePlayer gp
+            where gp.player.id = :playerId
+            """)
+    Instant getLastestPlayedAtByPlayerId(long playerId);
 }

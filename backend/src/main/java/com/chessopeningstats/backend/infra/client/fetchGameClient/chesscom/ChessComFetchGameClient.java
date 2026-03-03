@@ -17,7 +17,7 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -26,15 +26,11 @@ public class ChessComFetchGameClient implements FetchGameClient<ChessComGameDto>
     private final WebClient chessComFetchGameWebClient;
 
     @Override
-    public List<ChessComGameDto> fetchGames(Player Player) {
-        Instant lastPlayedAt = Player.getLastPlayedAt();
-
-        return getRelevantArchiveUrls(Player.getUsername(), lastPlayedAt)
-                .flatMap(this::fetchGamesFromUrl, 10)  // 동시 10개만 요청
+    public Flux<ChessComGameDto> fetchGames(Player Player) {
+        return getRelevantArchiveUrls(Player.getUsername(), Player.getLastPlayedAt())
+                .flatMap(this::fetchGamesFromUrl, 5)  // 동시 10개만 요청
                 .flatMapIterable(ChessComArchiveResponse::getGames)
-                .filter(dto -> isAfterLastSyncTime(dto, lastPlayedAt))
-                .collectList()
-                .block();
+                .filter(dto -> isAfterLastSyncTime(dto, Player.getLastPlayedAt()));
     }
 
     // 월별 아카이브 Url 가져오기
@@ -43,16 +39,18 @@ public class ChessComFetchGameClient implements FetchGameClient<ChessComGameDto>
                 .uri(uriBuilder -> uriBuilder
                         .path("/pub/player/{username}/games/archives")
                         .build(username))
-                .retrieve()
-                .onStatus(HttpStatus.NOT_FOUND::equals,
-                        response -> Mono.error(new PlayerNotFoundException("Chess.com에서 플레이어를 찾을 수 없습니다: " + username)))
-                .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(),
-                        response -> Mono.error(new RemoteApiServerException("Chess.com API 서버 에러: " + response.statusCode())))
-                .bodyToMono(ArchivesResponse.class)
-                .map(response -> response.getArchives().stream()
-                        .filter(url -> isRelevantArchive(url, lastPlayedAt))
-                        .collect(Collectors.toList()))
-                .flatMapMany(Flux::fromIterable);
+                .exchangeToMono(response -> {
+                    if (response.statusCode().is2xxSuccessful())
+                        return response.bodyToMono(ArchivesResponse.class);
+                    else if (response.statusCode().isSameCodeAs(HttpStatus.NOT_FOUND))
+                        return Mono.error(PlayerNotFoundException::new);
+                    else
+                        return Mono.error(RemoteApiServerException::new);
+                })
+                .flatMapMany(response ->
+                        Flux.fromIterable(response.getArchives())
+                                .filter(url -> isRelevantArchive(url, lastPlayedAt))
+                );
     }
 
     // url로부터 게임 가져오기
@@ -60,22 +58,14 @@ public class ChessComFetchGameClient implements FetchGameClient<ChessComGameDto>
         return chessComFetchGameWebClient.get()
                 .uri(url)
                 .exchangeToMono(response -> {
-                    if (response.statusCode().is2xxSuccessful()) {
+                    if (response.statusCode().is2xxSuccessful())
                         return response.bodyToMono(ChessComArchiveResponse.class);
-                    }
-
-                    if (response.statusCode().value() == 404) {
-                        return Mono.empty(); // 데이터 없음 → 정상 처리
-                    }
-
-                    if (response.statusCode().value() == 429) {
-                        return Mono.error(new RemoteApiServerException("Rate limit 발생"));
-                    }
-
-                    return response.createException().flatMap(Mono::error);
+                    else if (response.statusCode().isSameCodeAs(HttpStatus.NOT_FOUND))
+                        return Mono.empty();
+                    else
+                        return Mono.error(RemoteApiServerException::new);
                 });
     }
-
 
     // 중복 아카이브 검사
     private boolean isRelevantArchive(String url, Instant lastPlayedAt) {
@@ -84,12 +74,11 @@ public class ChessComFetchGameClient implements FetchGameClient<ChessComGameDto>
             int year = Integer.parseInt(parts[parts.length - 2]);
             int month = Integer.parseInt(parts[parts.length - 1]);
 
-
             YearMonth urlMonth = YearMonth.of(year, month);
             YearMonth lastPlayedMonth = YearMonth.from(lastPlayedAt.atZone(ZoneId.of("UTC")));
             return !urlMonth.isBefore(lastPlayedMonth);
         } catch (Exception e) {
-            return true;
+            return false;
         }
     }
 

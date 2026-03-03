@@ -10,9 +10,8 @@ import com.chessopeningstats.backend.util.LogExecutionTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
-import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,11 +23,10 @@ public class GameAnalyzeService {
     private final OpeningAnalyzeService openingAnalyzeService;
 
     @LogExecutionTime
-    public Set<AnalyzedGameDto> analyzeAll(Collection<NormalizedGameDto> dtos) {
-        return dtos.parallelStream()
+    public Flux<AnalyzedGameDto> analyzeAll(Flux<NormalizedGameDto> dtos) {
+        return dtos
                 .map(this::analyzeOne)
-                .filter(this::hasOpening)
-                .collect(Collectors.toSet());
+                .filter(this::hasOpening);
     }
 
     public AnalyzedGameDto analyzeOne(NormalizedGameDto dto) {
@@ -38,7 +36,7 @@ public class GameAnalyzeService {
                 .id(dto.getUuid())
                 .time(dto.getGameTime())
                 .type(dto.getGameType())
-                .lastMatchedOpening(openings.isEmpty()?null:openings.getLast())
+                .lastMatchedOpening(openings.isEmpty() ? null : openings.getLast())
                 .playedAt(dto.getPlayedAt())
                 .build();
 
@@ -63,7 +61,7 @@ public class GameAnalyzeService {
                 .build();
     }
 
-    private boolean hasOpening(AnalyzedGameDto dto){
+    private boolean hasOpening(AnalyzedGameDto dto) {
         return !dto.getGameOpenings().isEmpty();
     }
 }

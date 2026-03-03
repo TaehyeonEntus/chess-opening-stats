@@ -1,10 +1,10 @@
 package com.chessopeningstats.backend.infra.client.checkPlayerClient.chesscom;
 
 import com.chessopeningstats.backend.domain.Platform;
+import com.chessopeningstats.backend.exception.PlayerNotFoundException;
 import com.chessopeningstats.backend.exception.RemoteApiServerException;
 import com.chessopeningstats.backend.infra.client.checkPlayerClient.CheckPlayerClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -21,20 +21,19 @@ public class ChessComCheckPlayerClient implements CheckPlayerClient {
 
     @Override
     public boolean checkPlayer(String username) {
-        return chessComCheckPlayerWebClient.get()
+        return Boolean.TRUE.equals(chessComCheckPlayerWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/pub/player/{username}/games/archives")
-                        .build(username))
+                        .build(username)
+                )
                 .exchangeToMono(response -> {
-                    if (response.statusCode().is2xxSuccessful()) {
+                    if (response.statusCode().is2xxSuccessful())
                         return Mono.just(true);
-                    } else if (response.statusCode().equals(HttpStatus.NOT_FOUND)) {
-                        return Mono.just(false);
-                    } else {
-                        return Mono.error(new RemoteApiServerException("Chess.com API 서버 에러: " + response.statusCode()));
-                    }
+                    else if (response.statusCode().is4xxClientError())
+                        return Mono.error(PlayerNotFoundException::new);
+                    else
+                        return Mono.error(RemoteApiServerException::new);
                 })
-                .blockOptional()
-                .orElseThrow(RemoteApiServerException::new);
+                .block());
     }
 }

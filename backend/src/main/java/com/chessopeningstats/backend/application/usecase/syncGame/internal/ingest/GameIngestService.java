@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -31,7 +32,7 @@ public class GameIngestService {
 
     @Transactional
     @LogExecutionTime
-    public void ingestAll(long accountId, long playerId, Collection<AnalyzedGameDto> dtos, Instant fetchedAt) {
+    public Mono<Void> ingestAll(long accountId, long playerId, Collection<AnalyzedGameDto> dtos, Instant fetchedAt) {
         Account account = accountService.getAccount(accountId);
         Player player = playerService.getPlayer(playerId);
 
@@ -73,24 +74,6 @@ public class GameIngestService {
         if(!gameOpeningRows.isEmpty())
             gameOpeningJdbcRepository.upsertGameOpenings(gameOpeningRows);
 
-        updatePlayerLatestPlayedAt(player, dtos);
-        updateAccountLatestSyncedAt(account, fetchedAt);
-    }
-
-    @Transactional
-    public void updatePlayerLatestPlayedAt(Player player, Collection<AnalyzedGameDto> dtos) {
-        dtos.stream()
-                .map(AnalyzedGameDto::getPlayedAt)
-                .max(Instant::compareTo)
-                .ifPresent(latest -> {
-                    if (player.getLastPlayedAt().isBefore(latest)) {
-                        player.setLastPlayedAt(latest);
-                    }
-                });
-    }
-
-    @Transactional
-    public void updateAccountLatestSyncedAt(Account account, Instant syncedAt) {
-        accountService.updateLastSyncedAt(account.getId(), syncedAt);
+        return Mono.empty();
     }
 }

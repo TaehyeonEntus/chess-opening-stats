@@ -22,7 +22,8 @@ public class GameSyncFacade {
     @LogExecutionTime
     public void sync(long accountId) {
         Account account = accountService.getAccount(accountId);
-        List<Long> playerIdList = account.getAccountPlayers().stream()
+        List<Long> playerIdList = account.getAccountPlayers()
+                .stream()
                 .map(AccountPlayer::getPlayer)
                 .map(Player::getId)
                 .toList();

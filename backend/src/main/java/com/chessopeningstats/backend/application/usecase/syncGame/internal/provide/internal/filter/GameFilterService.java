@@ -4,15 +4,17 @@ import com.chessopeningstats.backend.application.usecase.syncGame.internal.provi
 import com.chessopeningstats.backend.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class GameFilterService {
-    public List<NormalizedGameDto> filterNormalGames(Collection<NormalizedGameDto> dtos){
-        return dtos.parallelStream().filter(this::isValid).toList();
+    public Flux<NormalizedGameDto> filterNormalGames(Flux<NormalizedGameDto> dtos){
+        return dtos.filter(this::isValid);
     }
 
     public boolean isValid(NormalizedGameDto dto){

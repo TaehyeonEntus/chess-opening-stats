@@ -2,13 +2,15 @@ package com.chessopeningstats.backend.application.usecase.syncGame.internal.prov
 
 import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.infra.client.fetchGameClient.FetchGameClient;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface GameFetchService<T> {
     FetchGameClient<T> client();
 
-    default List<T> fetch(Player Player) {
+    default Flux<T> fetch(Player Player) {
         return client().fetchGames(Player);
     }
 }

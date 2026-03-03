@@ -2,21 +2,12 @@ package com.chessopeningstats.backend.application.usecase.syncGame.internal.prov
 
 import com.chessopeningstats.backend.application.usecase.syncGame.internal.provide.internal.adapt.dto.NormalizedGameDto;
 import com.chessopeningstats.backend.domain.Player;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 public interface GameAdaptService<T> {
-
-    default List<NormalizedGameDto> adaptAll(
-            @NotNull Player Player,
-            @NotNull List<@NotNull @Valid T> rawGameDtos
-    ) {
-        return rawGameDtos.parallelStream()
-                .map(rawGameDto -> adaptOne(Player, rawGameDto))
-                .toList();
+    default Flux<NormalizedGameDto> adaptAll(Player Player, Flux<T> rawGameDtos) {
+        return rawGameDtos.map(rawGameDto -> adaptOne(Player, rawGameDto));
     }
 
-    NormalizedGameDto adaptOne(@NotNull Player Player, @NotNull @Valid T rawGameDto);
-
+    NormalizedGameDto adaptOne(Player Player, T rawGameDto);
 }
