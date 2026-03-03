@@ -18,11 +18,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class GameAnalyzeService {
     private final OpeningAnalyzeService openingAnalyzeService;
 
-    @LogExecutionTime
     public Flux<AnalyzedGameDto> analyzeAll(Flux<NormalizedGameDto> dtos) {
         return dtos
                 .map(this::analyzeOne)

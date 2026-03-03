@@ -15,7 +15,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class OpeningAnalyzeService {
     private final OpeningStorage openingStorage;
 

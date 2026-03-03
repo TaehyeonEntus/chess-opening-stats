@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class GameIngestService {
     private final GameJdbcRepository gameJdbcRepository;
     private final GamePlayerJdbcRepository gamePlayerJdbcRepository;
@@ -31,7 +30,6 @@ public class GameIngestService {
     private final PlayerService playerService;
 
     @Transactional
-    @LogExecutionTime
     public Mono<Void> ingestAll(long accountId, long playerId, Collection<AnalyzedGameDto> dtos, Instant fetchedAt) {
         Account account = accountService.getAccount(accountId);
         Player player = playerService.getPlayer(playerId);

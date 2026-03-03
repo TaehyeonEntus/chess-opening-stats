@@ -28,7 +28,7 @@ public class ChessComFetchGameClient implements FetchGameClient<ChessComGameDto>
     @Override
     public Flux<ChessComGameDto> fetchGames(Player Player) {
         return getRelevantArchiveUrls(Player.getUsername(), Player.getLastPlayedAt())
-                .flatMap(this::fetchGamesFromUrl, 5)  // 동시 10개만 요청
+                .flatMap(this::fetchGamesFromUrl, 10)  // 동시 10개만 요청
                 .flatMapIterable(ChessComArchiveResponse::getGames)
                 .filter(dto -> isAfterLastSyncTime(dto, Player.getLastPlayedAt()));
     }

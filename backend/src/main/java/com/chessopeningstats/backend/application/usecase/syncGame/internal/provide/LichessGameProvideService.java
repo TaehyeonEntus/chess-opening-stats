@@ -26,7 +26,6 @@ public class LichessGameProvideService implements GameProvideService {
     }
 
     @Override
-    @LogExecutionTime
     public Flux<NormalizedGameDto> provideGames(Player Player) {
         return gameFilterService.filterNormalGames(adaptService.adaptAll(Player, fetchService.fetch(Player)));
     }
