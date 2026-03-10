@@ -1,13 +1,18 @@
 package com.chessopeningstats.backend.exception;
 
-import com.chessopeningstats.backend.exception.handler.error.ErrorCode;
-
 public class NicknameAlreadyExistsException extends BusinessException {
     public NicknameAlreadyExistsException() {
-        super(ErrorCode.NICKNAME_ALREADY_EXISTS);
     }
 
     public NicknameAlreadyExistsException(String message) {
-        super(ErrorCode.NICKNAME_ALREADY_EXISTS, message);
+        super(message);
+    }
+
+    public NicknameAlreadyExistsException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public NicknameAlreadyExistsException(Throwable cause) {
+        super(cause);
     }
 }

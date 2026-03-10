@@ -1,9 +1,18 @@
 package com.chessopeningstats.backend.exception;
 
-import com.chessopeningstats.backend.exception.handler.error.ErrorCode;
-
 public class PlayerAlreadyLinkedException extends BusinessException{
     public PlayerAlreadyLinkedException() {
-        super(ErrorCode.PLAYER_ALREADY_LINKED);
+    }
+
+    public PlayerAlreadyLinkedException(String message) {
+        super(message);
+    }
+
+    public PlayerAlreadyLinkedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public PlayerAlreadyLinkedException(Throwable cause) {
+        super(cause);
     }
 }

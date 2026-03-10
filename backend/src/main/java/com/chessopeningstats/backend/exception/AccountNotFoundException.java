@@ -1,13 +1,18 @@
 package com.chessopeningstats.backend.exception;
 
-import com.chessopeningstats.backend.exception.handler.error.ErrorCode;
-
 public class AccountNotFoundException extends BusinessException {
     public AccountNotFoundException() {
-        super(ErrorCode.PLAYER_NOT_FOUND);
     }
 
     public AccountNotFoundException(String message) {
-        super(ErrorCode.PLAYER_NOT_FOUND, message);
+        super(message);
+    }
+
+    public AccountNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public AccountNotFoundException(Throwable cause) {
+        super(cause);
     }
 }

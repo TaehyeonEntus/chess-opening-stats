@@ -1,6 +1,5 @@
 package com.chessopeningstats.backend.domain;
 
-import com.chessopeningstats.backend.domain.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,14 +12,14 @@ import lombok.*;
 @Table(
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_game_player",
-                        columnNames = {"game_id", "player_id"}
+                        name = "uk_player_id_game_id",
+                        columnNames = {"player_id", "game_id"}
                 )
         }
 )
-public class GamePlayer extends BaseEntity {
+public class GamePlayer{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -3,6 +3,8 @@ package com.chessopeningstats.backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @Builder
@@ -19,7 +21,7 @@ import lombok.*;
 )
 public class AccountPlayer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -30,7 +32,10 @@ public class AccountPlayer {
     @JoinColumn(name = "player_id")
     private Player player;
 
-    public static AccountPlayer of(Account account, Player player){
-        return AccountPlayer.builder().account(account).player(player).build();
+    @Column(nullable = false)
+    private Instant linkedAt;
+
+    public static AccountPlayer of(Account account, Player player, Instant linkedAt) {
+        return AccountPlayer.builder().account(account).linkedAt(linkedAt).player(player).build();
     }
 }

@@ -1,0 +1,79 @@
+package com.chessopeningstats.backend.service.syncgame.impl;
+
+import com.chessopeningstats.backend.domain.Opening;
+import com.chessopeningstats.backend.infra.cache.OpeningCache;
+import com.chessopeningstats.backend.infra.repository.batch.dto.GamePlayerRow;
+import com.chessopeningstats.backend.infra.repository.batch.dto.GameRow;
+import com.chessopeningstats.backend.service.syncgame.GameAnalyzeService;
+import com.chessopeningstats.backend.service.syncgame.dto.AnalyzedGame;
+import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
+import com.chessopeningstats.backend.util.converter.LongListConverter;
+import com.github.bhlangonijr.chesslib.Board;
+import com.github.bhlangonijr.chesslib.move.MoveList;
+import com.github.bhlangonijr.chesslib.pgn.PgnHolder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.ParallelFlux;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class GameAnalyzeServiceImpl implements GameAnalyzeService {
+    private final OpeningCache openingCache;
+    private final LongListConverter converter;
+    private static final int MAX_OPENING_MOVES = 30;
+
+    @Override
+    public ParallelFlux<AnalyzedGame> analyze(ParallelFlux<NormalizedGame> sanitizedGames, long playerId) {
+        return sanitizedGames.map(normalizedGame -> analyzeOne(normalizedGame, playerId));
+    }
+
+    public AnalyzedGame analyzeOne(NormalizedGame normalizedGame, long playerId) {
+        List<Long> openingIds = analyzeOpening(normalizedGame.pgn());
+
+        GameRow gameRow = new GameRow(
+                normalizedGame.uuid(),
+                normalizedGame.playedAt(),
+                normalizedGame.gameTime(),
+                normalizedGame.gameType(),
+                openingIds.isEmpty()
+                        ? null
+                        : openingIds.getLast(),
+                converter.convertToDatabaseColumn(openingIds)
+        );
+
+        GamePlayerRow gamePlayerRow = new GamePlayerRow(
+                gameRow.uuid(),
+                playerId,
+                normalizedGame.gamePlayerColor(),
+                normalizedGame.gamePlayerResult());
+
+        return new AnalyzedGame(gameRow, gamePlayerRow);
+    }
+
+    private List<Long> analyzeOpening(String pgn) {
+        PgnHolder pgnHolder = new PgnHolder();
+        pgnHolder.loadPgn(pgn);
+        com.github.bhlangonijr.chesslib.game.Game game = pgnHolder.getGames().getFirst();
+
+        Board board = new Board();
+        if (game.getFen() != null)
+            board.loadFromFen(game.getFen());
+
+        MoveList moves = game.getHalfMoves();
+
+        List<String> epds = new ArrayList<>();
+
+        for (int i = 0; i < Math.min(moves.size(), MAX_OPENING_MOVES); i++) {
+            board.doMove(moves.get(i));
+            epds.add(board.getFen(false, true));
+        }
+
+        return openingCache.getOpeningsByEpds(epds).stream().map(Opening::id).toList();
+    }
+}
+
+
+

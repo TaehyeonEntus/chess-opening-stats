@@ -1,19 +1,12 @@
 package com.chessopeningstats.backend.domain;
 
-import com.chessopeningstats.backend.domain.baseEntity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
+import lombok.Builder.Default;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-
-import lombok.AllArgsConstructor;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Builder;
-import lombok.Builder.Default;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,9 +27,8 @@ import lombok.Builder.Default;
         }
 )
 public class Account extends BaseEntity {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false, length = 64)
@@ -50,7 +42,7 @@ public class Account extends BaseEntity {
 
     @Default
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<AccountPlayer> accountPlayers = new HashSet<>();
+    private List<AccountPlayer> accountPlayers = new ArrayList<>();
 
     @Default
     @Column(name = "last_synced_at", nullable = false)

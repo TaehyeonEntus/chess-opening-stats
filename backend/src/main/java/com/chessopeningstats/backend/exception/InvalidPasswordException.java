@@ -1,9 +1,18 @@
 package com.chessopeningstats.backend.exception;
 
-import com.chessopeningstats.backend.exception.handler.error.ErrorCode;
-
 public class InvalidPasswordException extends BusinessException {
     public InvalidPasswordException() {
-        super(ErrorCode.INVALID_PASSWORD);
+    }
+
+    public InvalidPasswordException(String message) {
+        super(message);
+    }
+
+    public InvalidPasswordException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidPasswordException(Throwable cause) {
+        super(cause);
     }
 }
