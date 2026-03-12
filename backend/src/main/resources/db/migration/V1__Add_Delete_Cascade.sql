@@ -1,8 +1,8 @@
-ALTER TABLE game_player
-    DROP FOREIGN KEY fk_game_player_player;
+ALTER TABLE account_player
+    DROP FOREIGN KEY fk_account_player_player;
 
-ALTER TABLE game_player
-    ADD CONSTRAINT fk_game_player_player
+ALTER TABLE account_player
+    ADD CONSTRAINT fk_account_player_player
         FOREIGN KEY (player_id)
             REFERENCES player (id)
             ON DELETE CASCADE;
