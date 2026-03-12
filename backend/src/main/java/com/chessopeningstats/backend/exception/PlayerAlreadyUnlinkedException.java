@@ -1,7 +1,8 @@
 package com.chessopeningstats.backend.exception;
 
-public class PlayerAlreadyUnlinkedException extends BusinessException{
+public class PlayerAlreadyUnlinkedException extends BusinessException {
     public PlayerAlreadyUnlinkedException() {
+        super("Player already unlinked");
     }
 
     public PlayerAlreadyUnlinkedException(String message) {

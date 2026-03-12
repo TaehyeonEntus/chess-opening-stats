@@ -37,22 +37,40 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CookieCsrfTokenRepository cookieCsrfTokenRepository() {
+        CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        repo.setCookieCustomizer(cookie -> {
+            cookie.sameSite("Strict");
+            cookie.secure(true);
+        });
+        return repo;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         return http
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(cookieCsrfTokenRepository())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 )
                 .cors(Customizer.withDefaults())
                 .securityContext(context -> context
                         .requireExplicitSave(false)
                 )
-                .sessionManagement(session -> session
-                        .maximumSessions(2)
-                        .expiredUrl("/login")
-                )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/health", "/login", "/accounts/register", "/error", "/actuator/**").permitAll()
+                        .requestMatchers(
+                                "/health",
+                                "/login",
+                                "/accounts/register",
+                                "/error",
+                                // monitoring
+                                "/actuator/**",
+                                // Swagger UI
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
@@ -70,7 +88,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("https://www.chessopeningstat.com", "http://localhost:8080"));
+        config.setAllowedOrigins(List.of("https://www.chessopeningstat.com"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

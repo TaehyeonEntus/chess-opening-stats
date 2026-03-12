@@ -2,6 +2,7 @@ package com.chessopeningstats.backend.exception;
 
 public class AccountNotFoundException extends BusinessException {
     public AccountNotFoundException() {
+        super("Account not found");
     }
 
     public AccountNotFoundException(String message) {

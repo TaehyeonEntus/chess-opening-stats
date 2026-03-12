@@ -2,6 +2,7 @@ package com.chessopeningstats.backend.exception;
 
 public class PlayerNotFoundException extends BusinessException {
     public PlayerNotFoundException() {
+        super("Player not found");
     }
 
     public PlayerNotFoundException(String message) {

@@ -2,6 +2,7 @@ package com.chessopeningstats.backend.exception;
 
 public class RateLimitExceededException extends BusinessException {
     public RateLimitExceededException() {
+        super("Rate limit exceeded");
     }
 
     public RateLimitExceededException(String message) {

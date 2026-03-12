@@ -2,6 +2,7 @@ package com.chessopeningstats.backend.exception;
 
 public class NoLinkedPlayersException extends BusinessException {
     public NoLinkedPlayersException() {
+        super("No linked players found");
     }
 
     public NoLinkedPlayersException(String message) {

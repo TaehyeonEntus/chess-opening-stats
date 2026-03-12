@@ -2,6 +2,7 @@ package com.chessopeningstats.backend.exception;
 
 public class TooManySyncRequestException extends BusinessException {
     public TooManySyncRequestException() {
+        super("Too many sync requests");
     }
 
     public TooManySyncRequestException(String message) {

@@ -2,6 +2,7 @@ package com.chessopeningstats.backend.exception;
 
 public class UsernameAlreadyExistsException extends BusinessException {
     public UsernameAlreadyExistsException() {
+        super("Username already exists");
     }
 
     public UsernameAlreadyExistsException(String message) {

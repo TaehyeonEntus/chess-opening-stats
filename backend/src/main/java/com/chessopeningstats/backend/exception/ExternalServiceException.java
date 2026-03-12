@@ -2,6 +2,7 @@ package com.chessopeningstats.backend.exception;
 
 public class ExternalServiceException extends BusinessException {
     public ExternalServiceException() {
+        super("External service error");
     }
 
     public ExternalServiceException(String message) {
