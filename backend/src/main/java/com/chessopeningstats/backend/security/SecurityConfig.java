@@ -40,6 +40,7 @@ public class SecurityConfig {
     public CookieCsrfTokenRepository cookieCsrfTokenRepository() {
         CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
         repo.setCookieCustomizer(cookie -> {
+            cookie.domain("chessopeningstat.com");
             cookie.sameSite("Strict");
             cookie.secure(true);
         });
