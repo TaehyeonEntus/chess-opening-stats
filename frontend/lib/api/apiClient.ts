@@ -9,6 +9,27 @@ const axiosInstance = axios.create({
     withCredentials: true,
 });
 
+// Helper function to get cookie by name
+function getCookie(name: string): string | null {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+    return null;
+}
+
+// 2. Request Interceptor for Manual CSRF Handling
+// Axios automatically handles this for same-origin, but for cross-port (3001 vs 8080),
+// we sometimes need to manually inject it if the browser/axios treats it as cross-origin.
+axiosInstance.interceptors.request.use((config) => {
+    if (typeof document !== "undefined" && config.method !== "get" && config.method !== "head") {
+        const token = getCookie("XSRF-TOKEN");
+        if (token) {
+            config.headers["X-XSRF-TOKEN"] = token;
+        }
+    }
+    return config;
+});
+
 // 2. 공통 요청 함수 (제네릭 활용)
 async function request<T>(config: AxiosRequestConfig): Promise<T> {
     try {

@@ -73,13 +73,13 @@ export function OpeningFilter({
   const [boardEpd, setBoardEpd] = useState("")
   const [boardOrientation, setBoardOrientation] = useState<"white" | "black">("white")
 
-  const whiteStats = useMemo(() => {
-    if (!boardEpd.trim()) return null
+  const boardStatW = useMemo(() => {
+    if (!boardEpd) return null
     return allOpenings.find((op) => op.epd === boardEpd && op.color === "white") || null
   }, [allOpenings, boardEpd])
 
-  const blackStats = useMemo(() => {
-    if (!boardEpd.trim()) return null
+  const boardStatB = useMemo(() => {
+    if (!boardEpd) return null
     return allOpenings.find((op) => op.epd === boardEpd && op.color === "black") || null
   }, [allOpenings, boardEpd])
 
@@ -149,10 +149,12 @@ export function OpeningFilter({
                   <Chessboard
                     options={{
                       position: fen,
+                      boardOrientation: boardOrientation,
                       allowDragging: true,
                       showNotation: false,
+                      darkSquareStyle: { backgroundColor: "#769656" },
+                      lightSquareStyle: { backgroundColor: "#e9edcc" },
                       onPieceDrop: handlePieceDrop,
-                      boardOrientation: boardOrientation,
                     }}
                   />
                 </div>
@@ -177,11 +179,11 @@ export function OpeningFilter({
               </div>
 
               <div className="flex flex-col gap-4 min-h-0">
-                {(whiteStats || blackStats) && (
+                {(boardStatW || boardStatB) && (
                   <div className="rounded-lg border bg-card p-3">
                     <div className="text-xs text-muted-foreground mb-1">{t("opening")}</div>
-                    <div className="font-semibold">{(whiteStats || blackStats)!.name}</div>
-                    <div className="text-sm font-mono text-muted-foreground mt-0.5">{(whiteStats || blackStats)!.eco}</div>
+                    <div className="font-semibold">{(boardStatW || boardStatB)!.name}</div>
+                    <div className="text-sm font-mono text-muted-foreground mt-0.5">{(boardStatW || boardStatB)!.eco}</div>
                   </div>
                 )}
                 
@@ -189,41 +191,41 @@ export function OpeningFilter({
                 <div className="flex-1 rounded-lg border bg-card p-5 shadow-sm flex flex-col min-h-0">
                   <div className="mb-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="inline-block h-4 w-4 rounded-full border border-gray-300 bg-white" />
+                       <span className="inline-block h-4 w-4 rounded-full border border-gray-300 bg-white" />
                       <h4 className="text-base font-semibold">{t("playedAsWhite")}</h4>
                     </div>
-                    {whiteStats && <div className="text-sm font-medium text-muted-foreground">{whiteStats.totalGames} {t("games")}</div>}
+                    {boardStatW && <div className="text-sm font-medium text-muted-foreground">{boardStatW.totalGames} {t("games")}</div>}
                   </div>
-                  {whiteStats ? (
+                  {boardStatW ? (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="text-sm text-muted-foreground">{t("winRate")}</div>
-                        <div className="text-2xl font-bold">{whiteStats.winRate}%</div>
+                        <div className="text-2xl font-bold">{boardStatW.winRate}%</div>
                       </div>
                       <div className="space-y-2">
                         <div className="flex gap-1">
                           <div
                             className="h-2 rounded-l bg-emerald-500"
-                            style={{ width: `${whiteStats.winRate}%` }}
+                            style={{ width: `${boardStatW.winRate}%` }}
                           />
-                          <div className="h-2 bg-amber-400" style={{ width: `${whiteStats.drawRate}%` }} />
+                          <div className="h-2 bg-amber-400" style={{ width: `${boardStatW.drawRate}%` }} />
                           <div
                             className="h-2 rounded-r bg-rose-500"
-                            style={{ width: `${whiteStats.lossRate}%` }}
+                            style={{ width: `${boardStatW.lossRate}%` }}
                           />
                         </div>
                         <div className="flex justify-between text-sm tabular-nums text-muted-foreground">
                           <span className="flex items-center gap-1.5">
                             <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                            {whiteStats.wins}W
+                            {boardStatW.wins}W
                           </span>
                           <span className="flex items-center gap-1.5">
                             <span className="inline-block h-2.5 w-2.5 rounded-full bg-amber-400" />
-                            {whiteStats.draws}D
+                            {boardStatW.draws}D
                           </span>
                           <span className="flex items-center gap-1.5">
                             <span className="inline-block h-2.5 w-2.5 rounded-full bg-rose-500" />
-                            {whiteStats.losses}L
+                            {boardStatW.losses}L
                           </span>
                         </div>
                       </div>
@@ -244,38 +246,38 @@ export function OpeningFilter({
                       <span className="inline-block h-4 w-4 rounded-full border border-gray-700 bg-black" />
                       <h4 className="text-base font-semibold">{t("playedAsBlack")}</h4>
                     </div>
-                    {blackStats && <div className="text-sm font-medium text-muted-foreground">{blackStats.totalGames} {t("games")}</div>}
+                    {boardStatB && <div className="text-sm font-medium text-muted-foreground">{boardStatB.totalGames} {t("games")}</div>}
                   </div>
-                  {blackStats ? (
+                  {boardStatB ? (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="text-sm text-muted-foreground">{t("winRate")}</div>
-                        <div className="text-2xl font-bold">{blackStats.winRate}%</div>
+                        <div className="text-2xl font-bold">{boardStatB.winRate}%</div>
                       </div>
                       <div className="space-y-2">
                         <div className="flex gap-1">
                           <div
                             className="h-2 rounded-l bg-emerald-500"
-                            style={{ width: `${blackStats.winRate}%` }}
+                            style={{ width: `${boardStatB.winRate}%` }}
                           />
-                          <div className="h-2 bg-amber-400" style={{ width: `${blackStats.drawRate}%` }} />
+                          <div className="h-2 bg-amber-400" style={{ width: `${boardStatB.drawRate}%` }} />
                           <div
                             className="h-2 rounded-r bg-rose-500"
-                            style={{ width: `${blackStats.lossRate}%` }}
+                            style={{ width: `${boardStatB.lossRate}%` }}
                           />
                         </div>
                         <div className="flex justify-between text-sm tabular-nums text-muted-foreground">
                           <span className="flex items-center gap-1.5">
                             <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                            {blackStats.wins}W
+                            {boardStatB.wins}W
                           </span>
                           <span className="flex items-center gap-1.5">
                             <span className="inline-block h-2.5 w-2.5 rounded-full bg-amber-400" />
-                            {blackStats.draws}D
+                            {boardStatB.draws}D
                           </span>
                           <span className="flex items-center gap-1.5">
                             <span className="inline-block h-2.5 w-2.5 rounded-full bg-rose-500" />
-                            {blackStats.losses}L
+                            {boardStatB.losses}L
                           </span>
                         </div>
                       </div>

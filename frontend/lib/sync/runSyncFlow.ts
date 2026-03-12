@@ -1,9 +1,5 @@
 import { AxiosError } from "axios"
-import { fetchSyncStatus, syncAccount } from "@/lib/api/api"
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
+import { syncAccount } from "@/lib/api/api"
 
 export interface RunSyncFlowOptions {
   pollIntervalMs?: number
@@ -11,28 +7,14 @@ export interface RunSyncFlowOptions {
 }
 
 export async function runSyncFlow(options?: RunSyncFlowOptions): Promise<void> {
-  const pollIntervalMs = options?.pollIntervalMs ?? 3000
-  const maxPollCount = options?.maxPollCount ?? 100
-
-  const initialStatus = await fetchSyncStatus()
-
-  if (!initialStatus.running) {
-    try {
-      await syncAccount()
-    } catch (err) {
-      if (!(err instanceof AxiosError) || err.response?.status !== 409) {
-        throw err
-      }
+  // fetchSyncStatus is no longer supported by the backend ABI.
+  // We assume syncAccount is fully synchronous or fires and forgets.
+  try {
+    await syncAccount()
+  } catch (err) {
+    if (err instanceof AxiosError && err.response?.status === 409) {
+      console.warn("Sync conflict (already running or invalid state)", err)
     }
+    throw err
   }
-
-  for (let pollCount = 0; pollCount < maxPollCount; pollCount += 1) {
-    await delay(pollIntervalMs)
-    const status = await fetchSyncStatus()
-    if (!status.running) {
-      return
-    }
-  }
-
-  throw new Error("Sync status polling timed out")
 }

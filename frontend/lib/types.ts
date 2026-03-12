@@ -1,13 +1,81 @@
-// 백엔드 API에서 제공하는 원시 결과 데이터 (EPD 기반 매칭)
-export interface OpeningResult {
-    eco: string
-    epd: string
-    name: string
-    color: Color
-    wins: number
-    draws: number
-    losses: number
+export type Color = "white" | "black"
+export type Platform = "CHESS_COM" | "LICHESS"
+export type ColorFilter = "all" | "white" | "black"
+export type SortBy = "winRate" | "totalGames" | "name"
+
+export interface ApiResponseDto<T> {
+  code: string;
+  message: string;
+  data: T;
 }
+
+// ----------------------------------------------------------------------
+// 1. Account / Player API Types
+// ----------------------------------------------------------------------
+
+export interface PlayerInfo {
+    id: number
+    username: string
+    platform: Platform
+    lastPlayedAt: string // ISO 8601 datetime string
+}
+
+export interface AccountSummary {
+    id: number
+    nickname: string
+    lastSyncedAt: string // ISO 8601 datetime string
+}
+
+// Previously AccountInfoResponse
+export interface AccountInfoResponse {
+    nickname: string
+    lastSyncedAt: string 
+    players: PlayerInfo[]
+}
+
+// ----------------------------------------------------------------------
+// 2. Statistics API Types (Dashboard / Records)
+// ----------------------------------------------------------------------
+
+export interface ColorRecord {
+  color: Color | "unknown"
+  win: number
+  draw: number
+  lose: number
+}
+
+export interface ColorOpeningStat {
+  color: Color
+  id: number
+  win: number
+  draw: number
+  lose: number
+}
+
+export interface ColorDashboard {
+  record: ColorRecord
+  mostPlayedOpenings: ColorOpeningStat[]
+  highestWinRateOpenings: ColorOpeningStat[]
+  openings: ColorOpeningStat[]
+}
+
+export interface HomeView {
+  account: AccountSummary
+  players: PlayerInfo[]
+  white: ColorDashboard
+  black: ColorDashboard
+}
+
+export interface WinRate {
+  color: Color
+  wins: number
+  draws: number
+  losses: number
+}
+
+// ----------------------------------------------------------------------
+// 3. Frontend Internal Display Types
+// ----------------------------------------------------------------------
 
 export interface OpeningRate {
     winRate: number
@@ -16,9 +84,10 @@ export interface OpeningRate {
 }
 
 export interface OpeningStatView {
+    id: number
     eco: string
-    epd: string
     name: string
+    epd: string
     color: Color
     totalGames: number
     wins: number
@@ -29,42 +98,16 @@ export interface OpeningStatView {
     lossRate: number
 }
 
-export type Color = "white" | "black"
-export type ColorFilter = "all" | "white" | "black"
-export type SortBy = "winRate" | "totalGames" | "name"
-export type Platform = "CHESS_COM" | "LICHESS"
-
-// Summary API types
-export interface WinRate {
-    color: Color
-    wins: number
-    draws: number
-    losses: number
-}
-
 export interface Stat {
     eco: string
-    epd: string
     name: string
+    epd: string
     color: Color
     wins: number
     draws: number
     losses: number
 }
 
-export interface SummaryResponse {
-    nickname: string
-    bestWinRateOpenings: Stat[]
-    mostPlayedOpenings: Stat[]
-    winRates: WinRate[]
-}
-
-// Opening Stats API types
-export interface OpeningStatsResponse {
-    openingStats: OpeningResult[]
-}
-
-// Pre-calculated summary for display
 export interface DisplaySummary {
     totalWins: number;
     totalDraws: number;
@@ -75,21 +118,4 @@ export interface DisplaySummary {
     lossRate: number;
     bestWinRateOpenings: Stat[];
     mostPlayedOpenings: Stat[];
-}
-
-// Account Info API types (MyPage)
-export interface PlayerInfo {
-    username: string
-    platform: Platform
-    lastPlayedAt: string // ISO 8601 datetime string
-}
-
-export interface AccountInfoResponse {
-    nickname: string
-    lastSyncedAt: string // ISO 8601 datetime string
-    players: PlayerInfo[]
-}
-
-export interface SyncStatusResponse {
-    running: boolean
 }

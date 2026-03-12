@@ -5,6 +5,7 @@ import { getMessages, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { AuthInitializer } from '@/components/auth-initializer'
 import { locales } from '@/i18n'
 
 import '../globals.css'
@@ -59,6 +60,7 @@ export default async function LocaleLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <AuthInitializer />
             {children}
             <Toaster richColors />
           </ThemeProvider>

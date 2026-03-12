@@ -177,9 +177,9 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
             key={topOpening.epd}
             options={{
               position: topOpening.epd,
+              boardOrientation: topOpening.color,
               allowDragging: false,
               showNotation: false,
-              boardOrientation: topOpening.color,
               darkSquareStyle: { backgroundColor: "#779954" },
               lightSquareStyle: { backgroundColor: "#e9edcc" },
             }}
@@ -219,7 +219,7 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
             const opRates = calculateRatesFromCounts(op.wins, op.draws, op.losses)
             return (
               <div
-                key={`${op.epd}-${op.color}-${index}`}
+                key={`${op.name}-${op.color}-${index}`}
                 className="flex items-center justify-between rounded-md border p-2 text-sm transition-colors hover:bg-muted/50"
               >
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5 pr-3">

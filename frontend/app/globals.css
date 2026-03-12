@@ -9,6 +9,34 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/40;
+  }
+
+  ::selection {
+    @apply bg-primary/20;
+  }
+}
+
+
+@layer base {
   :root {
     --background: 40 20% 97%;
     --foreground: 220 20% 10%;

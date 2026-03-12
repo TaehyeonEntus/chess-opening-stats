@@ -1,7 +1,10 @@
-import type { OpeningResult, SummaryResponse, OpeningStatsResponse, Platform, AccountInfoResponse, SyncStatusResponse } from "@/lib/types"
+import type {
+  Platform,
+  AccountInfoResponse,
+  HomeView,
+  ApiResponseDto,
+} from "@/lib/types"
 import { apiClient } from "@/lib/api/apiClient"
-import { changePassword as authChangePassword, deleteAccount as authDeleteAccount } from "@/lib/api/auth"
-import type { ChangePasswordRequest } from "@/lib/api/auth"
 
 export interface AddPlayerRequest {
   username: string
@@ -13,44 +16,29 @@ export interface DeletePlayerRequest {
   platform: Platform
 }
 
-export { type ChangePasswordRequest }
-
-export function changePassword(request: ChangePasswordRequest): Promise<void> {
-  return authChangePassword(request)
+export function fetchHomeView(): Promise<HomeView> {
+  // Uses the new Swagger /views/home endpoint
+  return apiClient.get<ApiResponseDto<HomeView>>("/views/home").then((response) => response.data)
 }
 
-export function deleteAccount(): Promise<void> {
-  return authDeleteAccount()
-}
-
-export function fetchAllOpeningResult(): Promise<OpeningResult[]> {
-  return apiClient.get<OpeningStatsResponse>("/stat/account").then(response => response.openingStats)
-}
-
-export function fetchSummary(): Promise<SummaryResponse> {
-  return apiClient.get<SummaryResponse>("/stat/account/summary")
-}
-
+// /accounts/me/sync (POST)
 export function syncAccount(): Promise<void> {
-  return apiClient.post<void>("/sync")
+  return apiClient.post<void>("/accounts/me/sync")
 }
 
-export function fetchSyncStatus(): Promise<SyncStatusResponse> {
-  return apiClient.get<SyncStatusResponse>("/sync/status")
-}
-
+// /accounts/me/players (POST)
 export function addPlayer(request: AddPlayerRequest): Promise<string> {
-  return apiClient.post<string>("/player/add", request)
+  return apiClient.post<string>("/accounts/me/players", request)
 }
 
+// /accounts/me/players (DELETE)
 export function deletePlayer(request: DeletePlayerRequest): Promise<void> {
-  return apiClient.post<void>("/player/delete", request)
+  return apiClient.delete<void>("/accounts/me/players", { data: request })
 }
 
+// /accounts/me (GET)
+// fallback to `/views/home` if me is not fully mapping or use exact endpoint
 export function fetchAccountInfo(): Promise<AccountInfoResponse> {
-  return apiClient.get<AccountInfoResponse>("/account/info")
+  return apiClient.get<ApiResponseDto<AccountInfoResponse>>("/accounts/me").then((response) => response.data)
 }
 
-export function logout(): Promise<void> {
-  return apiClient.post<void>("/auth/logout")
-}

@@ -18,22 +18,28 @@ export interface ChangePasswordRequest {
   newPasswordConfirm: string
 }
 
+// /login (POST) - Authentication tag
 export function login(request: LoginRequest): Promise<void> {
-  return apiClient.post<void>("/auth/login", request)
+  return apiClient.post<void>("/login", request)
 }
 
+// Swagger 스펙에는 명시적인 /logout 엔드포인트가 없으므로,
+// 서버가 제공하는 경우를 대비해 기본 경로만 호출하도록 최소한으로 유지한다.
 export function logout(): Promise<void> {
-  return apiClient.post<void>("/auth/logout")
+  return apiClient.post<void>("/logout")
 }
 
+// /accounts/register (POST)
 export function register(request: RegisterRequest): Promise<string> {
-  return apiClient.post<string>("/auth/register", request)
+  return apiClient.post<string>("/accounts/register", request)
 }
 
+// /accounts/me/password (PATCH)
 export function changePassword(request: ChangePasswordRequest): Promise<void> {
-  return apiClient.post<void>("/auth/changePassword", request)
+  return apiClient.patch<void>("/accounts/me/password", request)
 }
 
+// /accounts/me (DELETE)
 export function deleteAccount(): Promise<void> {
-  return apiClient.post<void>("/auth/delete")
+  return apiClient.delete<void>("/accounts/me")
 }

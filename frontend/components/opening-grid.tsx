@@ -60,7 +60,7 @@ export function OpeningGrid({ stats }: OpeningGridProps) {
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {visibleItems.map((stat) => (
-            <OpeningCard key={`${stat.epd}-${stat.color}`} stat={stat} />
+            <OpeningCard key={`${stat.id}-${stat.color}`} stat={stat} />
           ))}
         </div>
       )}

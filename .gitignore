@@ -3,3 +3,6 @@
 
 # test database
 /database/
+
+.gemini/
+gha-creds-*.json

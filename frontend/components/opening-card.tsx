@@ -73,7 +73,7 @@ export function OpeningCard({ stat }: OpeningCardProps) {
   }, [])
 
   return (
-    <Card className="group transition-colors hover:border-foreground/20">
+    <Card className="group transition-all duration-200 hover:border-foreground/30 hover:shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
@@ -122,10 +122,10 @@ export function OpeningCard({ stat }: OpeningCardProps) {
               <Chessboard
                 options={{
                   position: stat.epd,
+                  boardOrientation: stat.color,
                   allowDragging: false,
                   showNotation: false,
-                  boardOrientation: stat.color,
-                  darkSquareStyle: { backgroundColor: "#779954" },
+                  darkSquareStyle: { backgroundColor: "#769656" },
                   lightSquareStyle: { backgroundColor: "#e9edcc" },
                 }}
               />
@@ -140,15 +140,15 @@ export function OpeningCard({ stat }: OpeningCardProps) {
         <WinRateBar winRate={stat.winRate} drawRate={stat.drawRate} lossRate={stat.lossRate} />
         <div className="mt-3 flex justify-between text-xs tabular-nums text-muted-foreground">
           <span className="flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
             {stat.wins}W
           </span>
           <span className="flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-amber-400" />
+            <span className="inline-block h-2 w-2 rounded-full bg-amber-400" aria-hidden />
             {stat.drawRate > 0 ? `${stat.draws}D` : "0D"}
           </span>
           <span className="flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-rose-500" />
+            <span className="inline-block h-2 w-2 rounded-full bg-rose-500" aria-hidden />
             {stat.losses}L
           </span>
         </div>
