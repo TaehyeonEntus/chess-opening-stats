@@ -92,9 +92,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+clean.doLast {
+    snippetsDir.mkdirs()
+}
+
 tasks.named('asciidoctor') {
     configurations 'asciidoctorExtensions'
-    inputs.dir snippetsDir
+    inputs.dir(snippetsDir).optional()
     dependsOn test
 }
 
@@ -102,6 +106,10 @@ tasks.register('copyDocument', Copy) {
     dependsOn asciidoctor
     from file("build/docs/asciidoc")
     into file("src/main/resources/static/docs")
+}
+
+tasks.named('processResources') {
+    dependsOn copyDocument
 }
 
 bootJar {
