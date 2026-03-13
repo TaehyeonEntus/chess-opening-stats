@@ -1,6 +1,5 @@
 package com.chessopeningstats.backend.usecase;
 
-import com.chessopeningstats.backend.domain.Account;
 import com.chessopeningstats.backend.service.AccountService;
 import com.chessopeningstats.backend.web.account.dto.ChangeNicknameRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,6 @@ public class ChangeAccountNicknameUseCase {
 
     @Transactional
     public void changeNickname(long accountId, ChangeNicknameRequest request) {
-        Account account = accountService.get(accountId);
-
-        account.setNickname(request.newNickname());
+        accountService.get(accountId).setNickname(request.newNickname());
     }
 }

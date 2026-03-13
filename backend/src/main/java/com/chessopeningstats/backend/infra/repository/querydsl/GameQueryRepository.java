@@ -67,6 +67,7 @@ public class GameQueryRepository {
                 .join(game.gamePlayers, gamePlayer)
                 .where(inPlayerIds(playerIds), eqColor(color))
                 .groupBy(gamePlayer.color, game.lastMatchedOpeningId)
+                .having(game.lastMatchedOpeningId.count().goe(10))
                 .orderBy(orderByWinRate())
                 .limit(limit)
                 .fetch();

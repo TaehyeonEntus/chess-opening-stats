@@ -2,7 +2,6 @@ package com.chessopeningstats.backend.usecase;
 
 import com.chessopeningstats.backend.exception.PlayerAlreadyUnlinkedException;
 import com.chessopeningstats.backend.service.AccountPlayerService;
-import com.chessopeningstats.backend.web.account.dto.UnlinkPlayerRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +10,7 @@ import org.springframework.stereotype.Service;
 public class UnlinkPlayerUseCase {
     private final AccountPlayerService accountPlayerService;
 
-    public void unlinkPlayerFromAccount(long accountId, UnlinkPlayerRequest request) {
-        long playerId = request.playerId();
-
+    public void unlinkPlayerFromAccount(long accountId, long playerId) {
         if (!accountPlayerService.isLinked(accountId, playerId))
             throw new PlayerAlreadyUnlinkedException();
 

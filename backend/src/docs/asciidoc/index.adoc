@@ -1,0 +1,151 @@
+= Chess Opening Stats API Guide
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+[[General-Information]]
+== General Information
+
+[[Security]]
+=== Security & CSRF
+본 API 서버는 CSRF(Cross-Site Request Forgery) 공격을 방지하기 위해 **CSRF 토큰**을 사용합니다.
+
+* **대상 메서드**: `POST`, `PATCH`, `DELETE`, `PUT`
+* **요청 헤더**: `X-CSRF-TOKEN`
+
+[[Error-Response]]
+=== Error Responses
+API 호출 중 에러 발생 시 공통 응답 형식입니다.
+
+[cols="1,2,3"]
+|===
+| 필드명 | 타입 | 설명
+
+| `message`
+| `String`
+| 에러의 상세 사유 (프론트엔드에서 노출하거나 디버깅용으로 사용)
+|===
+
+[[Auth-API]]
+== Auth API
+
+[[Auth-Health]]
+=== Health Check
+operation::auth-health[snippets='http-request,http-response,response-fields']
+
+[[Auth-Login]]
+=== Login
+operation::auth-login[snippets='http-request,http-response,request-fields,response-fields']
+
+.발생 가능한 에러
+[cols="1,2,3"]
+|===
+| 상태 코드 | 메시지 예시 | 설명
+
+| `401 Unauthorized` | `Bad credentials` | 아이디 또는 비밀번호가 일치하지 않음
+|===
+
+[[Account-API]]
+== Account API
+
+[[Account-Register]]
+=== Register
+operation::account-register[snippets='http-request,http-response,request-fields,response-fields']
+
+.발생 가능한 에러
+[cols="1,2,3"]
+|===
+| 상태 코드 | 메시지 예시 | 설명
+
+| `409 Conflict` | `Username already exists` | 이미 사용 중인 아이디
+| `409 Conflict` | `Nickname already exists` | 이미 사용 중인 닉네임
+| `400 Bad Request` | `Passwords do not match` | 비밀번호와 비밀번호 확인이 일치하지 않음
+|===
+
+[[Account-Me]]
+=== My Detail
+operation::account-me[snippets='http-request,http-response,response-fields']
+
+[[Account-Withdraw]]
+=== Withdraw
+operation::account-withdraw[snippets='http-request,http-response,response-fields']
+
+[[Account-Change-Password]]
+=== Change Password
+operation::account-change-password[snippets='http-request,http-response,request-fields,response-fields']
+
+.발생 가능한 에러
+[cols="1,2,3"]
+|===
+| 상태 코드 | 메시지 예시 | 설명
+
+| `400 Bad Request` | `Invalid password` | 기존 비밀번호가 일치하지 않음
+|===
+
+[[Account-Change-Nickname]]
+=== Change Nickname
+operation::account-change-nickname[snippets='http-request,http-response,request-fields,response-fields']
+
+.발생 가능한 에러
+[cols="1,2,3"]
+|===
+| 상태 코드 | 메시지 예시 | 설명
+
+| `409 Conflict` | `Nickname already exists` | 이미 사용 중인 닉네임
+|===
+
+[[Account-Get-Players]]
+=== Get Linked Players
+operation::account-get-players[snippets='http-request,http-response,response-fields']
+
+[[Account-Link-Player]]
+=== Link Player
+operation::account-link-player[snippets='http-request,http-response,request-fields,response-fields']
+
+.발생 가능한 에러
+[cols="1,2,3"]
+|===
+| 상태 코드 | 메시지 예시 | 설명
+
+| `404 Not Found` | `Player not found on platform` | 해당 플랫폼에 존재하지 않는 아이디
+| `409 Conflict` | `Player already linked` | 이미 현재 계정에 연동된 플레이어
+|===
+
+[[Account-Unlink-Player]]
+=== Unlink Player
+operation::account-unlink-player[snippets='http-request,http-response,path-parameters,response-fields']
+
+[[Account-Sync]]
+=== Sync Games
+operation::account-sync[snippets='http-request,http-response,response-fields']
+
+.발생 가능한 에러
+[cols="1,2,3"]
+|===
+| 상태 코드 | 메시지 예시 | 설명
+
+| `429 Too Many Requests` | `Too many sync requests. Please try again later.` | 동기화 요청 제한(최근 10분 내 요청함)
+| `404 Not Found` | `No linked players found` | 연동된 플레이어가 없어 동기화할 수 없음
+|===
+
+[[Account-Sync-Status]]
+=== Sync Status
+operation::account-sync-status[snippets='http-request,http-response,response-fields']
+
+[[View-API]]
+== View API
+
+[[View-Home]]
+=== Home View
+operation::view-home[snippets='http-request,http-response,response-fields']
+
+.발생 가능한 에러
+[cols="1,2,3"]
+|===
+| 상태 코드 | 메시지 예시 | 설명
+
+| `401 Unauthorized` | `Full authentication is required` | 세션이 만료되었거나 로그인이 필요함
+|===

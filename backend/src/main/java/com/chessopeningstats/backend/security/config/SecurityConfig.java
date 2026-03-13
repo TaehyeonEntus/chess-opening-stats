@@ -1,10 +1,10 @@
-package com.chessopeningstats.backend.security;
+package com.chessopeningstats.backend.security.config;
 
+import com.chessopeningstats.backend.security.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,19 +12,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private final CorsConfigurationSource corsConfigurationSource;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CookieCsrfTokenRepository cookieCsrfTokenRepository;
+    private final OncePerRequestFilter csrfCookieSetter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -37,27 +37,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CookieCsrfTokenRepository cookieCsrfTokenRepository() {
-        CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        repo.setCookieCustomizer(cookie -> {
-            cookie.domain("chessopeningstat.com");
-            cookie.sameSite("Strict");
-            cookie.secure(true);
-        });
-        return repo;
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         return http
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(cookieCsrfTokenRepository())
+                        .csrfTokenRepository(cookieCsrfTokenRepository)
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 )
-                .cors(Customizer.withDefaults())
-                .securityContext(context -> context
-                        .requireExplicitSave(false)
+                .securityContext(context -> context.requireExplicitSave(false))
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource)
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
@@ -65,12 +54,10 @@ public class SecurityConfig {
                                 "/login",
                                 "/accounts/register",
                                 "/error",
-                                // monitoring
+                                // Monitoring
                                 "/actuator/**",
-                                // Swagger UI
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                // API Documentation (Spring REST Docs)
+                                "/docs/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -82,21 +69,7 @@ public class SecurityConfig {
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                 )
+                .addFilterAfter(csrfCookieSetter, CsrfFilter.class)
                 .build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowedOrigins(List.of("https://www.chessopeningstat.com"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        return source;
     }
 }

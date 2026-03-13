@@ -22,23 +22,19 @@ public class LinkPlayerUseCase {
         String username = request.username();
         Platform platform = request.platform();
 
-        validateUsernameOnPlatform(username, platform);
+        if (!playerExistenceServiceRegistry.getService(platform).existsUsername(username))
+            throw new UsernameNotFoundOnPlatformException(username, platform);
 
-        if (playerService.existsByUsernameAndPlatform(username, platform))
-            link(accountId, playerService.getByUsernameAndPlatform(username, platform).getId());
+        if (playerService.existsByUsernameAndPlatform(username, platform)) {
+            long playerId = playerService.getByUsernameAndPlatform(username, platform).getId();
+
+            if (accountPlayerService.isLinked(accountId, playerId))
+                throw new PlayerAlreadyLinkedException();
+
+            accountPlayerService.link(accountId, playerId);
+        }
         else
             accountPlayerService.addPlayerAndLink(accountId, Player.of(username, platform));
     }
 
-    private void validateUsernameOnPlatform(String username, Platform platform) {
-        if (!playerExistenceServiceRegistry.getService(platform).existsUsername(username))
-            throw new UsernameNotFoundOnPlatformException(username, platform);
-    }
-
-    private void link(long accountId, long playerId) {
-        if (accountPlayerService.isLinked(accountId, playerId))
-            throw new PlayerAlreadyLinkedException();
-
-        accountPlayerService.link(accountId, playerId);
-    }
 }

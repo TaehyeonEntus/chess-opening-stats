@@ -7,5 +7,5 @@ public record RegisterAccountRequest(
         @NotBlank String nickname,
         @NotBlank String password,
         @NotBlank String passwordConfirm
-){
+) {
 }

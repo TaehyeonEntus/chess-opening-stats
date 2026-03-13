@@ -1,6 +1,6 @@
 package com.chessopeningstats.backend.security;
 
-import com.chessopeningstats.backend.security.web.dto.LoginRequest;
+import com.chessopeningstats.backend.web.auth.dto.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

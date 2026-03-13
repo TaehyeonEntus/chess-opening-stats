@@ -16,8 +16,11 @@ public class RegisterAccountUseCase {
     private final PasswordEncoder encoder;
 
     public void register(RegisterAccountRequest request) {
-        validateUsernameAvailable(request.username());
-        validateNicknameAvailable(request.nickname());
+        if (accountService.existsByUsername(request.username()))
+            throw new UsernameAlreadyExistsException();
+
+        if (accountService.existsByNickname(request.nickname()))
+            throw new NicknameAlreadyExistsException();
 
         accountService.save(
                 Account.builder()
@@ -28,13 +31,4 @@ public class RegisterAccountUseCase {
         );
     }
 
-    private void validateUsernameAvailable(String username) {
-        if (accountService.existsByUsername(username))
-            throw new UsernameAlreadyExistsException();
-    }
-
-    private void validateNicknameAvailable(String nickname) {
-        if (accountService.existsByNickname(nickname))
-            throw new NicknameAlreadyExistsException();
-    }
 }

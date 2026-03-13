@@ -50,17 +50,22 @@ public class GameSyncFacade {
         GameNormalizeService<RawGame> gameNormalizeService = gameNormalizeServiceRegistry.getService(player.getPlatform());
 
         Flux<RawGame> fetch =
+                // 1. game 가져오기
                 gameFetchService.fetch(player);
 
         ParallelFlux<NormalizedGame> normalizedGames =
+                // 2. game 정규화
                 gameNormalizeService.normalize(fetch, player.getUsername()).parallel().runOn(Schedulers.parallel());
 
         ParallelFlux<NormalizedGame> sanitizedGames =
+                // 3. 특수 룰, 특수 게임 제거
                 gameSanitizeService.sanitize(normalizedGames);
 
         ParallelFlux<AnalyzedGame> analyzedGames =
+                // 4. 오프닝 분석
                 gameAnalyzeService.analyze(sanitizedGames, player.getId());
 
+        // 5. 배치 저장
         return gameIngestService.ingest(analyzedGames)
                 .then(Mono.fromRunnable(() -> gamePlayerService.updateLastPlayedAt(player.getId()))
                         .subscribeOn(Schedulers.fromExecutor(virtualThreadPool)).then());

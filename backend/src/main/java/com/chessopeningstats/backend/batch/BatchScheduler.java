@@ -5,6 +5,7 @@ import com.chessopeningstats.backend.service.AccountService;
 import com.chessopeningstats.backend.service.GameService;
 import com.chessopeningstats.backend.service.PlayerService;
 import com.chessopeningstats.backend.service.syncgame.GameSyncFacade;
+import com.chessopeningstats.backend.service.syncgame.GameSyncMap;
 import com.chessopeningstats.backend.service.syncgame.GameSyncQueue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +19,8 @@ public class BatchScheduler {
     private final PlayerService playerService;
     private final GameSyncQueue gameSyncQueue;
     private final GameService gameService;
+    private final GameSyncMap gameSyncMap;
+
 
     @Scheduled(fixedDelay = 86400000)
     public void scheduledSync() {
@@ -35,6 +38,7 @@ public class BatchScheduler {
         Player player;
         while ((player = gameSyncQueue.getChessComQueue().poll()) != null) {
             gameSyncFacade.syncPlayer(player).block();
+            gameSyncMap.removeChessComPlayer(player.getId());
         }
     }
 
@@ -43,6 +47,7 @@ public class BatchScheduler {
         Player player;
         while ((player = gameSyncQueue.getLichessQueue().poll()) != null) {
             gameSyncFacade.syncPlayer(player).block();
+            gameSyncMap.removeLichessPlayer(player.getId());
         }
     }
 }
