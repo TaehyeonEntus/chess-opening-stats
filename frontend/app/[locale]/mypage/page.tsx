@@ -50,10 +50,11 @@ export default function MyPage() {
   // Dialog states
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
   const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState(false)
-  const [removePlayerDialog, setRemovePlayerDialog] = useState<{open: boolean, username: string, platform: Platform | null}>({
+  const [removePlayerDialog, setRemovePlayerDialog] = useState<{open: boolean, username: string, platform: Platform | null, playerId: number | null}>({
     open: false,
     username: "",
-    platform: null
+    platform: null,
+    playerId: null
   })
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false)
   const [oldPassword, setOldPassword] = useState("")
@@ -114,14 +115,14 @@ export default function MyPage() {
     )
   }
 
-  const handleRemovePlayer = async (username: string, platform: Platform | null) => {
-    if (!platform || removingPlayer) {
+  const handleRemovePlayer = async (playerId: number | null) => {
+    if (playerId === null || removingPlayer) {
       return
     }
 
     try {
       setRemovingPlayer(true)
-      await deletePlayer({ username, platform })
+      await deletePlayer(playerId)
       toast.success(tPlayer("removeSuccess"))
       await loadAccountInfo()
     } catch (err) {
@@ -261,8 +262,8 @@ export default function MyPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <p className="font-semibold">{player.username}</p>
-                            <Badge variant={player.platform === "CHESS_COM" ? "default" : "secondary"}>
-                              {player.platform === "CHESS_COM" ? "Chess.com" : "Lichess"}
+                            <Badge variant={player.platform === "chess_com" ? "default" : "secondary"}>
+                              {player.platform === "chess_com" ? "Chess.com" : "Lichess"}
                             </Badge>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
@@ -272,7 +273,7 @@ export default function MyPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setRemovePlayerDialog({ open: true, username: player.username, platform: player.platform })}
+                          onClick={() => setRemovePlayerDialog({ open: true, username: player.username, platform: player.platform, playerId: player.id })}
                           className="text-destructive"
                         >
                           {tPlayer("removePlayer")}
@@ -350,12 +351,12 @@ export default function MyPage() {
 
       <ConfirmDialog
         open={removePlayerDialog.open}
-        onOpenChange={(open) => setRemovePlayerDialog({ open, username: "", platform: null })}
+        onOpenChange={(open) => setRemovePlayerDialog({ open, username: "", platform: null, playerId: null })}
         title={tPlayer("removePlayer")}
         description={tPlayer("removeConfirm")}
         onConfirm={() => {
-          handleRemovePlayer(removePlayerDialog.username, removePlayerDialog.platform)
-          setRemovePlayerDialog({ open: false, username: "", platform: null })
+          handleRemovePlayer(removePlayerDialog.playerId)
+          setRemovePlayerDialog({ open: false, username: "", platform: null, playerId: null })
         }}
         variant="destructive"
       />
@@ -372,7 +373,7 @@ export default function MyPage() {
             setShowOldPassword(false)
             setShowNewPassword(false)
             setShowNewPasswordConfirm(false)
-            setPasswordError(null)
+            clearPasswordError()
           }
         }}
       >
