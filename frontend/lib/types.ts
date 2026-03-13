@@ -1,5 +1,5 @@
 export type Color = "white" | "black"
-export type Platform = "CHESS_COM" | "LICHESS"
+export type Platform = "chess_com" | "lichess"
 export type ColorFilter = "all" | "white" | "black"
 export type SortBy = "winRate" | "totalGames" | "name"
 
@@ -33,6 +33,12 @@ export interface AccountInfoResponse {
     players: PlayerInfo[]
 }
 
+export type SyncGameResponse = Record<string, number>
+
+export interface SyncGameStatus {
+  status: boolean
+}
+
 // ----------------------------------------------------------------------
 // 2. Statistics API Types (Dashboard / Records)
 // ----------------------------------------------------------------------
@@ -53,10 +59,10 @@ export interface ColorOpeningStat {
 }
 
 export interface ColorDashboard {
-  record: ColorRecord
+  record: ColorRecord | null
   mostPlayedOpenings: ColorOpeningStat[]
   highestWinRateOpenings: ColorOpeningStat[]
-  openings: ColorOpeningStat[]
+  openings: ColorOpeningStat[] | null
 }
 
 export interface HomeView {

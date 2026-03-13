@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api/apiClient"
+import { SyncGameResponse } from "@/lib/types"
 
 export interface LoginRequest {
   username: string
@@ -42,4 +43,9 @@ export function changePassword(request: ChangePasswordRequest): Promise<void> {
 // /accounts/me (DELETE)
 export function deleteAccount(): Promise<void> {
   return apiClient.delete<void>("/accounts/me")
+}
+
+// /accounts/me/sync (POST)
+export function syncGames(): Promise<SyncGameResponse> {
+  return apiClient.post<SyncGameResponse>("/accounts/me/sync")
 }

@@ -13,24 +13,36 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { ArrowLeft, RefreshCw, Trash2, KeyRound, User, Loader2, LogOut, Eye, EyeOff } from "lucide-react"
 import type { Platform, AccountInfoResponse } from "@/lib/types"
 import { fetchAccountInfo, deletePlayer } from "@/lib/api/api"
-import { logout, changePassword, deleteAccount } from "@/lib/api/auth"
-import { runSyncFlow } from "@/lib/sync/runSyncFlow"
+import { useAuthActions } from "@/hooks/use-auth-actions"
 import { toast } from "sonner"
 import { AxiosError } from "axios"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { cn } from "@/lib/utils"
 
 export default function MyPage() {
   const router = useRouter()
   const locale = useLocale()
   const t = useTranslations("myPage")
   const tAuth = useTranslations("auth")
-  const tHome = useTranslations("home")
   const tPlayer = useTranslations("player")
   const tCommon = useTranslations("common")
   
-  const [syncing, setSyncing] = useState(false)
+  const { 
+    loggingOut, 
+    changingPassword, 
+    deletingAccount, 
+    syncing, 
+    isPolling,
+    passwordError, 
+    handleLogout, 
+    handleDeleteAccount, 
+    handleChangePasswordSubmit,
+    handleSyncGames,
+    clearPasswordError 
+  } = useAuthActions()
+
   const [loading, setLoading] = useState(true)
   const [accountInfo, setAccountInfo] = useState<AccountInfoResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -50,14 +62,18 @@ export default function MyPage() {
   const [showOldPassword, setShowOldPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showNewPasswordConfirm, setShowNewPasswordConfirm] = useState(false)
-  const [changingPassword, setChangingPassword] = useState(false)
-  const [passwordError, setPasswordError] = useState<string | null>(null)
-  const [deletingAccount, setDeletingAccount] = useState(false)
   const [removingPlayer, setRemovingPlayer] = useState(false)
 
   useEffect(() => {
     loadAccountInfo()
   }, [])
+
+  // 폴링 완료 등으로 인해 서버 컴포넌트 데이터가 갱신되면 클라이언트 상태도 동기화할 수 있도록 처리
+  useEffect(() => {
+    if (!isPolling && !loading && !syncing) {
+        loadAccountInfo()
+    }
+  }, [isPolling, syncing])
 
   const loadAccountInfo = async () => {
     try {
@@ -73,19 +89,6 @@ export default function MyPage() {
     }
   }
 
-  const handleSync = async () => {
-    try {
-      setSyncing(true)
-      await runSyncFlow()
-      window.location.reload()
-    } catch (err) {
-      toast.error(tHome("syncFailed"))
-      console.error(err)
-    } finally {
-      setSyncing(false)
-    }
-  }
-
   const handleChangePassword = () => {
     setChangePasswordDialogOpen(true)
     setOldPassword("")
@@ -94,80 +97,21 @@ export default function MyPage() {
     setShowOldPassword(false)
     setShowNewPassword(false)
     setShowNewPasswordConfirm(false)
-    setPasswordError(null)
+    clearPasswordError()
   }
 
-  const handleChangePasswordSubmit = async () => {
-    if (!oldPassword || !newPassword || !newPasswordConfirm) {
-      setPasswordError(tAuth("allFieldsRequired"))
-      return
-    }
-
-    if (newPassword !== newPasswordConfirm) {
-      setPasswordError(tAuth("newPasswordMismatch"))
-      return
-    }
-
-    try {
-      setChangingPassword(true)
-      setPasswordError(null)
-      await changePassword({ oldPassword, newPassword, newPasswordConfirm })
-      toast.success(tAuth("changePasswordSuccess"))
-      setChangePasswordDialogOpen(false)
-      setOldPassword("")
-      setNewPassword("")
-      setNewPasswordConfirm("")
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        const errorCode = err.response?.data?.code
-        if (errorCode === "S003") {
-          setPasswordError(tAuth("invalidPassword"))
-        } else if (errorCode === "S004") {
-          setPasswordError(tAuth("newPasswordMismatch"))
-        } else {
-          setPasswordError(err.response?.data?.message || tAuth("changePasswordFailed"))
-        }
-      } else {
-        setPasswordError(tAuth("changePasswordFailed"))
+  const onSubmitChangePassword = async () => {
+    await handleChangePasswordSubmit(
+      oldPassword, 
+      newPassword, 
+      newPasswordConfirm, 
+      () => {
+        setChangePasswordDialogOpen(false)
+        setOldPassword("")
+        setNewPassword("")
+        setNewPasswordConfirm("")
       }
-      console.error(err)
-    } finally {
-      setChangingPassword(false)
-    }
-  }
-
-  const handleLogout = async () => {
-    try {
-      await logout()
-      toast.success(tAuth("logoutSuccess"))
-      router.push("/")
-    } catch (err) {
-      toast.error(tAuth("logoutFailed"))
-      console.error(err)
-    }
-  }
-
-  const handleDeleteAccount = async () => {
-    if (deletingAccount) {
-      return
-    }
-
-    try {
-      setDeletingAccount(true)
-      await deleteAccount()
-      toast.success(t("deleteAccountSuccess"))
-      router.replace("/login")
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        const message = err.response?.data?.message || t("deleteAccountFailed")
-        toast.error(message)
-      } else {
-        toast.error(t("deleteAccountFailed"))
-      }
-      console.error(err)
-    } finally {
-      setDeletingAccount(false)
-    }
+    )
   }
 
   const handleRemovePlayer = async (username: string, platform: Platform | null) => {
@@ -204,7 +148,7 @@ export default function MyPage() {
     })
   }
 
-  if (loading) {
+  if (loading && !accountInfo) {
     return (
       <div className="min-h-screen overflow-x-hidden bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -278,7 +222,7 @@ export default function MyPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <RefreshCw className="h-5 w-5" />
+                  <RefreshCw className={cn("h-5 w-5", (syncing || isPolling) && "animate-spin")} />
                   {t("dataSync")}
                 </CardTitle>
                 <CardDescription>
@@ -286,8 +230,12 @@ export default function MyPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button onClick={handleSync} disabled={syncing} className="w-full">
-                  {syncing ? t("syncing") : t("syncNow")}
+                <Button 
+                    onClick={() => handleSyncGames(accountInfo.players)} 
+                    disabled={syncing || isPolling} 
+                    className="w-full"
+                >
+                  {syncing || isPolling ? t("syncing") : t("syncNow")}
                 </Button>
               </CardContent>
             </Card>
@@ -518,7 +466,7 @@ export default function MyPage() {
               {tCommon("cancel")}
             </Button>
             <Button
-              onClick={handleChangePasswordSubmit}
+              onClick={onSubmitChangePassword}
               disabled={changingPassword}
             >
               {changingPassword ? tAuth("changing") : tCommon("confirm")}

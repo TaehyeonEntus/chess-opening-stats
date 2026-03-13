@@ -2,40 +2,25 @@
 
 import { useState, useCallback } from "react"
 import { provideAddPlayer } from "@/lib/provide/provideFacade"
-import { runSyncFlow } from "@/lib/sync/runSyncFlow"
 import { toast } from "sonner"
 import { AxiosError } from "axios"
 import { useTranslations } from "next-intl"
 import type { Platform } from "@/lib/types"
 
+/**
+ * 플레이어 추가(연동) 관련 로직을 담당하는 훅입니다.
+ * 동기화 처리는 useAuthActions의 handleSyncGames로 위임합니다.
+ */
 export function usePlayer() {
   const tPlayer = useTranslations("player")
-  const t = useTranslations("home")
 
   const [addingPlayer, setAddingPlayer] = useState(false)
   const [addPlayerError, setAddPlayerError] = useState<string | null>(null)
-  const [syncing, setSyncing] = useState(false)
-  const [syncError, setSyncError] = useState<string | null>(null)
-
-  const handleSync = useCallback(async (onSuccess?: () => void) => {
-    try {
-      setSyncing(true)
-      setSyncError(null)
-      await runSyncFlow()
-      onSuccess?.()
-      window.location.reload()
-    } catch (err) {
-      console.error("Failed to sync account players", err)
-      setSyncError(t("syncFailedTryAgain"))
-    } finally {
-      setSyncing(false)
-    }
-  }, [t])
 
   const handleAddPlayer = useCallback(async (
     username: string,
     platform: Platform,
-    onSuccess: () => void
+    onSuccess: (playersAfterAdd?: any) => void // 추가 성공 후 콜백 (여기서 handleSyncGames를 호출하도록 유도)
   ) => {
     if (!username.trim()) {
       setAddPlayerError(tPlayer("enterUsername"))
@@ -45,10 +30,14 @@ export function usePlayer() {
     try {
       setAddingPlayer(true)
       setAddPlayerError(null)
+      // 1. 플레이어 추가 API 호출
       await provideAddPlayer({ username: username.trim(), platform })
-      onSuccess()
+      
       toast.success(tPlayer("addSuccess"))
-      await handleSync()
+      
+      // 2. 성공 시 콜백 실행 (UI 레이어에서 handleSyncGames를 호출하여 폴링 시작)
+      onSuccess()
+      
     } catch (err) {
       console.error("Failed to add player", err)
       if (err instanceof AxiosError) {
@@ -82,16 +71,13 @@ export function usePlayer() {
     } finally {
       setAddingPlayer(false)
     }
-  }, [tPlayer, handleSync])
+  }, [tPlayer])
 
   const clearAddPlayerError = useCallback(() => setAddPlayerError(null), [])
 
   return {
     addingPlayer,
     addPlayerError,
-    syncing,
-    syncError,
-    handleSync,
     handleAddPlayer,
     clearAddPlayerError,
   }

@@ -3,8 +3,10 @@
 import { useState, useEffect, useMemo, useDeferredValue, useCallback } from "react"
 import { provideHomeView } from "@/lib/provide/provideFacade"
 import { adaptColorOpeningStat, adaptStat } from "@/lib/provide/internel/adapter"
-import { parseOpeningCsv } from "@/lib/openings/csv-parser"
+import { parseOpeningCsv, type OpeningDictionary } from "@/lib/openings/csv-parser"
 import { calculateRatesFromCounts } from "@/lib/stats"
+import { toast } from "sonner"
+import { AxiosError } from "axios"
 import type { OpeningStatView, ColorFilter, DisplaySummary, WinRate, Stat, SortBy, HomeView } from "@/lib/types"
 
 function calculateDisplaySummary(
@@ -42,8 +44,10 @@ export interface FilterState {
 
 export function useOpeningData() {
   const [allOpenings, setAllOpenings] = useState<OpeningStatView[]>([])
+  const [openingDictionary, setOpeningDictionary] = useState<OpeningDictionary | null>(null)
   const [summaries, setSummaries] = useState<Record<ColorFilter, DisplaySummary> | null>(null)
   const [nickname, setNickname] = useState<string>("")
+  const [hasPlayers, setHasPlayers] = useState<boolean>(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -61,34 +65,66 @@ export function useOpeningData() {
 
     try {
       const [homeView, csvResponse] = await Promise.all([
-        provideHomeView(),
-        fetch('/data/openings/OPENING.csv').then(res => res.text())
+        provideHomeView().catch(e => {
+            console.error("HomeView API failed", e);
+            throw e;
+        }),
+        fetch('/data/openings/OPENING.csv')
+          .then(res => {
+            if (!res.ok) throw new Error("CSV file not found");
+            return res.text();
+          })
+          .catch(e => {
+            console.error("CSV fetch failed", e);
+            return ""; // Fallback to empty CSV
+          })
       ])
       
+      if (!homeView) {
+        throw new Error("No data received from server");
+      }
+
       const dictionary = parseOpeningCsv(csvResponse)
+      setOpeningDictionary(dictionary)
       
-      const whiteOpenings = adaptColorOpeningStat(homeView.white.openings, "white", dictionary)
-      const blackOpenings = adaptColorOpeningStat(homeView.black.openings, "black", dictionary)
+      const hasAnyPlayers = (homeView.players && homeView.players.length > 0)
+      setHasPlayers(hasAnyPlayers)
+
+      const whiteStats = homeView.white?.openings || []
+      const blackStats = homeView.black?.openings || []
+      
+      const whiteOpenings = adaptColorOpeningStat(whiteStats, "white", dictionary)
+      const blackOpenings = adaptColorOpeningStat(blackStats, "black", dictionary)
       setAllOpenings([...whiteOpenings, ...blackOpenings])
       
-      setNickname(homeView.account.nickname)
+      setNickname(homeView.account?.nickname || "Player")
       
       // Calculate win rates
       const winRates: WinRate[] = [
-        { color: "white", wins: homeView.white.record.win, draws: homeView.white.record.draw, losses: homeView.white.record.lose },
-        { color: "black", wins: homeView.black.record.win, draws: homeView.black.record.draw, losses: homeView.black.record.lose },
+        { 
+          color: "white", 
+          wins: homeView.white?.record?.win || 0, 
+          draws: homeView.white?.record?.draw || 0, 
+          losses: homeView.white?.record?.lose || 0 
+        },
+        { 
+          color: "black", 
+          wins: homeView.black?.record?.win || 0, 
+          draws: homeView.black?.record?.draw || 0, 
+          losses: homeView.black?.record?.lose || 0 
+        },
       ]
       
       // Calculate best win rate
       const bestWinRateOpenings: Stat[] = [
-        ...adaptStat(homeView.white.highestWinRateOpenings, "white", dictionary),
-        ...adaptStat(homeView.black.highestWinRateOpenings, "black", dictionary)
+        ...adaptStat(homeView.white?.highestWinRateOpenings || [], "white", dictionary),
+        ...adaptStat(homeView.black?.highestWinRateOpenings || [], "black", dictionary)
       ]
       
       // Calculate most played
       const mostPlayedOpenings: Stat[] = [
-        ...adaptStat(homeView.white.mostPlayedOpenings, "white", dictionary),
-        ...adaptStat(homeView.black.mostPlayedOpenings, "black", dictionary)
+        ...adaptStat(homeView.white?.mostPlayedOpenings || [], "white", dictionary),
+        ...adaptStat(homeView.black?.mostPlayedOpenings || [], "black", dictionary)
       ]
 
       setSummaries({
@@ -99,7 +135,14 @@ export function useOpeningData() {
 
     } catch (err) {
        console.error("Failed to load data", err)
-       setError("Failed to load opening stats. Please try again.")
+       let message = "Failed to load opening stats. Please try again."
+       if (err instanceof AxiosError) {
+         message = err.response?.data?.message || err.message
+       } else if (err instanceof Error) {
+         message = err.message
+       }
+       setError(message)
+       toast.error(message)
     } finally {
        if (showLoading) setLoading(false)
     }
@@ -151,12 +194,25 @@ export function useOpeningData() {
 
   const currentSummary = summaries ? summaries[colorFilter] : null
 
+  const epdMap = useMemo(() => {
+    if (!openingDictionary) return new Map<string, { id: number; eco: string; name: string; epd: string }>()
+    const map = new Map<string, { id: number; eco: string; name: string; epd: string }>()
+    Object.entries(openingDictionary).forEach(([idStr, meta]) => {
+      const id = parseInt(idStr)
+      map.set(meta.epd, { id, ...meta })
+    })
+    return map
+  }, [openingDictionary])
+
   return {
     allOpenings,
+    openingDictionary,
+    epdMap,
     filteredAndSortedOpenings,
     summaries,
     currentSummary,
     nickname,
+    hasPlayers,
     loading,
     error,
     loadData,

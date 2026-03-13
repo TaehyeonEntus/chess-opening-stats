@@ -44,11 +44,11 @@ export function AddPlayerDialog({
   const tCommon = useTranslations("common")
 
   const [username, setUsername] = useState("")
-  const [platform, setPlatform] = useState<Platform>("CHESS_COM")
+  const [platform, setPlatform] = useState<Platform>("chess_com")
 
   function resetForm() {
     setUsername("")
-    setPlatform("CHESS_COM")
+    setPlatform("chess_com")
     onClearError()
   }
 
@@ -92,8 +92,8 @@ export function AddPlayerDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="CHESS_COM">CHESS.COM</SelectItem>
-                <SelectItem value="LICHESS">LICHESS</SelectItem>
+                <SelectItem value="chess_com">CHESS.COM</SelectItem>
+                <SelectItem value="lichess">LICHESS</SelectItem>
               </SelectContent>
             </Select>
           </div>

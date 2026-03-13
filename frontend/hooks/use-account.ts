@@ -21,24 +21,27 @@ export function useAccount(onPlayerChange?: () => Promise<void>) {
     try {
       setLoadingAccountInfo(true)
       const homeView = await provideHomeView()
-      setAccountInfo({
+      const newAccountInfo: AccountInfoResponse = {
         nickname: homeView.account.nickname,
         lastSyncedAt: homeView.account.lastSyncedAt,
         players: homeView.players
-      })
+      }
+      setAccountInfo(newAccountInfo)
+      return newAccountInfo
     } catch (err) {
       console.error("Failed to load account info", err)
       toast.error(tMyPage("failedToLoadAccountInfo"))
+      return null
     } finally {
       setLoadingAccountInfo(false)
     }
   }, [tMyPage])
 
-  const handleRemovePlayer = useCallback(async (username: string, platform: Platform | null) => {
-    if (!platform || removingPlayer) return
+  const handleRemovePlayer = useCallback(async (playerId: number) => {
+    if (removingPlayer) return
     try {
       setRemovingPlayer(true)
-      await deletePlayer({ username, platform })
+      await deletePlayer(playerId)
       toast.success(tPlayer("removeSuccess"))
       await loadAccountInfo()
       await onPlayerChange?.()

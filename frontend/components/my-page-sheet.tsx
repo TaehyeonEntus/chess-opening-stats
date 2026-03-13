@@ -25,7 +25,7 @@ interface MyPageSheetProps {
   onLoadAccountInfo: () => void
   onSync: () => void
   onAddPlayer: () => void
-  onRemovePlayer: (username: string, platform: Platform) => void
+  onRemovePlayer: (playerId: number) => void
   onChangePassword: () => void
   onLogout: () => void
   onDeleteAccount: () => void
@@ -142,10 +142,10 @@ export function MyPageSheet({
                           <div className="flex items-center gap-2">
                             <p className="font-semibold text-sm truncate">{player.username}</p>
                             <Badge
-                              variant={player.platform === "CHESS_COM" ? "default" : "secondary"}
+                              variant={player.platform === "chess_com" ? "default" : "secondary"}
                               className="text-xs"
                             >
-                              {player.platform === "CHESS_COM" ? "Chess.com" : "Lichess"}
+                              {player.platform === "chess_com" ? "Chess.com" : "Lichess"}
                             </Badge>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
@@ -155,7 +155,7 @@ export function MyPageSheet({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => onRemovePlayer(player.username, player.platform)}
+                          onClick={() => onRemovePlayer(player.id)}
                           className="text-destructive text-xs hover:text-destructive"
                         >
                           {tPlayer("removePlayer")}

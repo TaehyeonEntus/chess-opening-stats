@@ -3,6 +3,7 @@ import type {
   AccountInfoResponse,
   HomeView,
   ApiResponseDto,
+  SyncGameStatus,
 } from "@/lib/types"
 import { apiClient } from "@/lib/api/apiClient"
 
@@ -11,14 +12,19 @@ export interface AddPlayerRequest {
   platform: Platform
 }
 
-export interface DeletePlayerRequest {
-  username: string
-  platform: Platform
+/**
+ * 백엔드 응답에서 실제 데이터를 추출하는 헬퍼 함수입니다.
+ * ApiResponseDto { data: ... } 형태이거나 순수 객체인 경우 모두 대응합니다.
+ */
+function extractData<T>(response: any): T {
+  if (response && typeof response === 'object' && 'data' in response && response.data !== null) {
+    return response.data as T;
+  }
+  return response as T;
 }
 
 export function fetchHomeView(): Promise<HomeView> {
-  // Uses the new Swagger /views/home endpoint
-  return apiClient.get<ApiResponseDto<HomeView>>("/views/home").then((response) => response.data)
+  return apiClient.get<any>("/views/home").then(res => extractData<HomeView>(res))
 }
 
 // /accounts/me/sync (POST)
@@ -31,14 +37,22 @@ export function addPlayer(request: AddPlayerRequest): Promise<string> {
   return apiClient.post<string>("/accounts/me/players", request)
 }
 
-// /accounts/me/players (DELETE)
-export function deletePlayer(request: DeletePlayerRequest): Promise<void> {
-  return apiClient.delete<void>("/accounts/me/players", { data: request })
+// /accounts/me/players/{playerId} (DELETE)
+export function deletePlayer(playerId: number): Promise<void> {
+  return apiClient.delete<void>(`/accounts/me/players/${playerId}`)
+}
+
+// /health (GET) - CSRF token & session handshake
+export function healthCheck(): Promise<void> {
+  return apiClient.get<void>("/health")
+}
+
+// /accounts/me/sync/status (GET)
+export function fetchSyncStatus(): Promise<SyncGameStatus> {
+  return apiClient.get<any>("/accounts/me/sync/status").then(res => extractData<SyncGameStatus>(res))
 }
 
 // /accounts/me (GET)
-// fallback to `/views/home` if me is not fully mapping or use exact endpoint
 export function fetchAccountInfo(): Promise<AccountInfoResponse> {
-  return apiClient.get<ApiResponseDto<AccountInfoResponse>>("/accounts/me").then((response) => response.data)
+  return apiClient.get<any>("/accounts/me").then(res => extractData<AccountInfoResponse>(res))
 }
-

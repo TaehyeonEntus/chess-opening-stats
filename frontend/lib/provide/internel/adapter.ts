@@ -22,21 +22,28 @@ export function adaptColorOpeningStat(
         return [];
     }
     
-    return stats.map((stat): OpeningStatView => {
-        const metadata = dictionary ? dictionary[stat.id] : null;
-        
-        return {
-            id: stat.id,
-            eco: metadata?.eco || "---",
-            name: metadata?.name || `Opening #${stat.id}`,
-            epd: metadata?.epd || "",
-            color: color,
-            wins: stat.win,
-            draws: stat.draw,
-            losses: stat.lose,
-            ...calcOpeningRates(stat.win + stat.draw + stat.lose, stat.win, stat.draw, stat.lose)
-        }
-    })
+    return stats
+        .filter(stat => stat && typeof stat.id !== 'undefined')
+        .map((stat): OpeningStatView => {
+            const metadata = dictionary ? dictionary[stat.id] : null;
+            
+            return {
+                id: stat.id,
+                eco: metadata?.eco || "---",
+                name: metadata?.name || `Opening #${stat.id}`,
+                epd: metadata?.epd || "",
+                color: color,
+                wins: stat.win || 0,
+                draws: stat.draw || 0,
+                losses: stat.lose || 0,
+                ...calcOpeningRates(
+                    (stat.win || 0) + (stat.draw || 0) + (stat.lose || 0), 
+                    stat.win || 0, 
+                    stat.draw || 0, 
+                    stat.lose || 0
+                )
+            }
+        })
 }
 
 export function adaptStat(
@@ -48,17 +55,19 @@ export function adaptStat(
         return [];
     }
     
-    return stats.map((stat): Stat => {
-        const metadata = dictionary ? dictionary[stat.id] : null;
-        
-        return {
-            eco: metadata?.eco || "---",
-            name: metadata?.name || `Opening #${stat.id}`,
-            epd: metadata?.epd || "",
-            color: color,
-            wins: stat.win,
-            draws: stat.draw,
-            losses: stat.lose,
-        }
-    })
+    return stats
+        .filter(stat => stat && typeof stat.id !== 'undefined')
+        .map((stat): Stat => {
+            const metadata = dictionary ? dictionary[stat.id] : null;
+            
+            return {
+                eco: metadata?.eco || "---",
+                name: metadata?.name || `Opening #${stat.id}`,
+                epd: metadata?.epd || "",
+                color: color,
+                wins: stat.win || 0,
+                draws: stat.draw || 0,
+                losses: stat.lose || 0,
+            }
+        })
 }

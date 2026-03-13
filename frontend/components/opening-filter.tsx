@@ -29,7 +29,7 @@ import {
 import type { ColorFilter, OpeningStatView, SortBy } from "@/lib/types"
 import { Chess } from "chess.js"
 import { Chessboard } from "react-chessboard"
-import { Grid2X2, Search, SlidersHorizontal } from "lucide-react"
+import { Grid2X2, Search, SlidersHorizontal, Undo2 } from "lucide-react"
 
 interface OpeningFilterProps {
   colorFilter: ColorFilter
@@ -41,6 +41,7 @@ interface OpeningFilterProps {
   maxGames: string
   onMaxGamesChange: (maxGames: string) => void
   allOpenings: OpeningStatView[]
+  epdMap: Map<string, { id: number; eco: string; name: string; epd: string }>
   search: string
   onSearchChange: (search: string) => void
 }
@@ -62,6 +63,7 @@ export function OpeningFilter({
   maxGames,
   onMaxGamesChange,
   allOpenings,
+  epdMap,
   search,
   onSearchChange,
 }: OpeningFilterProps) {
@@ -82,6 +84,14 @@ export function OpeningFilter({
     if (!boardEpd) return null
     return allOpenings.find((op) => op.epd === boardEpd && op.color === "black") || null
   }, [allOpenings, boardEpd])
+
+  const fallbackOpening = useMemo(() => {
+    if (boardStatW || boardStatB || !boardEpd) return null
+    return epdMap.get(boardEpd) || null
+  }, [boardStatW, boardStatB, boardEpd, epdMap])
+
+  const currentBoardOpeningName = (boardStatW || boardStatB)?.name || fallbackOpening?.name
+  const currentBoardOpeningEco = (boardStatW || boardStatB)?.eco || fallbackOpening?.eco
 
   function updateFen(nextFen: string) {
     gameRef.current.load(nextFen)
@@ -104,6 +114,13 @@ export function OpeningFilter({
     }
     updateFen(gameRef.current.fen())
     return true
+  }
+
+  function handleUndo() {
+    gameRef.current.undo()
+    const newFen = gameRef.current.fen()
+    setFen(newFen)
+    setBoardEpd(fenToEpd(newFen))
   }
 
   function handleClearBoardSearch() {
@@ -162,10 +179,11 @@ export function OpeningFilter({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleClearBoardSearch}
-                    className="flex-1"
+                    onClick={handleUndo}
+                    className="flex-1 gap-1.5"
                   >
-                    {t("resetBoard")}
+                    <Undo2 className="h-3.5 w-3.5" />
+                    {tCommon("undo")}
                   </Button>
                   <Button
                     variant="outline"
@@ -175,15 +193,24 @@ export function OpeningFilter({
                   >
                     {t("flipBoard")}
                   </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearBoardSearch}
+                    className="flex-none px-3"
+                    title={t("resetBoard")}
+                  >
+                    {tCommon("reset")}
+                  </Button>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4 min-h-0">
-                {(boardStatW || boardStatB) && (
+                {currentBoardOpeningName && (
                   <div className="rounded-lg border bg-card p-3">
                     <div className="text-xs text-muted-foreground mb-1">{t("opening")}</div>
-                    <div className="font-semibold">{(boardStatW || boardStatB)!.name}</div>
-                    <div className="text-sm font-mono text-muted-foreground mt-0.5">{(boardStatW || boardStatB)!.eco}</div>
+                    <div className="font-semibold">{currentBoardOpeningName}</div>
+                    <div className="text-sm font-mono text-muted-foreground mt-0.5">{currentBoardOpeningEco}</div>
                   </div>
                 )}
                 

@@ -87,6 +87,8 @@ function SummaryOverallSection({
   lossRate,
 }: SummaryOverallSectionProps) {
   const t = useTranslations("opening")
+  const hasData = totalGames > 0
+
   return (
     <section className="flex h-full min-w-0 flex-col gap-6 p-6">
       <h3 className="text-lg font-semibold">{title}</h3>
@@ -105,7 +107,7 @@ function SummaryOverallSection({
               <span>{t("wins")}</span>
             </div>
             <span className="tabular-nums">
-              {totalWins.toLocaleString()} ({winRate}%)
+              {totalWins.toLocaleString()} ({hasData ? winRate : 0}%)
             </span>
           </div>
           <div className="flex items-center justify-between">
@@ -114,7 +116,7 @@ function SummaryOverallSection({
               <span>{t("draws")}</span>
             </div>
             <span className="tabular-nums">
-              {totalDraws.toLocaleString()} ({drawRate}%)
+              {totalDraws.toLocaleString()} ({hasData ? drawRate : 0}%)
             </span>
           </div>
           <div className="flex items-center justify-between">
@@ -123,7 +125,7 @@ function SummaryOverallSection({
               <span>{t("losses")}</span>
             </div>
             <span className="tabular-nums">
-              {totalLosses.toLocaleString()} ({lossRate}%)
+              {totalLosses.toLocaleString()} ({hasData ? lossRate : 0}%)
             </span>
           </div>
         </div>
@@ -145,10 +147,10 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
   if (!topOpening) {
     return (
       <section className="flex h-full min-w-0 flex-col p-6">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="text-lg font-semibold">{title}</h3>
+        <div className="flex items-start justify-between gap-3 overflow-hidden">
+          <h3 className="text-lg font-semibold truncate">{title}</h3>
           {title === t("bestWinRate") && (
-            <p className="max-w-[10rem] text-right text-xs text-muted-foreground">
+            <p className="flex-none max-w-[10rem] text-right text-xs text-muted-foreground whitespace-nowrap">
               {t("bestWinRateNote")}
             </p>
           )}
@@ -161,18 +163,18 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
   const topOpeningRates = calculateRatesFromCounts(topOpening.wins, topOpening.draws, topOpening.losses)
 
   return (
-    <section className="flex h-full min-w-0 flex-col gap-6 p-6">
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="text-lg font-semibold">{title}</h3>
+    <section className="flex h-full min-w-0 flex-col gap-6 p-6 overflow-hidden">
+      <div className="flex items-start justify-between gap-3 overflow-hidden">
+        <h3 className="text-lg font-semibold truncate">{title}</h3>
         {title === t("bestWinRate") && (
-          <p className="max-w-[10rem] text-right text-xs text-muted-foreground">
+          <p className="flex-none max-w-[10rem] text-right text-xs text-muted-foreground">
             {t("bestWinRateNote")}
           </p>
         )}
       </div>
 
-      <div className="flex gap-4">
-        <div className="pointer-events-none aspect-square w-24 flex-none overflow-hidden rounded-md border bg-muted/50 sm:w-28">
+      <div className="flex gap-4 min-w-0 overflow-hidden">
+        <div className="pointer-events-none aspect-square w-20 flex-none overflow-hidden rounded-md border bg-muted/50 sm:w-24">
           <Chessboard
             key={topOpening.epd}
             options={{
@@ -185,64 +187,66 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
             }}
           />
         </div>
-        <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
-          <div className="space-y-1">
-            <div className="truncate font-semibold leading-tight" title={topOpening.name}>
+        <div className="flex min-w-0 flex-1 flex-col justify-center py-0.5">
+          <div className="space-y-1 overflow-hidden">
+            <div className="truncate font-semibold leading-tight text-sm sm:text-base" title={topOpening.name}>
               {topOpening.name}
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="outline" className="font-mono">
+              <Badge variant="outline" className="font-mono text-[10px] h-4 px-1">
                 {topOpening.eco}
               </Badge>
               <span
-                className={`inline-block h-3 w-3 rounded-full border ${
+                className={`inline-block h-2.5 w-2.5 rounded-full border ${
                   topOpening.color === "white" ? "bg-white border-gray-300" : "bg-black border-gray-700"
                 }`}
                 title={topOpening.color}
               />
-              <span>{topOpeningRates.totalGames.toLocaleString()} {t("games")}</span>
+              <span className="whitespace-nowrap">{topOpeningRates.totalGames.toLocaleString()} {t("games")}</span>
             </div>
           </div>
-          <div className="flex items-center gap-3 text-xs tabular-nums">
-            <span className="font-medium text-foreground">{topOpeningRates.winRate}% {t("winRate")}</span>
-            <span className="text-emerald-600">{topOpening.wins}W</span>
-            <span className="text-amber-500">{topOpening.draws}D</span>
-            <span className="text-rose-500">{topOpening.losses}L</span>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs tabular-nums">
+            <span className="font-medium text-foreground whitespace-nowrap">{topOpeningRates.winRate}% {t("winRate")}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-600">{topOpening.wins}W</span>
+              <span className="text-amber-500">{topOpening.draws}D</span>
+              <span className="text-rose-500">{topOpening.losses}L</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <h4 className="text-xs font-semibold uppercase text-muted-foreground">{t("runnerUps")}</h4>
-        <div className="grid gap-2">
+      <div className="flex flex-col gap-2 min-w-0 overflow-hidden">
+        <h4 className="text-[10px] font-semibold uppercase text-muted-foreground tracking-wider">{t("runnerUps")}</h4>
+        <div className="flex flex-col gap-1.5 overflow-hidden">
           {otherOpenings.map((op, index) => {
             const opRates = calculateRatesFromCounts(op.wins, op.draws, op.losses)
             return (
               <div
                 key={`${op.name}-${op.color}-${index}`}
-                className="flex items-center justify-between rounded-md border p-2 text-sm transition-colors hover:bg-muted/50"
+                className="flex items-center justify-between rounded-md border p-2 text-xs transition-colors hover:bg-muted/50 min-w-0 overflow-hidden"
               >
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5 pr-3">
+                <div className="flex min-w-0 flex-1 flex-col gap-0.5 pr-2 overflow-hidden">
                   <div className="truncate font-medium leading-tight">{op.name}</div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="font-mono text-[10px]">{op.eco}</span>
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                    <span className="font-mono">{op.eco}</span>
                     <span
-                      className={`inline-block h-2.5 w-2.5 rounded-full border ${
+                      className={`inline-block h-2 w-2 rounded-full border ${
                         op.color === "white" ? "bg-white border-gray-300" : "bg-black border-gray-700"
                       }`}
                       title={op.color}
                     />
-                    <span>{opRates.totalGames.toLocaleString()} {t("games")}</span>
+                    <span className="whitespace-nowrap">{opRates.totalGames.toLocaleString()} {t("games")}</span>
                   </div>
                 </div>
-                <div className="text-right text-xs tabular-nums">
-                  <div className="font-medium">{opRates.winRate}% {t("winRate")}</div>
+                <div className="flex-none text-right text-[10px] tabular-nums">
+                  <div className="font-semibold text-foreground">{opRates.winRate}%</div>
                 </div>
               </div>
             )
           })}
           {otherOpenings.length === 0 && (
-            <div className="text-sm text-muted-foreground">{t("noOtherOpenings")}</div>
+            <div className="text-xs text-muted-foreground italic">{t("noOtherOpenings")}</div>
           )}
         </div>
       </div>
