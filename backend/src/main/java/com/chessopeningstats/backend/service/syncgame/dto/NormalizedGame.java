@@ -1,9 +1,9 @@
 package com.chessopeningstats.backend.service.syncgame.dto;
 
-import com.chessopeningstats.backend.domain.GamePlayerColor;
-import com.chessopeningstats.backend.domain.GamePlayerResult;
-import com.chessopeningstats.backend.domain.GameTime;
-import com.chessopeningstats.backend.domain.GameType;
+import com.chessopeningstats.backend.domain.Color;
+import com.chessopeningstats.backend.domain.Result;
+import com.chessopeningstats.backend.domain.Time;
+import com.chessopeningstats.backend.domain.Type;
 
 import java.time.Instant;
 
@@ -12,12 +12,11 @@ import java.time.Instant;
  * 우리 시스템에서 분석하기 좋게 정규화한 DTO
  */
 public record NormalizedGame(
-        String uuid,
         String pgn,
-        GameTime gameTime,
-        GameType gameType,
+        Time time,
+        Type type,
         Instant playedAt,
-        GamePlayerColor gamePlayerColor,
-        GamePlayerResult gamePlayerResult
+        Color color,
+        Result result
 ) {
 }

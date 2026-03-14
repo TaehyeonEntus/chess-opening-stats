@@ -7,6 +7,7 @@ import com.chessopeningstats.backend.service.syncgame.GameNormalizeService;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 
@@ -19,56 +20,58 @@ public class ChessComGameNormalizeService implements GameNormalizeService<ChessC
     }
 
     @Override
+    public Flux<NormalizedGame> normalize(Flux<ChessComRawGame> rawGames, Player player) {
+        return rawGames.map(dto -> normalizeOne(dto, player.username()));
+    }
+
     public NormalizedGame normalizeOne(ChessComRawGame dto, String username) {
-        String uuid = dto.getUuid();
         String pgn = dto.getPgn();
-        GameTime gameTime = parseGameTime(dto);
-        GameType gameType = parseGameType(dto);
-        GamePlayerColor gamePlayerColor = parseGameColor(dto, username);
-        GamePlayerResult gamePlayerResult = parseGameResult(dto, gamePlayerColor);
+        Time time = parseGameTime(dto);
+        Type type = parseGameType(dto);
+        Color color = parseGameColor(dto, username);
+        Result result = parseGameResult(dto, color);
         Instant playedAt = Instant.ofEpochSecond(dto.getEndTime());
 
         return new NormalizedGame(
-                uuid,
                 pgn,
-                gameTime,
-                gameType,
+                time,
+                type,
                 playedAt,
-                gamePlayerColor,
-                gamePlayerResult
+                color,
+                result
         );
     }
 
-    private GameType parseGameType(ChessComRawGame rawGame) {
+    private Type parseGameType(ChessComRawGame rawGame) {
         return switch (rawGame.getRules()) {
-            case "chess" -> GameType.STANDARD;
+            case "chess" -> Type.STANDARD;
             case "chess960",
                  "bughouse",
                  "kingofthehill",
                  "threecheck",
-                 "crazyhouse" -> GameType.ETC;
-            default -> GameType.UNKNOWN;
+                 "crazyhouse" -> Type.ETC;
+            default -> Type.UNKNOWN;
         };
     }
 
-    private GameTime parseGameTime(ChessComRawGame rawGame) {
+    private Time parseGameTime(ChessComRawGame rawGame) {
         return switch (rawGame.getTimeClass()) {
-            case "bullet" -> GameTime.BULLET;
-            case "blitz" -> GameTime.BLITZ;
-            case "rapid" -> GameTime.RAPID;
-            case "daily" -> GameTime.DAILY;
-            default -> GameTime.UNKNOWN;
+            case "bullet" -> Time.BULLET;
+            case "blitz" -> Time.BLITZ;
+            case "rapid" -> Time.RAPID;
+            case "daily" -> Time.DAILY;
+            default -> Time.UNKNOWN;
         };
     }
 
-    private GamePlayerColor parseGameColor(ChessComRawGame rawGame, String username) {
+    private Color parseGameColor(ChessComRawGame rawGame, String username) {
         if (parseUsernameFromUrl(rawGame.getWhite().getId()).equals(username))
-            return GamePlayerColor.WHITE;
+            return Color.WHITE;
 
         if (parseUsernameFromUrl(rawGame.getBlack().getId()).equals(username))
-            return GamePlayerColor.BLACK;
+            return Color.BLACK;
 
-        return GamePlayerColor.UNKNOWN;
+        return Color.UNKNOWN;
     }
 
     private String parseUsernameFromUrl(String url) {
@@ -76,28 +79,25 @@ public class ChessComGameNormalizeService implements GameNormalizeService<ChessC
         return parts[parts.length - 1];
     }
 
-    private GamePlayerResult parseGameResult(ChessComRawGame rawGame, GamePlayerColor color) {
-        String result = (color == GamePlayerColor.WHITE)
+    private Result parseGameResult(ChessComRawGame rawGame, Color color) {
+        String result = (color == Color.WHITE)
                 ? rawGame.getWhite().getResult()
                 : rawGame.getBlack().getResult();
 
         return switch (result) {
-            case "win" -> GamePlayerResult.WIN;
+            case "win" -> Result.WIN;
             case "agreed",
                  "repetition",
                  "stalemate",
                  "insufficient",
                  "timevsinsufficient",
-                 "50move" -> GamePlayerResult.DRAW;
+                 "50move" -> Result.DRAW;
             case "lose",
                  "checkmated",
                  "resigned",
                  "timeout",
-                 "abandoned" -> GamePlayerResult.LOSE;
-            case "kingofthehill",
-                 "threecheck",
-                 "bughousepartnerlose" -> GamePlayerResult.ETC;
-            default -> GamePlayerResult.UNKNOWN;
+                 "abandoned" -> Result.LOSE;
+            default -> Result.UNKNOWN;
         };
     }
 }

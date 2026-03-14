@@ -19,7 +19,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-    asciidoctorExtensions
+    asciidoctorExt
 }
 
 repositories {
@@ -27,32 +27,21 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-ext {
-    snippetsDir = file('build/generated-snippets')
-}
-
 dependencies {
-    // 🌐 Web (블로킹 서버)
     implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    // 🗄 JPA
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-    // 🔐 Security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-
-    // ✅ Validation
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // 📊 Actuator
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-    // Batch
-    implementation 'org.springframework.boot:spring-boot-starter-batch'
-    testImplementation 'org.springframework.batch:spring-batch-test'
-
-    // WebClient 사용을 위한 디펜던시
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // ☕ Cache
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+
+    // 🧪 Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
     // ♟ Chess
     implementation 'com.github.bhlangonijr:chesslib:1.3.6'
@@ -60,65 +49,35 @@ dependencies {
     // 📄 TSV 파싱
     implementation 'org.apache.commons:commons-csv:1.10.0'
 
-    // 🛢 DB
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
 
-    // 🧪 Test
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-
-    // Lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    // H2 Database (for test)
-    runtimeOnly 'com.h2database:h2'
-
-    // 프로메테우스
-    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-
-    // Querydsl
-    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
-    annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
-    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
-    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+ext {
+    snippetsDir = file('build/generated-snippets')
 }
 
 tasks.named('test') {
-    outputs.dir snippetsDir
     useJUnitPlatform()
-}
-
-clean.doLast {
-    snippetsDir.mkdirs()
+    outputs.dir snippetsDir
 }
 
 tasks.named('asciidoctor') {
-    configurations 'asciidoctorExtensions'
-    inputs.dir(snippetsDir).optional()
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
     dependsOn test
 }
 
-tasks.register('copyDocument', Copy) {
+// 📄 API 문서 복사 태스크 추가
+task copyDocument(type: Copy) {
     dependsOn asciidoctor
-    from file("build/docs/asciidoc")
+    from file("${asciidoctor.outputDir}")
     into file("src/main/resources/static/docs")
 }
 
-tasks.named('processResources') {
-    dependsOn copyDocument
+tasks.named('bootJar') {
+    dependsOn copyDocument // JAR 빌드 전 문서 복사 실행
 }
 
-bootJar {
-    dependsOn asciidoctor
-    from ("${asciidoctor.outputDir}") {
-        into 'static/docs'
-    }
-}
-
-build {
-    dependsOn copyDocument
+tasks.named('build') {
+    dependsOn copyDocument // 일반 빌드 시에도 문서 복사 실행
 }

@@ -37,8 +37,7 @@ public class LichessPlayerGameClient implements PlayerGameClient<LichessRawGame>
                 .queryParam("rated", true)
                 .queryParam("perfType", "ultraBullet,bullet,blitz,rapid,classical,correspondence")
                 .queryParam("moves", true)
-                .queryParam("since", player.getLastPlayedAt().toEpochMilli())
-                .build(player.getUsername())
+                .build(player.username())
                 .toString();
     }
 

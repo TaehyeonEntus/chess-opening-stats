@@ -17,8 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.YearMonth;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,17 +41,15 @@ public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGam
     public String uri(Player player) {
         return UriComponentsBuilder
                 .fromPath("/pub/player/{username}/games/archives")
-                .build(player.getUsername())
+                .build(player.username())
                 .toString();
     }
 
     @Override
     public Flux<ChessComRawGame> fetchGames(Player player) {
         return getArchiveUrls(player)
-                .filter(url -> isRelevantMonthlyArchive(url, yearMonthOf(player)))
                 .flatMap(this::fetchMonthlyArchiveGames, FETCH_CONCURRENCY)
-                .flatMapIterable(ChessComArchiveResponse::getGames)
-                .filter(dto -> dto.isAfter(player.getLastPlayedAt()));
+                .flatMapIterable(ChessComArchiveResponse::getGames);
     }
 
     private Flux<String> getArchiveUrls(Player player) {
@@ -79,20 +75,6 @@ public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGam
                 .onErrorMap(WebClientResponseException.NotFound.class, PlayerNotFoundException::new)
                 .onErrorMap(WebClientResponseException.TooManyRequests.class, RateLimitExceededException::new)
                 .onErrorMap(ExternalServiceException::new);
-    }
-
-    // 중복 아카이브 검사
-    private boolean isRelevantMonthlyArchive(String url, YearMonth playerYearMonth) {
-        String[] parts = url.split("/");
-        int year = Integer.parseInt(parts[parts.length - 2]);
-        int month = Integer.parseInt(parts[parts.length - 1]);
-
-        YearMonth urlYearMonth = YearMonth.of(year, month);
-        return !urlYearMonth.isBefore(playerYearMonth);
-    }
-
-    private YearMonth yearMonthOf(Player player) {
-        return YearMonth.from(player.getLastPlayedAt().atZone(ZoneId.of("UTC")));
     }
 
     @Data

@@ -3,11 +3,10 @@ package com.chessopeningstats.backend.infra.client.playerexistence;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
 @Configuration
 public class PlayerExistenceClientConfig {
-
     @Value("${api.lichess.base-url}")
     private String lichessBaseUrl;
 
@@ -15,15 +14,15 @@ public class PlayerExistenceClientConfig {
     private String chessComBaseUrl;
 
     @Bean
-    public WebClient lichessPlayerExistenceWebClient() {
-        return WebClient.builder()
+    public RestClient lichessPlayerExistenceRestClient() {
+        return RestClient.builder()
                 .baseUrl(lichessBaseUrl)
                 .build();
     }
 
     @Bean
-    public WebClient chessComPlayerExistenceWebClient() {
-        return WebClient.builder()
+    public RestClient chessComPlayerExistenceRestClient() {
+        return RestClient.builder()
                 .baseUrl(chessComBaseUrl)
                 .build();
     }

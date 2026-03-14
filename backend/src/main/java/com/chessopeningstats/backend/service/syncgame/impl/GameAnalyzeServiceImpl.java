@@ -2,12 +2,9 @@ package com.chessopeningstats.backend.service.syncgame.impl;
 
 import com.chessopeningstats.backend.domain.Opening;
 import com.chessopeningstats.backend.infra.cache.OpeningCache;
-import com.chessopeningstats.backend.infra.repository.batch.dto.GamePlayerRow;
-import com.chessopeningstats.backend.infra.repository.batch.dto.GameRow;
 import com.chessopeningstats.backend.service.syncgame.GameAnalyzeService;
 import com.chessopeningstats.backend.service.syncgame.dto.AnalyzedGame;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
-import com.chessopeningstats.backend.util.converter.LongListConverter;
 import com.github.bhlangonijr.chesslib.Board;
 import com.github.bhlangonijr.chesslib.move.MoveList;
 import com.github.bhlangonijr.chesslib.pgn.PgnHolder;
@@ -22,35 +19,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GameAnalyzeServiceImpl implements GameAnalyzeService {
     private final OpeningCache openingCache;
-    private final LongListConverter converter;
     private static final int MAX_OPENING_MOVES = 30;
 
     @Override
-    public ParallelFlux<AnalyzedGame> analyze(ParallelFlux<NormalizedGame> sanitizedGames, long playerId) {
-        return sanitizedGames.map(normalizedGame -> analyzeOne(normalizedGame, playerId));
+    public ParallelFlux<AnalyzedGame> analyze(ParallelFlux<NormalizedGame> sanitizedGames) {
+        return sanitizedGames.map(this::analyzeOne);
     }
 
-    public AnalyzedGame analyzeOne(NormalizedGame normalizedGame, long playerId) {
+    public AnalyzedGame analyzeOne(NormalizedGame normalizedGame) {
         List<Long> openingIds = analyzeOpening(normalizedGame.pgn());
-
-        GameRow gameRow = new GameRow(
-                normalizedGame.uuid(),
-                normalizedGame.playedAt(),
-                normalizedGame.gameTime(),
-                normalizedGame.gameType(),
+        return new AnalyzedGame(
+                normalizedGame.color(),
+                normalizedGame.result(),
+                openingIds,
                 openingIds.isEmpty()
                         ? null
-                        : openingIds.getLast(),
-                converter.convertToDatabaseColumn(openingIds)
+                        : openingIds.getLast()
         );
-
-        GamePlayerRow gamePlayerRow = new GamePlayerRow(
-                gameRow.uuid(),
-                playerId,
-                normalizedGame.gamePlayerColor(),
-                normalizedGame.gamePlayerResult());
-
-        return new AnalyzedGame(gameRow, gamePlayerRow);
     }
 
     private List<Long> analyzeOpening(String pgn) {

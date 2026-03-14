@@ -1,8 +1,9 @@
 package com.chessopeningstats.backend.service.syncgame.impl;
 
-import com.chessopeningstats.backend.domain.GamePlayerColor;
-import com.chessopeningstats.backend.domain.GameTime;
-import com.chessopeningstats.backend.domain.GameType;
+import com.chessopeningstats.backend.domain.Color;
+import com.chessopeningstats.backend.domain.Result;
+import com.chessopeningstats.backend.domain.Time;
+import com.chessopeningstats.backend.domain.Type;
 import com.chessopeningstats.backend.service.syncgame.GameSanitizeService;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import lombok.RequiredArgsConstructor;
@@ -19,25 +20,30 @@ public class GameSanitizeServiceImpl implements GameSanitizeService {
     }
 
     private boolean isValid(NormalizedGame normalizedGame) {
-        return validGameType(normalizedGame)
-                && validGameTime(normalizedGame)
-                && validGamePlayerColor(normalizedGame)
-                && validPgn(normalizedGame);
+        return validType(normalizedGame.type()) &&
+                validTime(normalizedGame.time()) &&
+                validColor(normalizedGame.color()) &&
+                validResult(normalizedGame.result()) &&
+                validPgn(normalizedGame.pgn());
     }
 
-    private boolean validGameType(NormalizedGame normalizedGame) {
-        return normalizedGame.gameType() == GameType.STANDARD;
+    private boolean validType(Type type) {
+        return type == Type.STANDARD;
     }
 
-    private boolean validGameTime(NormalizedGame normalizedGame) {
-        return normalizedGame.gameTime() != GameTime.UNKNOWN;
+    private boolean validTime(Time time) {
+        return time != Time.UNKNOWN;
     }
 
-    private boolean validGamePlayerColor(NormalizedGame normalizedGame) {
-        return normalizedGame.gamePlayerColor() != GamePlayerColor.UNKNOWN;
+    private boolean validColor(Color color) {
+        return color != Color.UNKNOWN;
     }
 
-    private boolean validPgn(NormalizedGame normalizedGame) {
-        return !normalizedGame.pgn().isBlank();
+    private boolean validResult(Result result) {
+        return result != Result.UNKNOWN;
+    }
+
+    private boolean validPgn(String pgn) {
+        return !pgn.isBlank();
     }
 }

@@ -9,26 +9,20 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class OpeningCache {
-    private final Map<String, Opening> epdToOpeningMap = new HashMap<>();
-    private final Map<Long, Opening> idToOpeningMap = new HashMap<>();
+    private final Map<String, Opening> openingMap = new HashMap<>();
 
     public List<Opening> getOpeningsByEpds(Collection<String> epds) {
         return epds.stream()
-                .map(epdToOpeningMap::get)
+                .map(openingMap::get)
                 .filter(Objects::nonNull)
                 .toList();
     }
 
-    public Opening get(Long id) {
-        return idToOpeningMap.get(id);
-    }
-
     public void cacheAll(Collection<Opening> openings) {
-        openings.forEach(this::cacheOne);
+        openings.forEach(this::cache);
     }
 
-    private void cacheOne(Opening opening) {
-        epdToOpeningMap.put(opening.epd(), opening);
-        idToOpeningMap.put(opening.id(), opening);
+    private void cache(Opening opening) {
+        openingMap.put(opening.epd(), opening);
     }
 }

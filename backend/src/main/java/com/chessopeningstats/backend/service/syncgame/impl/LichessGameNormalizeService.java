@@ -7,6 +7,7 @@ import com.chessopeningstats.backend.service.syncgame.GameNormalizeService;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 
@@ -19,29 +20,31 @@ public class LichessGameNormalizeService implements GameNormalizeService<Lichess
     }
 
     @Override
+    public Flux<NormalizedGame> normalize(Flux<LichessRawGame> rawGames, Player player) {
+        return rawGames.map(dto -> normalizeOne(dto, player.username()));
+    }
+
     public NormalizedGame normalizeOne(LichessRawGame rawGame, String username) {
-        String uuid = rawGame.getId();
         String pgn = rawGame.getPgn();
-        GameTime gameTime = parseGameTime(rawGame);
-        GameType gameType = parseGameType(rawGame);
-        GamePlayerColor gamePlayerColor = parseGameColor(rawGame, username);
-        GamePlayerResult gamePlayerResult = parseGameResult(rawGame, gamePlayerColor);
+        Time time = parseGameTime(rawGame);
+        Type type = parseGameType(rawGame);
+        Color color = parseGameColor(rawGame, username);
+        Result result = parseGameResult(rawGame, color);
         Instant playedAt = Instant.ofEpochMilli(rawGame.getCreatedAt());
 
         return new NormalizedGame(
-                uuid,
                 pgn,
-                gameTime,
-                gameType,
+                time,
+                type,
                 playedAt,
-                gamePlayerColor,
-                gamePlayerResult
+                color,
+                result
         );
     }
 
-    private GameType parseGameType(LichessRawGame rawGame) {
+    private Type parseGameType(LichessRawGame rawGame) {
         return switch (rawGame.getVariant()) {
-            case "standard" -> GameType.STANDARD;
+            case "standard" -> Type.STANDARD;
             case "chess960",
                  "crazyhouse",
                  "antichess",
@@ -50,57 +53,50 @@ public class LichessGameNormalizeService implements GameNormalizeService<Lichess
                  "kingOfTheHill",
                  "racingKings",
                  "threeCheck",
-                 "fromPosition" -> GameType.ETC;
-            default -> GameType.UNKNOWN;
+                 "fromPosition" -> Type.ETC;
+            default -> Type.UNKNOWN;
         };
     }
 
-    private GameTime parseGameTime(LichessRawGame rawGame) {
+    private Time parseGameTime(LichessRawGame rawGame) {
         return switch (rawGame.getSpeed()) {
             case "ultraBullet",
-                 "bullet" -> GameTime.BULLET;
-            case "blitz" -> GameTime.BLITZ;
-            case "rapid" -> GameTime.RAPID;
-            case "classical" -> GameTime.CLASSICAL;
-            case "correspondence" -> GameTime.DAILY;
-            default -> GameTime.UNKNOWN;
+                 "bullet" -> Time.BULLET;
+            case "blitz" -> Time.BLITZ;
+            case "rapid" -> Time.RAPID;
+            case "classical" -> Time.CLASSICAL;
+            case "correspondence" -> Time.DAILY;
+            default -> Time.UNKNOWN;
         };
     }
 
-    private GamePlayerColor parseGameColor(LichessRawGame rawGame, String username) {
+    private Color parseGameColor(LichessRawGame rawGame, String username) {
         if (rawGame.getPlayers().getWhite().getUser().getId().equals(username))
-            return GamePlayerColor.WHITE;
+            return Color.WHITE;
 
         if (rawGame.getPlayers().getBlack().getUser().getId().equals(username))
-            return GamePlayerColor.BLACK;
+            return Color.BLACK;
 
-        return GamePlayerColor.UNKNOWN;
+        return Color.UNKNOWN;
     }
 
-    private GamePlayerResult parseGameResult(LichessRawGame rawGame, GamePlayerColor color) {
+    private Result parseGameResult(LichessRawGame rawGame, Color color) {
         if (hasWinner(rawGame))
             return switch (rawGame.getWinner()) {
-                case "white" -> color == GamePlayerColor.WHITE
-                        ? GamePlayerResult.WIN
-                        : GamePlayerResult.LOSE;
-                case "black" -> color == GamePlayerColor.BLACK
-                        ? GamePlayerResult.WIN
-                        : GamePlayerResult.LOSE;
-                default -> GamePlayerResult.UNKNOWN;
+                case "white" -> color == Color.WHITE
+                        ? Result.WIN
+                        : Result.LOSE;
+                case "black" -> color == Color.BLACK
+                        ? Result.WIN
+                        : Result.LOSE;
+                default -> Result.UNKNOWN;
             };
         else
             return switch (rawGame.getStatus()) {
                 case "draw",
                      "stalemate",
-                     "insufficientMaterialClaim" -> GamePlayerResult.DRAW;
-                case "created",
-                     "started",
-                     "aborted",
-                     "noStart",
-                     "variantEnd",
-                     "cheat",
-                     "unknownFinish" -> GamePlayerResult.ETC;
-                default -> GamePlayerResult.UNKNOWN;
+                     "insufficientMaterialClaim" -> Result.DRAW;
+                default -> Result.UNKNOWN;
             };
     }
 
