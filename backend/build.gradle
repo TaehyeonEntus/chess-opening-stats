@@ -65,7 +65,7 @@ tasks.named('test') {
 }
 
 tasks.named('asciidoctor') {
-    inputs.dir snippetsDir
+    inputs.dir(snippetsDir).optional()
     configurations 'asciidoctorExt'
     dependsOn test
 }
