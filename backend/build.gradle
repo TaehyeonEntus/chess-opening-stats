@@ -65,9 +65,12 @@ tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     configurations 'asciidoctorExt'
     dependsOn test
+
+    doFirst {
+        snippetsDir.mkdirs()
+    }
 }
 
-// 📄 API 문서 복사 태스크 추가
 task copyDocument(type: Copy) {
     dependsOn asciidoctor
     from file("${asciidoctor.outputDir}")
@@ -75,9 +78,9 @@ task copyDocument(type: Copy) {
 }
 
 tasks.named('bootJar') {
-    dependsOn copyDocument // JAR 빌드 전 문서 복사 실행
+    dependsOn copyDocument
 }
 
 tasks.named('build') {
-    dependsOn copyDocument // 일반 빌드 시에도 문서 복사 실행
+    dependsOn copyDocument
 }
