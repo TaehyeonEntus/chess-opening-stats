@@ -1,0 +1,1772 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - heading "체스 오프닝 통계" [level=1] [ref=e5]
+      - generic [ref=e6]:
+        - button "테마 전환" [ref=e7] [cursor=pointer]:
+          - img
+          - generic [ref=e8]: 테마 전환
+        - button "Change language" [ref=e9] [cursor=pointer]:
+          - img
+          - generic [ref=e10]: Change language
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - img [ref=e25]
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - heading "hikaru" [level=2] [ref=e28]
+              - generic [ref=e29]: CHESS.COM
+            - paragraph [ref=e30]: 통계 업데이트 완료 (최대 1시간 캐시)
+        - button "플레이어 변경" [ref=e32] [cursor=pointer]
+      - generic [ref=e33]:
+        - tablist [ref=e35]:
+          - tab "전체" [selected] [ref=e36] [cursor=pointer]
+          - tab "백" [ref=e37] [cursor=pointer]
+          - tab "흑" [ref=e38] [cursor=pointer]
+        - generic [ref=e39]:
+          - button "체스보드 검색" [ref=e40] [cursor=pointer]:
+            - img
+          - generic [ref=e41]:
+            - img [ref=e42]
+            - textbox "오프닝 또는 ECO 검색..." [ref=e45]
+          - button "필터" [ref=e46] [cursor=pointer]:
+            - img
+            - text: 필터
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - heading "전체 전적" [level=3] [ref=e52]
+          - generic [ref=e53]:
+            - generic [ref=e54]: 총 게임 수
+            - generic [ref=e55]: 65,350
+          - generic [ref=e56]:
+            - text: 결과 분포
+            - generic [ref=e57]:
+              - generic [ref=e58]:
+                - generic [ref=e61]: 승리
+                - generic [ref=e62]: 51,892 (79.4%)
+              - generic [ref=e63]:
+                - generic [ref=e66]: 무승부
+                - generic [ref=e67]: 5,599 (8.6%)
+              - generic [ref=e68]:
+                - generic [ref=e71]: 패배
+                - generic [ref=e72]: 7,859 (12%)
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - heading "최고 승률" [level=3] [ref=e75]
+            - paragraph [ref=e76]: 최소 10게임 이상의 오프닝을 기준으로 합니다.
+          - generic [ref=e77]:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - img
+              - status
+            - generic [ref=e78]:
+              - generic [ref=e79]:
+                - 'generic "Pirc Defense: Austrian Attack, Unzicker Attack, Bronstein Variation" [ref=e80]'
+                - generic [ref=e81]:
+                  - generic [ref=e82]: B09
+                  - generic "white" [ref=e83]
+                  - generic [ref=e84]: 27 게임
+              - generic [ref=e85]:
+                - generic [ref=e86]: 100% 승률
+                - generic [ref=e87]:
+                  - generic [ref=e88]: 27W
+                  - generic [ref=e89]: 0D
+                  - generic [ref=e90]: 0L
+          - generic [ref=e91]:
+            - heading "다음 순위" [level=4] [ref=e92]
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - generic [ref=e95]:
+                  - generic [ref=e96]: "Sicilian Defense: Alapin Variation, Barmen Defense"
+                  - generic [ref=e97]:
+                    - generic [ref=e98]: B22
+                    - generic "white" [ref=e99]
+                    - generic [ref=e100]: 20 게임
+                - generic [ref=e102]: 100%
+              - generic [ref=e103]:
+                - generic [ref=e104]:
+                  - generic [ref=e105]: "Four Knights Game: Italian Variation"
+                  - generic [ref=e106]:
+                    - generic [ref=e107]: C47
+                    - generic "white" [ref=e108]
+                    - generic [ref=e109]: 14 게임
+                - generic [ref=e111]: 100%
+        - generic [ref=e112]:
+          - heading "가장 많이 플레이한 오프닝" [level=3] [ref=e114]
+          - generic [ref=e115]:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - button [disabled]:
+                        - generic:
+                          - img
+                - img
+              - status
+            - generic [ref=e116]:
+              - generic [ref=e117]:
+                - 'generic "Nimzo-Larsen Attack: Classical Variation" [ref=e118]'
+                - generic [ref=e119]:
+                  - generic [ref=e120]: A01
+                  - generic "white" [ref=e121]
+                  - generic [ref=e122]: 1,771 게임
+              - generic [ref=e123]:
+                - generic [ref=e124]: 83.1% 승률
+                - generic [ref=e125]:
+                  - generic [ref=e126]: 1472W
+                  - generic [ref=e127]: 143D
+                  - generic [ref=e128]: 156L
+          - generic [ref=e129]:
+            - heading "다음 순위" [level=4] [ref=e130]
+            - generic [ref=e131]:
+              - generic [ref=e132]:
+                - generic [ref=e133]:
+                  - generic [ref=e134]: "Nimzo-Larsen Attack: Indian Variation"
+                  - generic [ref=e135]:
+                    - generic [ref=e136]: A01
+                    - generic "white" [ref=e137]
+                    - generic [ref=e138]: 1,606 게임
+                - generic [ref=e140]: 86.7%
+              - generic [ref=e141]:
+                - generic [ref=e142]:
+                  - generic [ref=e143]: "Nimzo-Larsen Attack: Modern Variation"
+                  - generic [ref=e144]:
+                    - generic [ref=e145]: A01
+                    - generic "white" [ref=e146]
+                    - generic [ref=e147]: 1,371 게임
+                - generic [ref=e149]: 81.3%
+      - generic [ref=e150]:
+        - generic [ref=e151]:
+          - generic [ref=e152]:
+            - generic [ref=e154]:
+              - generic [ref=e155]:
+                - generic [ref=e156]: King's Pawn Game
+                - generic [ref=e157]:
+                  - generic [ref=e158]: B00
+                  - generic "흑" [ref=e159]
+              - generic [ref=e161]:
+                - generic [ref=e162]:
+                  - paragraph [ref=e163]: 76.7%
+                  - paragraph [ref=e164]: 승률
+                - generic [ref=e165]:
+                  - paragraph [ref=e166]: "15107"
+                  - paragraph [ref=e167]: 게임
+            - generic [ref=e168]:
+              - generic [ref=e169]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - img
+                  - status
+              - generic [ref=e170]:
+                - 'generic "Win: 76.7%" [ref=e171]'
+                - 'generic "Draw: 9.8%" [ref=e172]'
+                - 'generic "Loss: 13.6%" [ref=e173]'
+              - generic [ref=e174]:
+                - generic [ref=e175]: 11586W
+                - generic [ref=e177]: 1473D
+                - generic [ref=e179]: 2048L
+          - generic [ref=e181]:
+            - generic [ref=e183]:
+              - generic [ref=e184]:
+                - generic [ref=e185]: King's Pawn Game
+                - generic [ref=e186]:
+                  - generic [ref=e187]: B00
+                  - generic "백" [ref=e188]
+              - generic [ref=e190]:
+                - generic [ref=e191]:
+                  - paragraph [ref=e192]: 81.1%
+                  - paragraph [ref=e193]: 승률
+                - generic [ref=e194]:
+                  - paragraph [ref=e195]: "13117"
+                  - paragraph [ref=e196]: 게임
+            - generic [ref=e197]:
+              - generic [ref=e198]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - img
+                  - status
+              - generic [ref=e199]:
+                - 'generic "Win: 81.1%" [ref=e200]'
+                - 'generic "Draw: 8.2%" [ref=e201]'
+                - 'generic "Loss: 10.7%" [ref=e202]'
+              - generic [ref=e203]:
+                - generic [ref=e204]: 10633W
+                - generic [ref=e206]: 1076D
+                - generic [ref=e208]: 1408L
+          - generic [ref=e210]:
+            - generic [ref=e212]:
+              - generic [ref=e213]:
+                - generic [ref=e214]: Queen's Pawn Game
+                - generic [ref=e215]:
+                  - generic [ref=e216]: A40
+                  - generic "흑" [ref=e217]
+              - generic [ref=e219]:
+                - generic [ref=e220]:
+                  - paragraph [ref=e221]: 76.9%
+                  - paragraph [ref=e222]: 승률
+                - generic [ref=e223]:
+                  - paragraph [ref=e224]: "10874"
+                  - paragraph [ref=e225]: 게임
+            - generic [ref=e226]:
+              - generic [ref=e227]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - img
+                  - status
+              - generic [ref=e228]:
+                - 'generic "Win: 76.9%" [ref=e229]'
+                - 'generic "Draw: 9.3%" [ref=e230]'
+                - 'generic "Loss: 13.8%" [ref=e231]'
+              - generic [ref=e232]:
+                - generic [ref=e233]: 8367W
+                - generic [ref=e235]: 1008D
+                - generic [ref=e237]: 1499L
+          - generic [ref=e239]:
+            - generic [ref=e241]:
+              - generic [ref=e242]:
+                - generic [ref=e243]: Nimzo-Larsen Attack
+                - generic [ref=e244]:
+                  - generic [ref=e245]: A01
+                  - generic "백" [ref=e246]
+              - generic [ref=e248]:
+                - generic [ref=e249]:
+                  - paragraph [ref=e250]: 84%
+                  - paragraph [ref=e251]: 승률
+                - generic [ref=e252]:
+                  - paragraph [ref=e253]: "7257"
+                  - paragraph [ref=e254]: 게임
+            - generic [ref=e255]:
+              - generic [ref=e256]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button [disabled]:
+                            - generic:
+                              - img
+                    - img
+                  - status
+              - generic [ref=e257]:
+                - 'generic "Win: 84%" [ref=e258]'
+                - 'generic "Draw: 6.4%" [ref=e259]'
+                - 'generic "Loss: 9.6%" [ref=e260]'
+              - generic [ref=e261]:
+                - generic [ref=e262]: 6094W
+                - generic [ref=e264]: 466D
+                - generic [ref=e266]: 697L
+          - generic [ref=e268]:
+            - generic [ref=e270]:
+              - generic [ref=e271]:
+                - generic [ref=e272]: Modern Defense
+                - generic [ref=e273]:
+                  - generic [ref=e274]: B06
+                  - generic "흑" [ref=e275]
+              - generic [ref=e277]:
+                - generic [ref=e278]:
+                  - paragraph [ref=e279]: 83.2%
+                  - paragraph [ref=e280]: 승률
+                - generic [ref=e281]:
+                  - paragraph [ref=e282]: "5355"
+                  - paragraph [ref=e283]: 게임
+            - generic [ref=e284]:
+              - generic [ref=e286]:
+                - 'generic "Win: 83.2%" [ref=e287]'
+                - 'generic "Draw: 5.7%" [ref=e288]'
+                - 'generic "Loss: 11.1%" [ref=e289]'
+              - generic [ref=e290]:
+                - generic [ref=e291]: 4458W
+                - generic [ref=e293]: 304D
+                - generic [ref=e295]: 593L
+          - generic [ref=e297]:
+            - generic [ref=e299]:
+              - generic [ref=e300]:
+                - generic [ref=e301]: "Queen's Pawn Game: Modern Defense"
+                - generic [ref=e302]:
+                  - generic [ref=e303]: A40
+                  - generic "흑" [ref=e304]
+              - generic [ref=e306]:
+                - generic [ref=e307]:
+                  - paragraph [ref=e308]: 81.8%
+                  - paragraph [ref=e309]: 승률
+                - generic [ref=e310]:
+                  - paragraph [ref=e311]: "4874"
+                  - paragraph [ref=e312]: 게임
+            - generic [ref=e313]:
+              - generic [ref=e315]:
+                - 'generic "Win: 81.8%" [ref=e316]'
+                - 'generic "Draw: 6.4%" [ref=e317]'
+                - 'generic "Loss: 11.8%" [ref=e318]'
+              - generic [ref=e319]:
+                - generic [ref=e320]: 3986W
+                - generic [ref=e322]: 311D
+                - generic [ref=e324]: 577L
+          - generic [ref=e326]:
+            - generic [ref=e328]:
+              - generic [ref=e329]:
+                - generic [ref=e330]: Zukertort Opening
+                - generic [ref=e331]:
+                  - generic [ref=e332]: A04
+                  - generic "백" [ref=e333]
+              - generic [ref=e335]:
+                - generic [ref=e336]:
+                  - paragraph [ref=e337]: 78.7%
+                  - paragraph [ref=e338]: 승률
+                - generic [ref=e339]:
+                  - paragraph [ref=e340]: "4750"
+                  - paragraph [ref=e341]: 게임
+            - generic [ref=e342]:
+              - generic [ref=e344]:
+                - 'generic "Win: 78.7%" [ref=e345]'
+                - 'generic "Draw: 10.4%" [ref=e346]'
+                - 'generic "Loss: 10.9%" [ref=e347]'
+              - generic [ref=e348]:
+                - generic [ref=e349]: 3739W
+                - generic [ref=e351]: 492D
+                - generic [ref=e353]: 519L
+          - generic [ref=e355]:
+            - generic [ref=e357]:
+              - generic [ref=e358]:
+                - generic [ref=e359]: Modern Defense
+                - generic [ref=e360]:
+                  - generic [ref=e361]: B06
+                  - generic "흑" [ref=e362]
+              - generic [ref=e364]:
+                - generic [ref=e365]:
+                  - paragraph [ref=e366]: 81.3%
+                  - paragraph [ref=e367]: 승률
+                - generic [ref=e368]:
+                  - paragraph [ref=e369]: "4541"
+                  - paragraph [ref=e370]: 게임
+            - generic [ref=e371]:
+              - generic [ref=e373]:
+                - 'generic "Win: 81.3%" [ref=e374]'
+                - 'generic "Draw: 6.6%" [ref=e375]'
+                - 'generic "Loss: 12.2%" [ref=e376]'
+              - generic [ref=e377]:
+                - generic [ref=e378]: 3691W
+                - generic [ref=e380]: 298D
+                - generic [ref=e382]: 552L
+          - generic [ref=e384]:
+            - generic [ref=e386]:
+              - generic [ref=e387]:
+                - generic [ref=e388]: Sicilian Defense
+                - generic [ref=e389]:
+                  - generic [ref=e390]: B20
+                  - generic "백" [ref=e391]
+              - generic [ref=e393]:
+                - generic [ref=e394]:
+                  - paragraph [ref=e395]: 82.6%
+                  - paragraph [ref=e396]: 승률
+                - generic [ref=e397]:
+                  - paragraph [ref=e398]: "4171"
+                  - paragraph [ref=e399]: 게임
+            - generic [ref=e400]:
+              - generic [ref=e402]:
+                - 'generic "Win: 82.6%" [ref=e403]'
+                - 'generic "Draw: 7.4%" [ref=e404]'
+                - 'generic "Loss: 10%" [ref=e405]'
+              - generic [ref=e406]:
+                - generic [ref=e407]: 3446W
+                - generic [ref=e409]: 308D
+                - generic [ref=e411]: 417L
+          - generic [ref=e413]:
+            - generic [ref=e415]:
+              - generic [ref=e416]:
+                - generic [ref=e417]: Queen's Pawn Game
+                - generic [ref=e418]:
+                  - generic [ref=e419]: A40
+                  - generic "백" [ref=e420]
+              - generic [ref=e422]:
+                - generic [ref=e423]:
+                  - paragraph [ref=e424]: 77.6%
+                  - paragraph [ref=e425]: 승률
+                - generic [ref=e426]:
+                  - paragraph [ref=e427]: "3972"
+                  - paragraph [ref=e428]: 게임
+            - generic [ref=e429]:
+              - generic [ref=e431]:
+                - 'generic "Win: 77.6%" [ref=e432]'
+                - 'generic "Draw: 9.9%" [ref=e433]'
+                - 'generic "Loss: 12.5%" [ref=e434]'
+              - generic [ref=e435]:
+                - generic [ref=e436]: 3083W
+                - generic [ref=e438]: 394D
+                - generic [ref=e440]: 495L
+          - generic [ref=e442]:
+            - generic [ref=e444]:
+              - generic [ref=e445]:
+                - generic [ref=e446]: King's Pawn Game
+                - generic [ref=e447]:
+                  - generic [ref=e448]: C20
+                  - generic "백" [ref=e449]
+              - generic [ref=e451]:
+                - generic [ref=e452]:
+                  - paragraph [ref=e453]: 77.4%
+                  - paragraph [ref=e454]: 승률
+                - generic [ref=e455]:
+                  - paragraph [ref=e456]: "3649"
+                  - paragraph [ref=e457]: 게임
+            - generic [ref=e458]:
+              - generic [ref=e460]:
+                - 'generic "Win: 77.4%" [ref=e461]'
+                - 'generic "Draw: 11.1%" [ref=e462]'
+                - 'generic "Loss: 11.6%" [ref=e463]'
+              - generic [ref=e464]:
+                - generic [ref=e465]: 2823W
+                - generic [ref=e467]: 404D
+                - generic [ref=e469]: 422L
+          - generic [ref=e471]:
+            - generic [ref=e473]:
+              - generic [ref=e474]:
+                - generic [ref=e475]: Zukertort Opening
+                - generic [ref=e476]:
+                  - generic [ref=e477]: A04
+                  - generic "흑" [ref=e478]
+              - generic [ref=e480]:
+                - generic [ref=e481]:
+                  - paragraph [ref=e482]: 78.6%
+                  - paragraph [ref=e483]: 승률
+                - generic [ref=e484]:
+                  - paragraph [ref=e485]: "3438"
+                  - paragraph [ref=e486]: 게임
+            - generic [ref=e487]:
+              - generic [ref=e489]:
+                - 'generic "Win: 78.6%" [ref=e490]'
+                - 'generic "Draw: 8.2%" [ref=e491]'
+                - 'generic "Loss: 13.2%" [ref=e492]'
+              - generic [ref=e493]:
+                - generic [ref=e494]: 2702W
+                - generic [ref=e496]: 281D
+                - generic [ref=e498]: 455L
+          - generic [ref=e500]:
+            - generic [ref=e502]:
+              - generic [ref=e503]:
+                - generic [ref=e504]: "Modern Defense: Standard Line"
+                - generic [ref=e505]:
+                  - generic [ref=e506]: B06
+                  - generic "흑" [ref=e507]
+              - generic [ref=e509]:
+                - generic [ref=e510]:
+                  - paragraph [ref=e511]: 81.2%
+                  - paragraph [ref=e512]: 승률
+                - generic [ref=e513]:
+                  - paragraph [ref=e514]: "3286"
+                  - paragraph [ref=e515]: 게임
+            - generic [ref=e516]:
+              - generic [ref=e518]:
+                - 'generic "Win: 81.2%" [ref=e519]'
+                - 'generic "Draw: 6.4%" [ref=e520]'
+                - 'generic "Loss: 12.4%" [ref=e521]'
+              - generic [ref=e522]:
+                - generic [ref=e523]: 2668W
+                - generic [ref=e525]: 210D
+                - generic [ref=e527]: 408L
+          - generic [ref=e529]:
+            - generic [ref=e531]:
+              - generic [ref=e532]:
+                - generic [ref=e533]: Indian Defense
+                - generic [ref=e534]:
+                  - generic [ref=e535]: A45
+                  - generic "흑" [ref=e536]
+              - generic [ref=e538]:
+                - generic [ref=e539]:
+                  - paragraph [ref=e540]: 69.3%
+                  - paragraph [ref=e541]: 승률
+                - generic [ref=e542]:
+                  - paragraph [ref=e543]: "2963"
+                  - paragraph [ref=e544]: 게임
+            - generic [ref=e545]:
+              - generic [ref=e547]:
+                - 'generic "Win: 69.3%" [ref=e548]'
+                - 'generic "Draw: 14.5%" [ref=e549]'
+                - 'generic "Loss: 16.2%" [ref=e550]'
+              - generic [ref=e551]:
+                - generic [ref=e552]: 2054W
+                - generic [ref=e554]: 430D
+                - generic [ref=e556]: 479L
+          - generic [ref=e558]:
+            - generic [ref=e560]:
+              - generic [ref=e561]:
+                - generic [ref=e562]: King's Pawn Game
+                - generic [ref=e563]:
+                  - generic [ref=e564]: C20
+                  - generic "흑" [ref=e565]
+              - generic [ref=e567]:
+                - generic [ref=e568]:
+                  - paragraph [ref=e569]: 63.3%
+                  - paragraph [ref=e570]: 승률
+                - generic [ref=e571]:
+                  - paragraph [ref=e572]: "2899"
+                  - paragraph [ref=e573]: 게임
+            - generic [ref=e574]:
+              - generic [ref=e576]:
+                - 'generic "Win: 63.3%" [ref=e577]'
+                - 'generic "Draw: 19.2%" [ref=e578]'
+                - 'generic "Loss: 17.6%" [ref=e579]'
+              - generic [ref=e580]:
+                - generic [ref=e581]: 1834W
+                - generic [ref=e583]: 556D
+                - generic [ref=e585]: 509L
+          - generic [ref=e587]:
+            - generic [ref=e589]:
+              - generic [ref=e590]:
+                - generic [ref=e591]: King's Knight Opening
+                - generic [ref=e592]:
+                  - generic [ref=e593]: C40
+                  - generic "흑" [ref=e594]
+              - generic [ref=e596]:
+                - generic [ref=e597]:
+                  - paragraph [ref=e598]: 62.1%
+                  - paragraph [ref=e599]: 승률
+                - generic [ref=e600]:
+                  - paragraph [ref=e601]: "2591"
+                  - paragraph [ref=e602]: 게임
+            - generic [ref=e603]:
+              - generic [ref=e605]:
+                - 'generic "Win: 62.1%" [ref=e606]'
+                - 'generic "Draw: 20.1%" [ref=e607]'
+                - 'generic "Loss: 17.8%" [ref=e608]'
+              - generic [ref=e609]:
+                - generic [ref=e610]: 1609W
+                - generic [ref=e612]: 522D
+                - generic [ref=e614]: 460L
+          - generic [ref=e616]:
+            - generic [ref=e618]:
+              - generic [ref=e619]:
+                - generic [ref=e620]: "King's Knight Opening: Normal Variation"
+                - generic [ref=e621]:
+                  - generic [ref=e622]: C44
+                  - generic "흑" [ref=e623]
+              - generic [ref=e625]:
+                - generic [ref=e626]:
+                  - paragraph [ref=e627]: 62.1%
+                  - paragraph [ref=e628]: 승률
+                - generic [ref=e629]:
+                  - paragraph [ref=e630]: "2572"
+                  - paragraph [ref=e631]: 게임
+            - generic [ref=e632]:
+              - generic [ref=e634]:
+                - 'generic "Win: 62.1%" [ref=e635]'
+                - 'generic "Draw: 20.1%" [ref=e636]'
+                - 'generic "Loss: 17.8%" [ref=e637]'
+              - generic [ref=e638]:
+                - generic [ref=e639]: 1596W
+                - generic [ref=e641]: 517D
+                - generic [ref=e643]: 459L
+          - generic [ref=e645]:
+            - generic [ref=e647]:
+              - generic [ref=e648]:
+                - generic [ref=e649]: "Sicilian Defense: Closed"
+                - generic [ref=e650]:
+                  - generic [ref=e651]: B23
+                  - generic "백" [ref=e652]
+              - generic [ref=e654]:
+                - generic [ref=e655]:
+                  - paragraph [ref=e656]: 85.9%
+                  - paragraph [ref=e657]: 승률
+                - generic [ref=e658]:
+                  - paragraph [ref=e659]: "2380"
+                  - paragraph [ref=e660]: 게임
+            - generic [ref=e661]:
+              - generic [ref=e663]:
+                - 'generic "Win: 85.9%" [ref=e664]'
+                - 'generic "Draw: 4.9%" [ref=e665]'
+                - 'generic "Loss: 9.2%" [ref=e666]'
+              - generic [ref=e667]:
+                - generic [ref=e668]: 2044W
+                - generic [ref=e670]: 117D
+                - generic [ref=e672]: 219L
+          - generic [ref=e674]:
+            - generic [ref=e676]:
+              - generic [ref=e677]:
+                - generic [ref=e678]: Indian Defense
+                - generic [ref=e679]:
+                  - generic [ref=e680]: A45
+                  - generic "백" [ref=e681]
+              - generic [ref=e683]:
+                - generic [ref=e684]:
+                  - paragraph [ref=e685]: 75.1%
+                  - paragraph [ref=e686]: 승률
+                - generic [ref=e687]:
+                  - paragraph [ref=e688]: "2361"
+                  - paragraph [ref=e689]: 게임
+            - generic [ref=e690]:
+              - generic [ref=e692]:
+                - 'generic "Win: 75.1%" [ref=e693]'
+                - 'generic "Draw: 10.8%" [ref=e694]'
+                - 'generic "Loss: 14.1%" [ref=e695]'
+              - generic [ref=e696]:
+                - generic [ref=e697]: 1773W
+                - generic [ref=e699]: 256D
+                - generic [ref=e701]: 332L
+          - generic [ref=e703]:
+            - generic [ref=e705]:
+              - generic [ref=e706]:
+                - generic [ref=e707]: Vienna Game
+                - generic [ref=e708]:
+                  - generic [ref=e709]: C25
+                  - generic "백" [ref=e710]
+              - generic [ref=e712]:
+                - generic [ref=e713]:
+                  - paragraph [ref=e714]: 80.7%
+                  - paragraph [ref=e715]: 승률
+                - generic [ref=e716]:
+                  - paragraph [ref=e717]: "2141"
+                  - paragraph [ref=e718]: 게임
+            - generic [ref=e719]:
+              - generic [ref=e721]:
+                - 'generic "Win: 80.7%" [ref=e722]'
+                - 'generic "Draw: 8.2%" [ref=e723]'
+                - 'generic "Loss: 11.2%" [ref=e724]'
+              - generic [ref=e725]:
+                - generic [ref=e726]: 1727W
+                - generic [ref=e728]: 175D
+                - generic [ref=e730]: 239L
+        - paragraph [ref=e732]: 20/3288 오프닝 표시 중
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e16] [cursor=pointer]:
+    - img [ref=e17]
+  - alert [ref=e20]

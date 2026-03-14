@@ -1,0 +1,35 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - heading "체스 오프닝 통계" [level=1] [ref=e5]
+      - generic [ref=e6]:
+        - button "테마 전환" [ref=e7] [cursor=pointer]:
+          - img
+          - generic [ref=e8]: 테마 전환
+        - button "Change language" [ref=e9] [cursor=pointer]:
+          - img
+          - generic [ref=e10]: Change language
+    - generic [ref=e35]:
+      - heading "이 플레이어가 본인인가요?" [level=2] [ref=e36]
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - img "hikaru" [ref=e41]
+          - img [ref=e43]
+        - generic [ref=e45]:
+          - heading "hikaru" [level=3] [ref=e46]
+          - generic [ref=e47]:
+            - generic [ref=e48]: CHESS.COM
+            - generic [ref=e49]:
+              - img [ref=e50]
+              - generic [ref=e53]: 23h ago 전 활동
+      - generic [ref=e54]:
+        - button "아니요, 뒤로가기" [ref=e55] [cursor=pointer]:
+          - img
+          - text: 아니요, 뒤로가기
+        - button "네, 맞습니다" [ref=e56] [cursor=pointer]:
+          - img
+          - text: 네, 맞습니다
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e29] [cursor=pointer]:
+    - img [ref=e30]
+  - alert [ref=e33]

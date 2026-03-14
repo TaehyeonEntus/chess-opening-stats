@@ -52,7 +52,8 @@ export interface ColorRecord {
 
 export interface ColorOpeningStat {
   color: Color
-  id: number
+  id?: number
+  openingId?: number // Backend might use openingId instead of id
   win: number
   draw: number
   lose: number

@@ -23,14 +23,15 @@ export function adaptColorOpeningStat(
     }
     
     return stats
-        .filter(stat => stat && typeof stat.id !== 'undefined')
+        .filter(stat => stat && (typeof stat.id !== 'undefined' || typeof stat.openingId !== 'undefined'))
         .map((stat): OpeningStatView => {
-            const metadata = dictionary ? dictionary[stat.id] : null;
+            const actualId = stat.id ?? stat.openingId!;
+            const metadata = dictionary ? dictionary[actualId] : null;
             
             return {
-                id: stat.id,
+                id: actualId,
                 eco: metadata?.eco || "---",
-                name: metadata?.name || `Opening #${stat.id}`,
+                name: metadata?.name || `Opening #${actualId}`,
                 epd: metadata?.epd || "",
                 color: color,
                 wins: stat.win || 0,
@@ -56,13 +57,14 @@ export function adaptStat(
     }
     
     return stats
-        .filter(stat => stat && typeof stat.id !== 'undefined')
+        .filter(stat => stat && (typeof stat.id !== 'undefined' || typeof stat.openingId !== 'undefined'))
         .map((stat): Stat => {
-            const metadata = dictionary ? dictionary[stat.id] : null;
+            const actualId = stat.id ?? stat.openingId!;
+            const metadata = dictionary ? dictionary[actualId] : null;
             
             return {
                 eco: metadata?.eco || "---",
-                name: metadata?.name || `Opening #${stat.id}`,
+                name: metadata?.name || `Opening #${actualId}`,
                 epd: metadata?.epd || "",
                 color: color,
                 wins: stat.win || 0,

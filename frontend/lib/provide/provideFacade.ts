@@ -10,6 +10,6 @@ export function provideSyncAccount(): Promise<void> {
     return syncAccount();
 }
 
-export function provideAddPlayer(request: AddPlayerRequest): Promise<string> {
+export function provideAddPlayer(request: AddPlayerRequest): Promise<void> {
     return addPlayer(request);
 }

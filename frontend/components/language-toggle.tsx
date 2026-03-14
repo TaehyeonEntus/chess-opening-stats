@@ -4,6 +4,7 @@ import * as React from "react"
 import { Languages } from "lucide-react"
 import { useLocale } from "next-intl"
 import { useRouter, usePathname } from "@/i18n/navigation"
+import { useSearchParams } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -22,9 +23,12 @@ export function LanguageToggle() {
   const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const changeLanguage = (newLocale: string) => {
-    router.push(pathname, { locale: newLocale })
+    const searchString = searchParams.toString()
+    const fullPath = searchString ? `${pathname}?${searchString}` : pathname
+    router.replace(fullPath, { locale: newLocale })
   }
 
   return (

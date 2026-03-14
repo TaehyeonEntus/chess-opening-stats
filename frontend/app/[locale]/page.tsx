@@ -1,41 +1,61 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useCallback, useMemo, useEffect } from "react"
 import { useTranslations } from "next-intl"
+import { useRouter, usePathname } from "@/i18n/navigation"
+import { useSearchParams } from "next/navigation"
 import { OpeningGrid } from "@/components/opening-grid"
 import { OpeningSummary } from "@/components/opening-summary"
 import { OpeningFilter } from "@/components/opening-filter"
-import { Skeleton } from "@/components/ui/skeleton"
 import { HeaderBar } from "@/components/header-bar"
-import { MyPageSheet } from "@/components/my-page-sheet"
-import { AddPlayerDialog } from "@/components/add-player-dialog"
-import { ChangePasswordDialog } from "@/components/change-password-dialog"
-import { EmptyState } from "@/components/empty-state"
-import { ConfirmDialog } from "@/components/confirm-dialog"
 import { useOpeningData } from "@/hooks/use-opening-data"
-import { useAccount } from "@/hooks/use-account"
-import { useAuthActions } from "@/hooks/use-auth-actions"
-import { usePlayer } from "@/hooks/use-player"
-import { RefreshCw, Info } from "lucide-react"
+import { RefreshCw, Search, Check, X, Clock, ExternalLink } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { checkPlayerExists, syncGames, type PlayerInfo } from "@/lib/api/api"
+import { toast } from "sonner"
+import { cn } from "@/lib/utils"
+
+// Format last_online (seconds ago)
+const formatLastOnline = (seconds: number) => {
+  if (seconds < 60) return `${seconds}s ago`
+  const mins = Math.floor(seconds / 60)
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+}
 
 export default function HomePage() {
   const t = useTranslations("home")
-  const tAuth = useTranslations("auth")
-  const tPlayer = useTranslations("player")
-  const tMyPage = useTranslations("myPage")
+  const tCommon = useTranslations("common")
 
-  // 1. Core data hook
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const [platform, setPlatform] = useState<string>(searchParams.get("platform") || "CHESS_COM")
+  const [usernameInput, setUsernameInput] = useState<string>(searchParams.get("username") || "")
+  const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null)
+  
+  // States: 'idle' | 'checking' | 'confirming' | 'syncing' | 'ready'
+  const [status, setStatus] = useState<'idle' | 'checking' | 'confirming' | 'syncing' | 'ready'>('idle')
+  const [isResetting, setIsResetting] = useState(false)
+
   const {
     allOpenings,
     epdMap,
     filteredAndSortedOpenings,
     currentSummary,
-    nickname,
-    hasPlayers,
-    loading: loadingData,
+    isPolling,
     error,
     loadData,
+    clearData,
     colorFilter, setColorFilter,
     sortBy, setSortBy,
     minGames, setMinGames,
@@ -43,101 +63,260 @@ export default function HomePage() {
     search, setSearch,
   } = useOpeningData()
 
-  // 2. Auth & Sync actions hook
-  const {
-    handleLogout,
-    handleDeleteAccount,
-    handleChangePasswordSubmit,
-    handleSyncGames,
-    clearPasswordError,
-    changingPassword,
-    syncing,
-    isPolling,
-    passwordError,
-  } = useAuthActions()
-
-  // 3. Player hook
-  const { addingPlayer, addPlayerError, handleAddPlayer, clearAddPlayerError } = usePlayer()
-
-  // 4. Account hook (Depends on player changes refreshing data)
-  const { accountInfo, loadingAccountInfo, loadAccountInfo, handleRemovePlayer } =
-    useAccount(() => loadData(false))
-
-  // UI state
-  const [myPageOpen, setMyPageOpen] = useState(false)
-  const [addPlayerOpen, setAddPlayerOpen] = useState(false)
-  const [changePasswordOpen, setChangePasswordOpen] = useState(false)
-  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
-  const [deleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState(false)
-  const [removePlayerDialog, setRemovePlayerDialog] = useState<{
-    open: boolean; playerId: number | null
-  }>({ open: false, playerId: null })
-
-  // 데이터 동기화 완료 전까지의 로딩 상태 정의
-  // (플레이어는 있지만 데이터가 0개이며, 현재 폴링/동기화 중인 경우)
-  const isSyncInProgress = syncing || isPolling
-  const isInitialSyncing = allOpenings.length === 0 && hasPlayers && isSyncInProgress
-
-  const handleSyncFromMyPage = useCallback(() => {
-    if (accountInfo) {
-      handleSyncGames(accountInfo.players)
+  const handleConfirm = useCallback(async () => {
+    if (!playerInfo?.username) return
+    
+    setStatus('syncing')
+    try {
+      await syncGames(platform, playerInfo.username)
+      loadData(platform, playerInfo.username)
+    } catch (err) {
+      console.error("Sync failed", err)
+      toast.error("Failed to start synchronization.")
+      setStatus('confirming')
     }
-  }, [accountInfo, handleSyncGames])
+  }, [platform, playerInfo, loadData])
 
-  const onAddPlayerSuccess = useCallback(() => {
-    setAddPlayerOpen(false)
-    // 플레이어가 추가된 직후의 정보를 서버에서 다시 가져온 뒤 동기화 폴링 시작
-    loadAccountInfo().then((newAccountInfo) => {
-        if (newAccountInfo) {
-            handleSyncGames(newAccountInfo.players)
-            loadData(false)
+  const handleCancel = useCallback(() => {
+    setIsResetting(true)
+    setPlayerInfo(null)
+    setStatus('idle')
+    setUsernameInput("")
+    setPlatform("CHESS_COM")
+    clearData()
+    router.replace(pathname)
+    // Small timeout to allow the URL change to take effect before re-enabling sync
+    setTimeout(() => setIsResetting(false), 1000)
+  }, [router, pathname, clearData])
+
+  const updateUrl = useCallback((user: string, plat: string) => {
+    const params = new URLSearchParams()
+    params.set("platform", plat)
+    params.set("username", user)
+    router.replace(`${pathname}?${params.toString()}`)
+  }, [pathname, router])
+
+  const handleSearch = useCallback(async (autoSync = false) => {
+    const queryUsername = autoSync ? (searchParams.get("username") || "") : usernameInput
+    const queryPlatform = autoSync ? (searchParams.get("platform") || "CHESS_COM") : platform
+
+    if (!queryUsername.trim()) {
+      if (!autoSync) toast.error("Please enter a username")
+      return
+    }
+
+    setStatus('checking')
+    try {
+      const info = await checkPlayerExists(queryPlatform, queryUsername)
+      if (!info.exists) {
+        if (!autoSync) toast.error(tCommon("failed"))
+        setStatus('idle')
+        return
+      }
+      setPlayerInfo(info)
+      
+      if (autoSync) {
+        setStatus('syncing')
+        try {
+          await syncGames(queryPlatform, info.username || "")
+          loadData(queryPlatform, info.username || "")
+        } catch (err) {
+          console.error("Auto-sync failed", err)
+          setStatus('confirming')
         }
-    })
-  }, [handleSyncGames, loadAccountInfo, loadData])
+      } else {
+        setStatus('confirming')
+        updateUrl(queryUsername, queryPlatform)
+      }
+    } catch (err) {
+      console.error("Search failed", err)
+      if (!autoSync) toast.error(tCommon("failed"))
+      setStatus('idle')
+    }
+  }, [platform, usernameInput, loadData, updateUrl, tCommon, searchParams])
+
+  useEffect(() => {
+    const urlUsername = searchParams.get("username")
+    const urlPlatform = searchParams.get("platform")
+    if (urlUsername && urlPlatform && status === 'idle' && allOpenings.length === 0 && !isResetting) {
+      handleSearch(true)
+    }
+  }, [searchParams, handleSearch, status, allOpenings.length, isResetting])
+
+  // Determine if data is ready based on useOpeningData's state
+  const isDataReady = allOpenings.length > 0 || currentSummary !== null
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background">
       <main className="mx-auto max-w-screen-2xl px-4 py-6 lg:px-6">
-        <HeaderBar
-          loading={loadingData || isSyncInProgress}
-          nickname={nickname}
-          onMyPageOpen={() => setMyPageOpen(true)}
-        />
+        <HeaderBar />
 
-        {loadingData && !isInitialSyncing ? (
-          <LoadingSkeleton />
-        ) : error ? (
-          <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            {error}
+        {/* Step 1: Initial Search Input */}
+        {status === 'idle' && !isDataReady && (
+          <div className="flex flex-col items-center justify-center py-32 space-y-10">
+            <div className="text-center space-y-4 max-w-2xl">
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">{t("exploreTitle")}</h2>
+              <p className="text-xl text-muted-foreground">{t("exploreDescription")}</p>
+            </div>
+            
+            <div className="flex flex-col md:flex-row gap-4 w-full max-w-2xl p-2 bg-card rounded-2xl border shadow-xl">
+              <Select value={platform} onValueChange={setPlatform}>
+                <SelectTrigger className="h-14 w-full md:w-[200px] border-none bg-transparent text-lg focus:ring-0">
+                  <SelectValue placeholder={tCommon("platform")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="CHESS_COM">Chess.com</SelectItem>
+                  <SelectItem value="LICHESS">Lichess</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <div className="h-14 hidden md:block w-[1px] bg-border my-auto" />
+              
+              <div className="relative flex-1">
+                <Input
+                  placeholder={tCommon("username")}
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="h-14 border-none bg-transparent text-lg focus-visible:ring-0 px-4"
+                />
+              </div>
+              
+              <Button onClick={() => handleSearch()} size="lg" className="h-14 px-8 rounded-xl font-bold transition-all hover:scale-105">
+                <Search className="mr-2 h-5 w-5" />
+                {tCommon("search")}
+              </Button>
+            </div>
           </div>
-        ) : allOpenings.length === 0 && !hasPlayers ? (
-          <EmptyState
-            onAddPlayer={() => setAddPlayerOpen(true)}
-            disabled={isSyncInProgress || addingPlayer}
-          />
-        ) : isInitialSyncing ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
-            <div className="relative mb-6">
+        )}
+
+        {/* Step 2: Confirmation / Checking */}
+        {(status === 'checking' || status === 'confirming') && !isDataReady && (
+          <div className="flex flex-col items-center justify-center py-32 space-y-8 animate-in fade-in zoom-in duration-300">
+            {status === 'checking' ? (
+              <div className="flex flex-col items-center gap-4">
+                <RefreshCw className="h-12 w-12 animate-spin text-primary" />
+                <p className="text-lg font-medium">{t("verifyingPlayer")}</p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center space-y-8 w-full max-w-md">
+                <h2 className="text-2xl font-bold">{t("isThisYou")}</h2>
+                
+                <Card className={cn(
+                  "w-full overflow-hidden transition-all duration-500 border-2",
+                  "border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)] bg-green-50/5 dark:bg-green-900/5"
+                )}>
+                  <CardContent className="p-8 flex flex-col items-center text-center space-y-6">
+                    <div className="relative">
+                      <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
+                        <AvatarImage src={playerInfo?.image_url} alt={playerInfo?.username} />
+                        <AvatarFallback className="text-3xl font-bold bg-primary/10 text-primary">
+                          {playerInfo?.username?.[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="absolute -bottom-2 -right-2 bg-green-500 text-white p-1.5 rounded-full shadow-lg">
+                        <Check className="h-5 w-5" />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <h3 className="text-3xl font-bold tracking-tight">{playerInfo?.username}</h3>
+                      <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                        <span className="uppercase text-xs font-bold px-2 py-0.5 rounded bg-muted">
+                          {platform.replace('_', '.')}
+                        </span>
+                        {playerInfo?.last_online !== undefined && (
+                          <div className="flex items-center text-xs gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{t("activeTime", { time: formatLastOnline(playerInfo.last_online) })}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <div className="flex gap-4 w-full">
+                  <Button variant="outline" size="lg" className="flex-1 h-14 rounded-xl" onClick={handleCancel}>
+                    <X className="mr-2 h-5 w-5" />
+                    {t("goBack")}
+                  </Button>
+                  <Button size="lg" className="flex-1 h-14 rounded-xl bg-green-600 hover:bg-green-700" onClick={handleConfirm}>
+                    <Check className="mr-2 h-5 w-5" />
+                    {t("confirmMe")}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 3: Syncing / Polling */}
+        {status === 'syncing' && !isDataReady && (
+          <div className="flex flex-col items-center justify-center py-32 text-center space-y-6">
+            <div className="relative">
               <div className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
-              <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <RefreshCw className="h-8 w-8 animate-spin" />
+              <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <RefreshCw className="h-10 w-10 animate-spin" />
               </div>
             </div>
-            <p className="text-sm text-muted-foreground animate-pulse">
-              {t("syncTip")}
-            </p>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold">{t("syncTitle")}</h2>
+              <p className="text-muted-foreground max-w-sm mx-auto">
+                {t("syncDescription", { platform: platform.replace('_', '.') })}
+              </p>
+            </div>
           </div>
-        ) : (
-          <div className="flex flex-col gap-6">
-            {isSyncInProgress && (
-              <Alert className="bg-primary/5 border-primary/20 animate-pulse">
-                <RefreshCw className="h-4 w-4 animate-spin text-primary" />
-                <AlertTitle className="text-primary font-semibold">{t("syncInProgress")}</AlertTitle>
-                <AlertDescription>
-                  데이터를 동기화하고 있습니다. 완료될 때까지 잠시만 기다려 주세요.
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="max-w-md mx-auto mt-8">
+             <Alert variant="destructive">
+              <AlertTitle>{tCommon("error")}</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+            <Button className="w-full mt-4" variant="outline" onClick={handleCancel}>
+              {tCommon("tryAgain")}
+            </Button>
+          </div>
+        )}
+
+        {/* Step 4: Dashboard Content */}
+        {isDataReady && (
+          <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="flex items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-12 w-12 border shadow-sm">
+                  <AvatarImage src={playerInfo?.image_url} />
+                  <AvatarFallback className="font-bold">{playerInfo?.username?.[0]?.toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-xl font-bold">{playerInfo?.username}</h2>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase leading-none">
+                      {platform.replace('_', '.')}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{t("cacheStatus")}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleCancel} className="rounded-lg">
+                  {t("changePlayer")}
+                </Button>
+              </div>
+            </div>
+
+            {isPolling ? (
+              <Alert className="bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/50 animate-pulse">
+                <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />
+                <AlertTitle className="text-blue-700 dark:text-blue-400 font-semibold">{t("bgSyncTitle")}</AlertTitle>
+                <AlertDescription className="text-blue-600 dark:text-blue-500">
+                  {t("bgSyncDescription")}
                 </AlertDescription>
               </Alert>
-            )}
+            ) : null}
 
             <OpeningFilter
               colorFilter={colorFilter}
@@ -158,103 +337,7 @@ export default function HomePage() {
             <OpeningGrid stats={filteredAndSortedOpenings} />
           </div>
         )}
-
-        {/* Dialogs & Sheets */}
-        <MyPageSheet
-          open={myPageOpen}
-          onOpenChange={setMyPageOpen}
-          accountInfo={accountInfo}
-          loadingAccountInfo={loadingAccountInfo}
-          syncing={isSyncInProgress}
-          onLoadAccountInfo={loadAccountInfo}
-          onSync={handleSyncFromMyPage}
-          onAddPlayer={() => setAddPlayerOpen(true)}
-          onRemovePlayer={(playerId) =>
-            setRemovePlayerDialog({ open: true, playerId })
-          }
-          onChangePassword={() => setChangePasswordOpen(true)}
-          onLogout={() => setLogoutDialogOpen(true)}
-          onDeleteAccount={() => setDeleteAccountDialogOpen(true)}
-        />
-
-        <AddPlayerDialog
-          open={addPlayerOpen}
-          onOpenChange={setAddPlayerOpen}
-          addingPlayer={addingPlayer}
-          addPlayerError={addPlayerError}
-          onAdd={(username, platform) => handleAddPlayer(username, platform, onAddPlayerSuccess)}
-          onClearError={clearAddPlayerError}
-        />
-
-        <ChangePasswordDialog
-          open={changePasswordOpen}
-          onOpenChange={setChangePasswordOpen}
-          changingPassword={changingPassword}
-          passwordError={passwordError}
-          onSubmit={handleChangePasswordSubmit}
-          onClearError={clearPasswordError}
-        />
-
-        <ConfirmDialog
-          open={logoutDialogOpen}
-          onOpenChange={setLogoutDialogOpen}
-          title={tAuth("logout")}
-          description={tAuth("logoutConfirm")}
-          onConfirm={() => { setLogoutDialogOpen(false); handleLogout() }}
-          confirmText={tAuth("logout")}
-        />
-
-        <ConfirmDialog
-          open={deleteAccountDialogOpen}
-          onOpenChange={setDeleteAccountDialogOpen}
-          title={tMyPage("deleteAccount")}
-          description={tMyPage("deleteAccountConfirm")}
-          onConfirm={() => { setDeleteAccountDialogOpen(false); handleDeleteAccount() }}
-          variant="destructive"
-        />
-
-        <ConfirmDialog
-          open={removePlayerDialog.open}
-          onOpenChange={(open) => setRemovePlayerDialog({ open, playerId: null })}
-          title={tPlayer("removePlayer")}
-          description={tPlayer("removeConfirm")}
-          onConfirm={() => {
-            if (removePlayerDialog.playerId !== null) {
-              handleRemovePlayer(removePlayerDialog.playerId)
-            }
-            setRemovePlayerDialog({ open: false, playerId: null })
-          }}
-          variant="destructive"
-        />
       </main>
-    </div>
-  )
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4">
-        <Skeleton className="h-5 w-32" />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-20 rounded-lg" />
-          ))}
-        </div>
-        <Skeleton className="h-10 rounded-lg" />
-      </div>
-      <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-        <Skeleton className="h-10 w-64" />
-        <div className="flex gap-2">
-          <Skeleton className="h-10 w-56" />
-          <Skeleton className="h-10 w-40" />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {Array.from({ length: 9 }).map((_, i) => (
-          <Skeleton key={i} className="h-32 rounded-lg" />
-        ))}
-      </div>
     </div>
   )
 }

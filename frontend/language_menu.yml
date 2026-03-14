@@ -1,0 +1,37 @@
+- generic:
+  - generic:
+    - main:
+      - generic:
+        - heading [level=1]: 체스 오프닝 통계
+        - generic:
+          - button:
+            - img
+            - generic: 테마 전환
+          - button [expanded]:
+            - img
+            - generic: Change language
+      - generic:
+        - generic:
+          - heading [level=2]: 체스 오프닝 분석하기
+          - paragraph: 플랫폼과 아이디를 입력하여 오프닝 실력을 확인해보세요.
+        - generic:
+          - combobox:
+            - generic: Chess.com
+            - img
+          - generic:
+            - textbox:
+              - /placeholder: 아이디
+          - button:
+            - img
+            - text: 검색
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e29] [cursor=pointer]:
+    - img [ref=e30]
+  - alert
+  - menu "Change language" [active] [ref=e34]:
+    - menuitem "🇺🇸 English" [ref=e35]:
+      - generic [ref=e36]: 🇺🇸
+      - text: English
+    - menuitem "🇰🇷 한국어" [ref=e37]:
+      - generic [ref=e38]: 🇰🇷
+      - text: 한국어

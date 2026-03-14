@@ -1,0 +1,76 @@
+- generic [ref=e1]:
+  - generic [active]:
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - navigation [ref=e28]:
+            - button "previous" [disabled] [ref=e29]:
+              - img "previous" [ref=e30]
+            - generic [ref=e32]:
+              - generic [ref=e33]: 1/
+              - text: "1"
+            - button "next" [disabled] [ref=e34]:
+              - img "next" [ref=e35]
+          - img
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - img [ref=e39]
+            - generic "Latest available version is detected (16.1.6)." [ref=e41]: Next.js 16.1.6
+            - generic [ref=e42]: Turbopack
+          - img
+      - dialog "Runtime ReferenceError" [ref=e44]:
+        - generic [ref=e47]:
+          - generic [ref=e48]:
+            - generic [ref=e49]:
+              - generic [ref=e51]: Runtime ReferenceError
+              - generic [ref=e52]:
+                - button "Copy Error Info" [ref=e53] [cursor=pointer]:
+                  - img [ref=e54]
+                - button "No related documentation found" [disabled] [ref=e56]:
+                  - img [ref=e57]
+                - button "Copy DevTools URL for Chrome" [ref=e59] [cursor=pointer]:
+                  - img [ref=e60]
+            - generic [ref=e69]: Cannot access 'updateUrl' before initialization
+          - generic [ref=e70]:
+            - generic [ref=e71]:
+              - paragraph [ref=e73]:
+                - img [ref=e75]
+                - generic [ref=e78]: app/[locale]/page.tsx (98:42) @ HomePage
+                - button "Open in editor" [ref=e79] [cursor=pointer]:
+                  - img [ref=e81]
+              - generic [ref=e84]:
+                - generic [ref=e85]: 96 | setStatus('idle')
+                - generic [ref=e86]: "97 | }"
+                - generic [ref=e87]: "> 98 | }, [platform, usernameInput, loadData, updateUrl, tCommon])"
+                - generic [ref=e88]: "| ^"
+                - generic [ref=e89]: 99 |
+                - generic [ref=e90]: "100 | const handleConfirm = useCallback(async () => {"
+                - generic [ref=e91]: 101 | if (!playerInfo?.username) return
+            - generic [ref=e92]:
+              - generic [ref=e93]:
+                - paragraph [ref=e94]:
+                  - text: Call Stack
+                  - generic [ref=e95]: "13"
+                - button "Show 12 ignore-listed frame(s)" [ref=e96] [cursor=pointer]:
+                  - text: Show 12 ignore-listed frame(s)
+                  - img [ref=e97]
+              - generic [ref=e99]:
+                - generic [ref=e100]:
+                  - text: HomePage
+                  - button "Open HomePage in editor" [ref=e101] [cursor=pointer]:
+                    - img [ref=e102]
+                - text: app/[locale]/page.tsx (98:42)
+        - generic [ref=e104]: "1"
+        - generic [ref=e105]: "2"
+    - generic [ref=e6] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e7]:
+        - img [ref=e8]
+      - generic [ref=e11]:
+        - button "Open issues overlay" [ref=e12]:
+          - generic [ref=e13]:
+            - generic [ref=e14]: "0"
+            - generic [ref=e15]: "1"
+          - generic [ref=e16]: Issue
+        - button "Collapse issues badge" [ref=e17]:
+          - img [ref=e18]
+  - 'heading "Application error: a client-side exception has occurred while loading localhost (see the browser console for more information)." [level=2] [ref=e22]'

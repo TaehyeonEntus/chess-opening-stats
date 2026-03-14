@@ -1,0 +1,18 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - heading "체스 오프닝 통계" [level=1] [ref=e5]
+      - generic [ref=e6]:
+        - button "테마 전환" [ref=e7] [cursor=pointer]:
+          - img
+          - generic [ref=e8]: 테마 전환
+        - button "Change language" [ref=e9] [cursor=pointer]:
+          - img
+          - generic [ref=e10]: Change language
+    - generic:
+      - generic:
+        - paragraph: 플레이어 정보를 확인 중...
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e16] [cursor=pointer]:
+    - img [ref=e17]
+  - alert [ref=e20]

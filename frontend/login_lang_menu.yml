@@ -1,0 +1,44 @@
+- generic:
+  - generic:
+    - generic:
+      - button:
+        - img
+        - generic: 테마 전환
+      - button [expanded]:
+        - img
+        - generic: Change language
+    - main:
+      - generic:
+        - generic:
+          - generic: 로그인
+          - generic: 체스 오프닝 통계를 보려면 로그인하세요.
+        - generic:
+          - generic:
+            - generic:
+              - text: 아이디
+              - textbox:
+                - /placeholder: 아이디
+            - generic:
+              - text: 비밀번호
+              - generic:
+                - textbox:
+                  - /placeholder: 비밀번호
+                - button:
+                  - img
+            - button: 로그인
+            - paragraph:
+              - text: 계정이 없나요?
+              - link:
+                - /url: /ko/register
+                - text: 회원가입
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e32] [cursor=pointer]:
+    - img [ref=e33]
+  - alert
+  - menu "Change language" [active] [ref=e37]:
+    - menuitem "🇺🇸 English" [ref=e38]:
+      - generic [ref=e39]: 🇺🇸
+      - text: English
+    - menuitem "🇰🇷 한국어" [ref=e40]:
+      - generic [ref=e41]: 🇰🇷
+      - text: 한국어

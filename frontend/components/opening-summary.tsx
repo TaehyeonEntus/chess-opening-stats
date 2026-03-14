@@ -164,7 +164,7 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
 
   return (
     <section className="flex h-full min-w-0 flex-col gap-6 p-6 overflow-hidden">
-      <div className="flex items-start justify-between gap-3 overflow-hidden">
+      <div className="flex items-start justify-between gap-3 overflow-hidden min-h-[3.5rem]">
         <h3 className="text-lg font-semibold truncate">{title}</h3>
         {title === t("bestWinRate") && (
           <p className="flex-none max-w-[10rem] text-right text-xs text-muted-foreground">
@@ -173,7 +173,7 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
         )}
       </div>
 
-      <div className="flex gap-4 min-w-0 overflow-hidden">
+      <div className="flex gap-4 min-w-0 overflow-hidden min-h-[6rem]">
         <div className="pointer-events-none aspect-square w-20 flex-none overflow-hidden rounded-md border bg-muted/50 sm:w-24">
           <Chessboard
             key={topOpening.epd}

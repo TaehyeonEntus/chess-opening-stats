@@ -14,11 +14,14 @@
     "search": "검색",
     "filter": "필터",
     "sort": "정렬",
+    "platform": "플랫폼",
     "reset": "초기화",
     "undo": "되돌리기",
     "submit": "제출",
     "success": "성공",
-    "failed": "실패"
+    "failed": "실패",
+    "tryAgain": "다시 시도",
+    "username": "아이디"
   },
   "auth": {
     "login": "로그인",
@@ -72,7 +75,20 @@
     "myPage": "마이페이지",
     "loadingData": "데이터를 불러오는 중...",
     "errorOccurred": "오류가 발생했습니다",
-    "pleaseEnterUsername": "플레이어 아이디를 입력해주세요."
+    "pleaseEnterUsername": "플레이어 아이디를 입력해주세요.",
+    "cacheStatus": "통계 업데이트 완료 (최대 1시간 캐시)",
+    "exploreTitle": "체스 오프닝 분석하기",
+    "exploreDescription": "플랫폼과 아이디를 입력하여 오프닝 실력을 확인해보세요.",
+    "verifyingPlayer": "플레이어 정보를 확인 중...",
+    "isThisYou": "이 플레이어가 본인인가요?",
+    "activeTime": "{time} 전 활동",
+    "goBack": "아니요, 뒤로가기",
+    "confirmMe": "네, 맞습니다",
+    "syncTitle": "게임 데이터 갱신 중...",
+    "syncDescription": "{platform}에서 최신 게임 데이터를 가져오고 있습니다. 잠시만 기다려 주세요.",
+    "changePlayer": "플레이어 변경",
+    "bgSyncTitle": "백그라운드 동기화 중...",
+    "bgSyncDescription": "새로운 게임 데이터를 처리하고 있습니다. 통계는 자동으로 업데이트됩니다."
   },
   "opening": {
     "name": "오프닝 이름",

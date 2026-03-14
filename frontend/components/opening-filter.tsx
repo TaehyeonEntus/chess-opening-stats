@@ -69,11 +69,12 @@ export function OpeningFilter({
 }: OpeningFilterProps) {
   const t = useTranslations("opening")
   const tCommon = useTranslations("common")
+  
   const gameRef = useRef(new Chess())
   const [isBoardOpen, setIsBoardOpen] = useState(false)
-  const [fen, setFen] = useState(DEFAULT_FEN)
-  const [boardEpd, setBoardEpd] = useState("")
   const [boardOrientation, setBoardOrientation] = useState<"white" | "black">("white")
+  const [fen, setFen] = useState(gameRef.current.fen())
+  const [boardEpd, setBoardEpd] = useState("")
 
   const boardStatW = useMemo(() => {
     if (!boardEpd) return null
@@ -93,34 +94,34 @@ export function OpeningFilter({
   const currentBoardOpeningName = (boardStatW || boardStatB)?.name || fallbackOpening?.name
   const currentBoardOpeningEco = (boardStatW || boardStatB)?.eco || fallbackOpening?.eco
 
-  function updateFen(nextFen: string) {
-    gameRef.current.load(nextFen)
-    const resolvedFen = gameRef.current.fen()
-    setFen(resolvedFen)
-    setBoardEpd(fenToEpd(resolvedFen))
-  }
-
   function handlePieceDrop(args: { sourceSquare: string; targetSquare: string | null }) {
-    if (!args.targetSquare) {
+    if (!args.targetSquare) return false
+    
+    try {
+      const move = gameRef.current.move({
+        from: args.sourceSquare,
+        to: args.targetSquare,
+        promotion: "q",
+      })
+      
+      if (!move) return false
+      
+      const nextFen = gameRef.current.fen()
+      setFen(nextFen)
+      setBoardEpd(fenToEpd(nextFen))
+      return true
+    } catch (e) {
       return false
     }
-    const move = gameRef.current.move({
-      from: args.sourceSquare,
-      to: args.targetSquare,
-      promotion: "q",
-    })
-    if (!move) {
-      return false
-    }
-    updateFen(gameRef.current.fen())
-    return true
   }
 
   function handleUndo() {
-    gameRef.current.undo()
-    const newFen = gameRef.current.fen()
-    setFen(newFen)
-    setBoardEpd(fenToEpd(newFen))
+    const move = gameRef.current.undo()
+    if (move) {
+      const nextFen = gameRef.current.fen()
+      setFen(nextFen)
+      setBoardEpd(fenToEpd(nextFen))
+    }
   }
 
   function handleClearBoardSearch() {
@@ -154,28 +155,30 @@ export function OpeningFilter({
               <Grid2X2 className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t("boardSearchTitle")}</DialogTitle>
               <DialogDescription>{t("boardSearchDescription")}</DialogDescription>
             </DialogHeader>
 
-            <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
-              <div className="space-y-3">
-                <div className="rounded-lg border bg-card p-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6 p-1 h-full min-h-0">
+              {/* Left Column: Board and Controls */}
+              <div className="flex flex-col gap-4 h-full">
+                <div className="aspect-square rounded-lg border bg-card p-4 shrink-0">
                   <Chessboard
+                    key={fen + boardOrientation}
                     options={{
                       position: fen,
+                      onPieceDrop: handlePieceDrop,
                       boardOrientation: boardOrientation,
-                      allowDragging: true,
-                      showNotation: false,
+                      animationDurationInMs: 200,
+                      showNotation: true,
                       darkSquareStyle: { backgroundColor: "#769656" },
                       lightSquareStyle: { backgroundColor: "#e9edcc" },
-                      onPieceDrop: handlePieceDrop,
                     }}
                   />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   <Button
                     variant="outline"
                     size="sm"
@@ -205,114 +208,122 @@ export function OpeningFilter({
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 min-h-0">
-                {currentBoardOpeningName && (
-                  <div className="rounded-lg border bg-card p-3">
-                    <div className="text-xs text-muted-foreground mb-1">{t("opening")}</div>
-                    <div className="font-semibold">{currentBoardOpeningName}</div>
-                    <div className="text-sm font-mono text-muted-foreground mt-0.5">{currentBoardOpeningEco}</div>
-                  </div>
-                )}
-                
-                {/* White Stats */}
-                <div className="flex-1 rounded-lg border bg-card p-5 shadow-sm flex flex-col min-h-0">
+              {/* Right Column: Stacked Info and Stats (2:4:4 Ratio) */}
+              <div className="flex flex-col gap-4 h-full min-h-0">
+                {/* Row 1: Opening Info (Flex 2) */}
+                <div className="flex-[2] rounded-lg border bg-muted/30 p-4 flex flex-col justify-center min-h-0 min-w-0 overflow-hidden">
+                  <div className="text-[10px] uppercase font-bold text-muted-foreground mb-1 shrink-0">{t("opening")}</div>
+                  {currentBoardOpeningName ? (
+                    <div className="flex items-baseline justify-between gap-4 min-w-0">
+                      <div className="min-w-0 flex-1 overflow-hidden">
+                        <h3 className="text-xl font-bold leading-tight truncate" title={currentBoardOpeningName}>
+                          {currentBoardOpeningName}
+                        </h3>
+                      </div>
+                      <div className="text-sm font-mono text-primary font-semibold shrink-0">
+                        {currentBoardOpeningEco}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground italic">{t("unknownOrNoGames")}</div>
+                  )}
+                </div>
+
+                {/* Row 2: White Stats (Flex 4) */}
+                <div className="flex-[4] rounded-lg border bg-card p-4 shadow-sm flex flex-col justify-center min-h-0 min-w-0 overflow-hidden">
                   <div className="mb-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                       <span className="inline-block h-4 w-4 rounded-full border border-gray-300 bg-white" />
-                      <h4 className="text-base font-semibold">{t("playedAsWhite")}</h4>
+                      <span className="inline-block h-3.5 w-3.5 rounded-full border border-gray-300 bg-white" />
+                      <h4 className="text-sm font-semibold">{t("playedAsWhite")}</h4>
                     </div>
-                    {boardStatW && <div className="text-sm font-medium text-muted-foreground">{boardStatW.totalGames} {t("games")}</div>}
+                    {boardStatW ? (
+                      <div className="text-xs font-medium text-muted-foreground">
+                        {boardStatW.totalGames} {t("games")}
+                      </div>
+                    ) : null}
                   </div>
                   {boardStatW ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm text-muted-foreground">{t("winRate")}</div>
-                        <div className="text-2xl font-bold">{boardStatW.winRate}%</div>
+                    <div className="flex items-center gap-8">
+                      <div className="flex flex-col">
+                        <div className="text-[10px] text-muted-foreground uppercase font-semibold">{t("winRate")}</div>
+                        <div className="text-2xl font-black">{boardStatW.winRate}%</div>
                       </div>
-                      <div className="space-y-2">
-                        <div className="flex gap-1">
+                      <div className="flex-1 space-y-2">
+                        <div className="flex gap-1 h-2.5">
                           <div
-                            className="h-2 rounded-l bg-emerald-500"
+                            className="rounded-l-sm bg-emerald-500 shadow-sm"
                             style={{ width: `${boardStatW.winRate}%` }}
                           />
-                          <div className="h-2 bg-amber-400" style={{ width: `${boardStatW.drawRate}%` }} />
+                          <div 
+                            className="bg-amber-400 shadow-sm" 
+                            style={{ width: `${boardStatW.drawRate}%` }} 
+                          />
                           <div
-                            className="h-2 rounded-r bg-rose-500"
+                            className="rounded-r-sm bg-rose-500 shadow-sm"
                             style={{ width: `${boardStatW.lossRate}%` }}
                           />
                         </div>
-                        <div className="flex justify-between text-sm tabular-nums text-muted-foreground">
-                          <span className="flex items-center gap-1.5">
-                            <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                            {boardStatW.wins}W
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <span className="inline-block h-2.5 w-2.5 rounded-full bg-amber-400" />
-                            {boardStatW.draws}D
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <span className="inline-block h-2.5 w-2.5 rounded-full bg-rose-500" />
-                            {boardStatW.losses}L
-                          </span>
+                        <div className="flex justify-between text-[11px] tabular-nums font-medium text-muted-foreground">
+                          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> {boardStatW.wins}W</span>
+                          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> {boardStatW.draws}D</span>
+                          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-rose-500" /> {boardStatW.losses}L</span>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex h-32 items-center justify-center">
-                      <p className="text-sm text-center text-muted-foreground">
-                        {t("unknownOrNoGames")}
+                    <div className="text-center">
+                      <p className="text-xs text-muted-foreground italic">
+                        {t("noDataAvailable") || "No data"}
                       </p>
                     </div>
                   )}
                 </div>
 
-                {/* Black Stats */}
-                <div className="flex-1 rounded-lg border bg-card p-5 shadow-sm flex flex-col min-h-0">
+                {/* Row 3: Black Stats (Flex 4) */}
+                <div className="flex-[4] rounded-lg border bg-card p-4 shadow-sm flex flex-col justify-center min-h-0 min-w-0 overflow-hidden">
                   <div className="mb-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="inline-block h-4 w-4 rounded-full border border-gray-700 bg-black" />
-                      <h4 className="text-base font-semibold">{t("playedAsBlack")}</h4>
+                      <span className="inline-block h-3.5 w-3.5 rounded-full border border-gray-700 bg-black" />
+                      <h4 className="text-sm font-semibold">{t("playedAsBlack")}</h4>
                     </div>
-                    {boardStatB && <div className="text-sm font-medium text-muted-foreground">{boardStatB.totalGames} {t("games")}</div>}
+                    {boardStatB ? (
+                      <div className="text-xs font-medium text-muted-foreground">
+                        {boardStatB.totalGames} {t("games")}
+                      </div>
+                    ) : null}
                   </div>
                   {boardStatB ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm text-muted-foreground">{t("winRate")}</div>
-                        <div className="text-2xl font-bold">{boardStatB.winRate}%</div>
+                    <div className="flex items-center gap-8">
+                      <div className="flex flex-col">
+                        <div className="text-[10px] text-muted-foreground uppercase font-semibold">{t("winRate")}</div>
+                        <div className="text-2xl font-black">{boardStatB.winRate}%</div>
                       </div>
-                      <div className="space-y-2">
-                        <div className="flex gap-1">
+                      <div className="flex-1 space-y-2">
+                        <div className="flex gap-1 h-2.5">
                           <div
-                            className="h-2 rounded-l bg-emerald-500"
+                            className="rounded-l-sm bg-emerald-500 shadow-sm"
                             style={{ width: `${boardStatB.winRate}%` }}
                           />
-                          <div className="h-2 bg-amber-400" style={{ width: `${boardStatB.drawRate}%` }} />
+                          <div 
+                            className="bg-amber-400 shadow-sm" 
+                            style={{ width: `${boardStatB.drawRate}%` }} 
+                          />
                           <div
-                            className="h-2 rounded-r bg-rose-500"
+                            className="rounded-r-sm bg-rose-500 shadow-sm"
                             style={{ width: `${boardStatB.lossRate}%` }}
                           />
                         </div>
-                        <div className="flex justify-between text-sm tabular-nums text-muted-foreground">
-                          <span className="flex items-center gap-1.5">
-                            <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                            {boardStatB.wins}W
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <span className="inline-block h-2.5 w-2.5 rounded-full bg-amber-400" />
-                            {boardStatB.draws}D
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <span className="inline-block h-2.5 w-2.5 rounded-full bg-rose-500" />
-                            {boardStatB.losses}L
-                          </span>
+                        <div className="flex justify-between text-[11px] tabular-nums font-medium text-muted-foreground">
+                          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> {boardStatB.wins}W</span>
+                          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> {boardStatB.draws}D</span>
+                          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-rose-500" /> {boardStatB.losses}L</span>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex h-32 items-center justify-center">
-                      <p className="text-sm text-center text-muted-foreground">
-                        {t("unknownOrNoGames")}
+                    <div className="text-center">
+                      <p className="text-xs text-muted-foreground italic">
+                        {t("noDataAvailable") || "No data"}
                       </p>
                     </div>
                   )}

@@ -14,11 +14,14 @@
     "search": "Search",
     "filter": "Filter",
     "sort": "Sort",
+    "platform": "Platform",
     "reset": "Reset",
     "undo": "Undo",
     "submit": "Submit",
     "success": "Success",
-    "failed": "Failed"
+    "failed": "Failed",
+    "tryAgain": "Try Again",
+    "username": "Username"
   },
   "auth": {
     "login": "Login",
@@ -72,7 +75,20 @@
     "myPage": "My Page",
     "loadingData": "Loading data...",
     "errorOccurred": "An error occurred",
-    "pleaseEnterUsername": "Please enter a username."
+    "pleaseEnterUsername": "Please enter a username.",
+    "cacheStatus": "Statistics updated (Cache up to 1 hour)",
+    "exploreTitle": "Explore Chess Openings",
+    "exploreDescription": "Enter your platform and username to visualize your opening performance.",
+    "verifyingPlayer": "Verifying player information...",
+    "isThisYou": "Is this you?",
+    "activeTime": "Active {time}",
+    "goBack": "No, Go Back",
+    "confirmMe": "Yes, That's Me",
+    "syncTitle": "Synchronizing Games...",
+    "syncDescription": "We are fetching your latest games from {platform}. This will take a few moments.",
+    "changePlayer": "Change Player",
+    "bgSyncTitle": "Background Syncing...",
+    "bgSyncDescription": "New games are still being processed. Your stats will refresh automatically."
   },
   "opening": {
     "name": "Opening Name",
