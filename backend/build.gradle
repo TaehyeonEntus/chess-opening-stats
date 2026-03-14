@@ -55,7 +55,6 @@ dependencies {
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 }
 
-// 📝 Spring REST Docs
 ext {
     snippetsDir = file('build/generated-snippets')
 }
@@ -66,11 +65,12 @@ tasks.named('test') {
 }
 
 tasks.named('asciidoctor') {
-    inputs.dir(snippetsDir).optional() // clean 후에도 디렉토리 없어도 오류 안 남
+    inputs.dir snippetsDir
     configurations 'asciidoctorExt'
     dependsOn test
 }
 
+// 📄 API 문서 복사 태스크 추가
 task copyDocument(type: Copy) {
     dependsOn asciidoctor
     from file("${asciidoctor.outputDir}")
@@ -78,9 +78,9 @@ task copyDocument(type: Copy) {
 }
 
 tasks.named('bootJar') {
-    dependsOn copyDocument
+    dependsOn copyDocument // JAR 빌드 전 문서 복사 실행
 }
 
 tasks.named('build') {
-    dependsOn copyDocument
+    dependsOn copyDocument // 일반 빌드 시에도 문서 복사 실행
 }
