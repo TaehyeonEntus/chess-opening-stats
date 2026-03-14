@@ -51,12 +51,24 @@ dependencies {
     // 🧪 Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 }
 
 ext {
     snippetsDir = file('build/generated-snippets')
+}
+
+// ✅ 1. configuration 단계에서 생성 (플러그인 검증 통과)
+snippetsDir.mkdirs()
+
+// ✅ 2. clean이 삭제해도 재생성
+tasks.named('clean') {
+    doLast {
+        snippetsDir.mkdirs()
+    }
 }
 
 tasks.named('test') {
@@ -70,17 +82,16 @@ tasks.named('asciidoctor') {
     dependsOn test
 }
 
-// 📄 API 문서 복사 태스크 추가
-task copyDocument(type: Copy) {
+tasks.register('copyDocument', Copy) {
     dependsOn asciidoctor
     from file("${asciidoctor.outputDir}")
     into file("src/main/resources/static/docs")
 }
 
 tasks.named('bootJar') {
-    dependsOn copyDocument // JAR 빌드 전 문서 복사 실행
+    dependsOn copyDocument
 }
 
 tasks.named('build') {
-    dependsOn copyDocument // 일반 빌드 시에도 문서 복사 실행
+    dependsOn copyDocument
 }
