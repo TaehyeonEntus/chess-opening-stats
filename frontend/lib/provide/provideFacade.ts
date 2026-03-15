@@ -6,7 +6,7 @@ export function provideHomeView(): Promise<HomeView> {
     return fetchHomeView();
 }
 
-export function provideSyncAccount(): Promise<void> {
+export function provideSyncAccount(): Promise<{ waiting: number }> {
     return syncAccount();
 }
 
