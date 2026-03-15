@@ -51,6 +51,7 @@ export function useOpeningData() {
 
   const pollingTimerRef = useRef<NodeJS.Timeout | null>(null)
   const pollCountRef = useRef(0)
+  const initialPollCountRef = useRef(0)
 
   const stopPolling = useCallback(() => {
     if (pollingTimerRef.current) {
@@ -58,6 +59,7 @@ export function useOpeningData() {
       pollingTimerRef.current = null
     }
     pollCountRef.current = 0
+    initialPollCountRef.current = 0
     setIsPolling(false)
   }, [])
 
@@ -91,19 +93,25 @@ export function useOpeningData() {
                            (dashboard.white === undefined && dashboard.black === undefined);
 
           if (isNotReady) {
-            // Data not ready yet, continue polling
-            setIsPolling(true)
-            pollingTimerRef.current = setTimeout(poll, 1000) // Poll every 1 second
+            // Data not ready yet, continue polling (max 30 seconds)
+            initialPollCountRef.current += 1
+            if (initialPollCountRef.current < 30) {
+              setIsPolling(true)
+              pollingTimerRef.current = setTimeout(poll, 1000) // Poll every 1 second
+            } else {
+              setIsPolling(false)
+              setLoading(false)
+              setError("Data synchronization is taking longer than expected. Please try again later.")
+            }
             return
           }
 
-          // Data received!
+          // Data received! Stop everything.
           setLoading(false)
-          
-          // Initial data is loaded, so we can hide the "Background Syncing" message.
-          // Further polls will be silent.
-          if (pollCountRef.current === 0) {
-            setIsPolling(false)
+          setIsPolling(false)
+          if (pollingTimerRef.current) {
+            clearTimeout(pollingTimerRef.current)
+            pollingTimerRef.current = null
           }
 
           const whiteStats = dashboard.white?.openings || []
@@ -113,7 +121,7 @@ export function useOpeningData() {
           const blackOpenings = adaptColorOpeningStat(blackStats, "black", dictionary)
           setAllOpenings([...whiteOpenings, ...blackOpenings])
           
-          // Calculate win rates
+          // ... (win rates, best win rate, most played calculation unchanged) ...
           const winRates: WinRate[] = [
             { 
               color: "white", 
@@ -129,13 +137,11 @@ export function useOpeningData() {
             },
           ]
           
-          // Calculate best win rate
           const bestWinRateOpenings: Stat[] = [
             ...adaptStat(dashboard.white?.highestWinRateOpenings || [], "white", dictionary),
             ...adaptStat(dashboard.black?.highestWinRateOpenings || [], "black", dictionary)
           ]
           
-          // Calculate most played
           const mostPlayedOpenings: Stat[] = [
             ...adaptStat(dashboard.white?.mostPlayedOpenings || [], "white", dictionary),
             ...adaptStat(dashboard.black?.mostPlayedOpenings || [], "black", dictionary)
@@ -146,15 +152,6 @@ export function useOpeningData() {
             white: calculateDisplaySummary(winRates, bestWinRateOpenings, mostPlayedOpenings, "white"),
             black: calculateDisplaySummary(winRates, bestWinRateOpenings, mostPlayedOpenings, "black"),
           })
-
-          // Continue polling in background at a slower rate (e.g. 10 seconds)
-          // Stop after 10 polls (about 1.5 minutes of background syncing)
-          pollCountRef.current += 1
-          if (pollCountRef.current < 10) {
-            pollingTimerRef.current = setTimeout(poll, 10000)
-          } else {
-            setIsPolling(false)
-          }
         } catch (err) {
           console.error("Dashboard poll failed", err)
           setIsPolling(false)

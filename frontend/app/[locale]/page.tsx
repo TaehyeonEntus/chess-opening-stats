@@ -148,6 +148,12 @@ export default function HomePage() {
   // Determine if data is ready based on useOpeningData's state
   const isDataReady = allOpenings.length > 0 || currentSummary !== null
 
+  useEffect(() => {
+    if (isDataReady && (status === 'syncing' || status === 'confirming')) {
+      setStatus('ready')
+    }
+  }, [isDataReady, status])
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-background">
       <main className="mx-auto max-w-screen-2xl px-4 py-6 lg:px-6">
