@@ -19,4 +19,8 @@ public class ChessComQueue {
     public Player poll() {
         return chessComQueue.poll();
     }
+
+    public int size(){
+        return chessComQueue.size();
+    }
 }

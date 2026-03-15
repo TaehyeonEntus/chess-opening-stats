@@ -7,7 +7,7 @@ import com.chessopeningstats.backend.service.syncgame.GameNormalizeService;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.ParallelFlux;
 
 import java.time.Instant;
 
@@ -20,7 +20,7 @@ public class LichessGameNormalizeService implements GameNormalizeService<Lichess
     }
 
     @Override
-    public Flux<NormalizedGame> normalize(Flux<LichessRawGame> rawGames, Player player) {
+    public ParallelFlux<NormalizedGame> normalize(ParallelFlux<LichessRawGame> rawGames, Player player) {
         return rawGames.map(dto -> normalizeOne(dto, player.username()));
     }
 

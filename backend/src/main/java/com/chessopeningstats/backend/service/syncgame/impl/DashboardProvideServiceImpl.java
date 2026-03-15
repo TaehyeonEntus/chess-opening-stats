@@ -23,7 +23,6 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class DashboardProvideServiceImpl implements DashboardProvideService {
-
     private final DashboardCache dashboardCache;
 
     @Override

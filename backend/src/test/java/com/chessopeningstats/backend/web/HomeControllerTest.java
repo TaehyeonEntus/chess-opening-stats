@@ -2,7 +2,6 @@ package com.chessopeningstats.backend.web;
 
 import com.chessopeningstats.backend.domain.Color;
 import com.chessopeningstats.backend.domain.Player;
-import com.chessopeningstats.backend.infra.client.playerexistence.dto.PlayerExistenceDto;
 import com.chessopeningstats.backend.service.syncgame.dto.ColorDashboard;
 import com.chessopeningstats.backend.service.syncgame.dto.ColorOpeningStat;
 import com.chessopeningstats.backend.service.syncgame.dto.ColorRecord;
@@ -10,6 +9,8 @@ import com.chessopeningstats.backend.service.syncgame.dto.Dashboard;
 import com.chessopeningstats.backend.usecase.ExistsPlayerUseCase;
 import com.chessopeningstats.backend.usecase.GetDashboardUseCase;
 import com.chessopeningstats.backend.usecase.SyncGameUseCase;
+import com.chessopeningstats.backend.web.dto.PlayerExistenceResponse;
+import com.chessopeningstats.backend.web.dto.SyncGameResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -119,7 +120,7 @@ class HomeControllerTest {
 
     @Test
     void existsPlayer() throws Exception {
-        given(existsPlayerUseCase.existsPlayer(any(Player.class))).willReturn(new PlayerExistenceDto("image", 123L));
+        given(existsPlayerUseCase.existsPlayer(any(Player.class))).willReturn(new PlayerExistenceResponse("image", 123L));
 
         mockMvc.perform(get("/player")
                         .param("platform", "CHESS_COM")
@@ -139,6 +140,8 @@ class HomeControllerTest {
 
     @Test
     void syncGames() throws Exception {
+        given(syncGameUseCase.syncGame(any(Player.class))).willReturn(new SyncGameResponse(1));
+
         mockMvc.perform(post("/sync")
                         .queryParam("platform", "CHESS_COM")
                         .queryParam("username", "testuser"))
@@ -149,7 +152,7 @@ class HomeControllerTest {
                                 parameterWithName("username").description("플레이어 사용자 이름")
                         ),
                         responseFields(
-                                fieldWithPath("message").description("동기화 요청 성공 메시지")
+                                fieldWithPath("waiting").description("큐에 대기중인 플레이어 수")
                         )
                 ));
     }

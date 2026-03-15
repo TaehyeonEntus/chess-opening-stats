@@ -9,6 +9,7 @@ import com.chessopeningstats.backend.service.syncgame.GameFetchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.ParallelFlux;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class LichessGameFetchService implements GameFetchService<LichessRawGame>
     }
 
     @Override
-    public Flux<LichessRawGame> fetch(Player player) {
+    public ParallelFlux<LichessRawGame> fetch(Player player) {
         return client.fetchGames(player);
     }
 }

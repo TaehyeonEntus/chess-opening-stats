@@ -5,7 +5,7 @@ import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.infra.client.playergames.dto.RawGame;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.ParallelFlux;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
@@ -20,7 +20,7 @@ public interface PlayerGameClient<T extends RawGame> {
 
     String uri(Player player);
 
-    Flux<T> fetchGames(Player Player);
+    ParallelFlux<T> fetchGames(Player Player);
 
     default Retry retryPolicy() {
         return Retry.backoff(5, Duration.ofSeconds(5))

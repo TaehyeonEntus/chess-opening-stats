@@ -2,7 +2,8 @@ package com.chessopeningstats.backend.usecase;
 
 import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.infra.cache.DashboardCache;
-import com.chessopeningstats.backend.infra.queue.QueueRouter;
+import com.chessopeningstats.backend.infra.queue.SyncQueue;
+import com.chessopeningstats.backend.web.dto.SyncGameResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +11,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SyncGameUseCase {
     private final DashboardCache dashboardCache;
-    private final QueueRouter queueRouter;
+    private final SyncQueue syncQueue;
 
-    public void syncGame(Player player) {
-        if (!dashboardCache.contains(player)) queueRouter.add(player);
+    public SyncGameResponse syncGame(Player player) {
+        int size = syncQueue.size(player.platform());
+
+        if (!dashboardCache.contains(player))
+            syncQueue.add(player);
+
+        return new SyncGameResponse(size);
     }
 }

@@ -15,7 +15,7 @@ public class WorkerScheduler {
     private final LichessQueue lichessQueue;
     private final GameSyncFacade gameSyncFacade;
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 1000, scheduler = "chessComScheduler")
     public void chessComWorker() {
         Player player;
         while ((player = chessComQueue.poll()) != null) {
@@ -23,7 +23,7 @@ public class WorkerScheduler {
         }
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 1000, scheduler = "lichessScheduler")
     public void lichessWorker() {
         Player player;
         while ((player = lichessQueue.poll()) != null) {

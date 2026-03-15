@@ -16,6 +16,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.ParallelFlux;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ import java.util.List;
 @Slf4j
 public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGame> {
     private final WebClient chessComPlayerGameWebClient;
-    private static final int FETCH_CONCURRENCY = 50;
+    private static final int FETCH_CONCURRENCY = 100;
 
     @Override
     public Platform platform() {
@@ -46,10 +48,12 @@ public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGam
     }
 
     @Override
-    public Flux<ChessComRawGame> fetchGames(Player player) {
+    public ParallelFlux<ChessComRawGame> fetchGames(Player player) {
         return getArchiveUrls(player)
                 .flatMap(this::fetchMonthlyArchiveGames, FETCH_CONCURRENCY)
-                .flatMapIterable(ChessComArchiveResponse::getGames);
+                .parallel()
+                .runOn(Schedulers.parallel())
+                .flatMap(archive -> Flux.fromIterable(archive.getGames()));
     }
 
     private Flux<String> getArchiveUrls(Player player) {

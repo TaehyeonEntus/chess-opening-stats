@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.ParallelFlux;
+import reactor.core.scheduler.Schedulers;
 
 @Component
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class LichessPlayerGameClient implements PlayerGameClient<LichessRawGame>
     }
 
     @Override
-    public Flux<LichessRawGame> fetchGames(Player player) {
+    public ParallelFlux<LichessRawGame> fetchGames(Player player) {
         return lichessPlayerGameWebClient
                 .get()
                 .uri(uri(player))
@@ -51,6 +52,8 @@ public class LichessPlayerGameClient implements PlayerGameClient<LichessRawGame>
                 .retryWhen(retryPolicy())
                 .onErrorMap(WebClientResponseException.NotFound.class, PlayerNotFoundException::new)
                 .onErrorMap(WebClientResponseException.TooManyRequests.class, RateLimitExceededException::new)
-                .onErrorMap(ExternalServiceException::new);
+                .onErrorMap(ExternalServiceException::new)
+                .parallel()
+                .runOn(Schedulers.parallel());
     }
 }

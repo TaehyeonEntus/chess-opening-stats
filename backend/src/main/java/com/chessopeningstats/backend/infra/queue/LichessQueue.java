@@ -19,4 +19,8 @@ public class LichessQueue {
     public Player poll() {
         return lichessQueue.poll();
     }
+
+    public int size(){
+        return lichessQueue.size();
+    }
 }

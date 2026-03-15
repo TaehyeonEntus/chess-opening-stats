@@ -9,10 +9,8 @@ import com.chessopeningstats.backend.service.syncgame.registry.GameNormalizeServ
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.ParallelFlux;
-import reactor.core.scheduler.Schedulers;
 
 @Service
 @RequiredArgsConstructor
@@ -24,28 +22,15 @@ public class GameSyncFacade {
     private final GameAnalyzeService gameAnalyzeService;
     private final DashboardProvideService dashboardProvideService;
 
+    //테스트용
     public Mono<Void> syncPlayer(Player player) {
         GameFetchService<RawGame> gameFetchService = gameFetchServiceRegistry.getService(player.platform());
         GameNormalizeService<RawGame> gameNormalizeService = gameNormalizeServiceRegistry.getService(player.platform());
 
-        Flux<RawGame> fetch =
-                // 1. game 가져오기
-                gameFetchService.fetch(player);
-
-        ParallelFlux<NormalizedGame> normalizedGames =
-                // 2. game 정규화
-                gameNormalizeService.normalize(fetch, player).parallel().runOn(Schedulers.parallel());
-
-        ParallelFlux<NormalizedGame> sanitizedGames =
-                // 3. 특수 룰, 특수 게임 제거
-                gameSanitizeService.sanitize(normalizedGames);
-
-        ParallelFlux<AnalyzedGame> analyzedGames =
-                // 4. 오프닝 분석
-                gameAnalyzeService.analyze(sanitizedGames);
-
-        return
-                // 5. 통계 제공
-                dashboardProvideService.provideDashboard(analyzedGames, player);
+        ParallelFlux<RawGame> rawGames = gameFetchService.fetch(player);
+        ParallelFlux<NormalizedGame> normalizedGames = gameNormalizeService.normalize(rawGames, player);
+        ParallelFlux<NormalizedGame> sanitizedGames = gameSanitizeService.sanitize(normalizedGames);
+        ParallelFlux<AnalyzedGame> analyzedGames = gameAnalyzeService.analyze(sanitizedGames);
+        return dashboardProvideService.provideDashboard(analyzedGames, player);
     }
 }

@@ -801,9 +801,9 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 15
+Content-Length: 39
 
-{"exists":true}</code></pre>
+{"image_url":"image","last_online":123}</code></pre>
 </div>
 </div>
 </div>
@@ -824,9 +824,14 @@ Content-Length: 15
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>exists</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">플레이어 존재 여부</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>image_url</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">플레이어 이미지 URL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>last_online</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">마지막 온라인 시간</p></td>
 </tr>
 </tbody>
 </table>
@@ -881,9 +886,9 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json
-Content-Length: 34
+Content-Length: 13
 
-{"message":"sync request success"}</code></pre>
+{"waiting":1}</code></pre>
 </div>
 </div>
 </div>
@@ -904,9 +909,9 @@ Content-Length: 34
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>message</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">동기화 요청 성공 메시지</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>waiting</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">큐에 대기중인 플레이어 수</p></td>
 </tr>
 </tbody>
 </table>
