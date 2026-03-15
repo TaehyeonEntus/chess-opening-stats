@@ -14,6 +14,7 @@ export function useAuthActions() {
   const router = useRouter()
   const tAuth = useTranslations("auth")
   const tCommon = useTranslations("common")
+  const tMyPage = useTranslations("myPage")
 
   const [loggingOut, setLoggingOut] = useState(false)
   const [changingPassword, setChangingPassword] = useState(false)
@@ -87,8 +88,8 @@ export function useAuthActions() {
 
       try {
           setSyncing(true)
-          await runSyncFlow()
-          toast.success(tCommon("syncSuccess"))
+          const response = await runSyncFlow()
+          toast.success(tMyPage("syncSuccess", { count: response.waiting }))
       } catch (err) {
           console.error(err)
           toast.error(tCommon("failed"))

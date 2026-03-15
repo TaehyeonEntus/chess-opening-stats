@@ -68,7 +68,9 @@
       "linkAccount": "Link Account"
     },
     "syncInProgress": "Sync is already in progress",
-    "syncTip": "Even vast data like GM Hikaru's takes only about 10 seconds!",
+    "syncLichessLimit": "Lichess users can only fetch 20 games per second.",
+    "syncHikaruTip": "Fetching GM Hikaru's ~60k games takes about 10 seconds.",
+    "syncAnalysisLimit": "Analyses are performed up to 30 moves.",
     "syncSuccess": "Data sync job has been queued. There are {count} users ahead of you.",
     "syncFailed": "Sync failed. Please try again later.",
     "syncFailedTryAgain": "Sync failed. Please try again later.",

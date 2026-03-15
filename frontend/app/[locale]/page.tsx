@@ -68,14 +68,15 @@ export default function HomePage() {
     
     setStatus('syncing')
     try {
-      await syncGames(platform, playerInfo.username)
+      const response = await syncGames(platform, playerInfo.username)
+      toast.success(t("syncSuccess", { count: response.waiting }))
       loadData(platform, playerInfo.username)
     } catch (err) {
       console.error("Sync failed", err)
       toast.error("Failed to start synchronization.")
       setStatus('confirming')
     }
-  }, [platform, playerInfo, loadData])
+  }, [platform, playerInfo, loadData, t])
 
   const handleCancel = useCallback(() => {
     setIsResetting(true)
@@ -118,7 +119,8 @@ export default function HomePage() {
       if (autoSync) {
         setStatus('syncing')
         try {
-          await syncGames(queryPlatform, info.username || "")
+          const response = await syncGames(queryPlatform, info.username || "")
+          toast.success(t("syncSuccess", { count: response.waiting }))
           loadData(queryPlatform, info.username || "")
         } catch (err) {
           console.error("Auto-sync failed", err)
@@ -133,7 +135,7 @@ export default function HomePage() {
       if (!autoSync) toast.error(tCommon("failed"))
       setStatus('idle')
     }
-  }, [platform, usernameInput, loadData, updateUrl, tCommon, searchParams])
+  }, [platform, usernameInput, loadData, updateUrl, tCommon, searchParams, t])
 
   useEffect(() => {
     const urlUsername = searchParams.get("username")
@@ -253,18 +255,36 @@ export default function HomePage() {
 
         {/* Step 3: Syncing / Polling */}
         {status === 'syncing' && !isDataReady && (
-          <div className="flex flex-col items-center justify-center py-32 text-center space-y-6">
+          <div className="flex flex-col items-center justify-center py-32 text-center space-y-8">
             <div className="relative">
               <div className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
-              <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary shadow-inner">
                 <RefreshCw className="h-10 w-10 animate-spin" />
               </div>
             </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold">{t("syncTitle")}</h2>
-              <p className="text-muted-foreground max-w-sm mx-auto">
-                {t("syncDescription", { platform: platform.replace('_', '.') })}
-              </p>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold tracking-tight">{t("syncTitle")}</h2>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  {t("syncDescription", { platform: platform.replace('_', '.') })}
+                </p>
+              </div>
+
+              <div className="pt-8 grid gap-4 max-w-sm mx-auto">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border/50">
+                  <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                  <p className="text-left leading-snug">{t("syncLichessLimit")}</p>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border/50">
+                  <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                  <p className="text-left leading-snug">{t("syncHikaruTip")}</p>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border/50">
+                  <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                  <p className="text-left leading-snug">{t("syncAnalysisLimit")}</p>
+                </div>
+              </div>
             </div>
           </div>
         )}

@@ -55,10 +55,10 @@ export async function checkPlayerExists(platform: string, username: string): Pro
  * 게임 동기화 요청
  * POST /sync?platform=...&username=...
  */
-export function syncGames(platform: string, username: string): Promise<{ message: string }> {
-  return apiClient.post<{ message: string }>(`/sync`, null, {
+export function syncGames(platform: string, username: string): Promise<{ waiting: number }> {
+  return apiClient.post<{ waiting: number }>(`/sync`, null, {
     params: { platform, username }
-  }).then(res => extractData<{ message: string }>(res))
+  }).then(res => extractData<{ waiting: number }>(res))
 }
 
 /**
@@ -81,8 +81,8 @@ export function fetchAccountInfo(): Promise<AccountInfoResponse> {
 /**
  * 어카운트 전체 동기화
  */
-export function syncAccount(): Promise<void> {
-  return apiClient.post<void>("/account/sync", {}).then(res => extractData<void>(res))
+export function syncAccount(): Promise<{ waiting: number }> {
+  return apiClient.post<{ waiting: number }>("/account/sync", {}).then(res => extractData<{ waiting: number }>(res))
 }
 
 /**
