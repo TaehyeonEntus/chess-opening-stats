@@ -21,6 +21,7 @@
 - **Task Queue**: In-Memory BlockingQueue
 - **API Docs:** Spring REST Docs
 - **Build Tool:** Gradle
+- **Deploy**: Railway PaaS
 - **etc:**
 - - **CSV Data Parser:** Apache Commons CSV
   - **Chess EPD Parser:** [chesslib](https://github.com/bhlangonijr/chesslib)
@@ -31,6 +32,7 @@
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **Styling:** [TailwindCSS](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/)
 - **Chess Logic & UI:** [react-chessboard](https://github.com/Clariity/react-chessboard), [chess.js](https://github.com/jhlywa/chess.js)
+- **Deploy**: Railway PaaS
 
 ### Etc
 - **Model:** Gemini 3 pro, Gemini 3 flash, Opus 4.5, Sonnet 4.5, Haiku 4.5
