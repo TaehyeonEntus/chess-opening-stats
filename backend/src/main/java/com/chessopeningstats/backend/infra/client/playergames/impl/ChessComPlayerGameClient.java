@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
@@ -21,6 +22,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Component
 @RequiredArgsConstructor
@@ -78,7 +80,13 @@ public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGam
                 .retryWhen(retryPolicy())
                 .onErrorMap(WebClientResponseException.NotFound.class, PlayerNotFoundException::new)
                 .onErrorMap(WebClientResponseException.TooManyRequests.class, RateLimitExceededException::new)
-                .onErrorMap(ExternalServiceException::new);
+                .onErrorReturn(is5xxError(), new ChessComArchiveResponse());
+
+    }
+
+    private Predicate<Throwable> is5xxError() {
+        return e -> e instanceof WebClientResponseException w &&
+                w.getStatusCode().is5xxServerError();
     }
 
     @Data
