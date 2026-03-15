@@ -1,7 +1,6 @@
-# chess-opening-stats
+<img width="1222" height="915" alt="Image" src="https://github.com/user-attachments/assets/16361590-d00e-4bf6-995d-63892a605ef0" />
 
 ## 🚀 Key Features (주요 기능)
-
 - **Account Linking & Data Sync:** Link your chess platform accounts to automatically fetch your latest game data.
   - **계정 연동 및 데이터 동기화:** Chess.com 등 체스 플랫폼 계정을 연동하여 최근 게임 데이터를 자동으로 가져옵니다.
 - **Opening Performance Analysis:** Detailed win, draw, and loss rates for each opening you've played.
