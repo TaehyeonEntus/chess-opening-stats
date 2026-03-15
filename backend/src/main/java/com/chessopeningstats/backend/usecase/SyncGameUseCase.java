@@ -16,7 +16,7 @@ public class SyncGameUseCase {
     public SyncGameResponse syncGame(Player player) {
         int size = syncQueue.size(player.platform());
 
-        if (!dashboardCache.contains(player))
+        if (!dashboardCache.contains(player) || !syncQueue.contains(player))
             syncQueue.add(player);
 
         return new SyncGameResponse(size);

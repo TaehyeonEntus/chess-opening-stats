@@ -27,4 +27,12 @@ public class SyncQueue {
             default -> throw new UnsupportedPlatformException(platform);
         };
     }
+
+    public boolean contains(Player player){
+        return switch (player.platform()) {
+            case CHESS_COM -> chessComQueue.contains(player);
+            case LICHESS -> lichessQueue.contains(player);
+            default -> throw new UnsupportedPlatformException(player.platform());
+        };
+    }
 }

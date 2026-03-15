@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class DashboardCache {
     private final Cache<Player, Dashboard> dashboardCache = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .maximumSize(1000)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .maximumSize(100)
             .build();
 
     public void cache(Player player, Dashboard dashboard) {

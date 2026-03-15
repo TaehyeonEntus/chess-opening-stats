@@ -92,7 +92,3 @@ tasks.named('processResources') {
 tasks.named('bootJar') {
     dependsOn copyDocument
 }
-
-tasks.named('build') {
-    dependsOn copyDocument
-}
