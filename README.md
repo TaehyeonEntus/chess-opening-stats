@@ -1,4 +1,4 @@
-### [[click here to get yout stats! www.chessopeningstat.com]](https://www.chessopeningstat.com)
+### [[click here to get yout stats! www.chessopeningstat.com]](https://www.chessopeningstat.com)  x0gusplaysgroove
 
 <img width="1222" height="915" alt="Image" src="https://github.com/user-attachments/assets/16361590-d00e-4bf6-995d-63892a605ef0" />
 
