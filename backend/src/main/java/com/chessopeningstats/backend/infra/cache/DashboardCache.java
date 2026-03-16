@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class DashboardCache {
     private final Cache<Player, Dashboard> dashboardCache = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .expireAfterWrite(60, TimeUnit.MINUTES)
             .maximumSize(100)
             .scheduler(Scheduler.systemScheduler())
             .build();
