@@ -5,3 +5,4 @@ scrape_configs:
   - job_name: 'chessopening-be'
     static_configs:
       - targets: ['chessopening-be.railway.internal:8080']
+    metrics_path: '/actuator/prometheus'
