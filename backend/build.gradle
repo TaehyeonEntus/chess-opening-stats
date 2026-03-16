@@ -75,9 +75,9 @@ tasks.named('test') {
     outputs.dir snippetsDir
 }
 
-//tasks.named('processResources') {
-//    dependsOn copyDocument
-//}
+tasks.named('processResources') {
+    dependsOn copyDocument
+}
 
 tasks.named('asciidoctor') {
     inputs.dir(snippetsDir).optional()
