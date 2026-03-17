@@ -13,17 +13,14 @@ import java.time.Duration;
 public class DashboardCache {
     private final RedisTemplate<String, Dashboard> redisTemplate;
 
-    // 캐시 저장
     public void cache(Player player, Dashboard dashboard) {
         redisTemplate.opsForValue().set(keyOf(player), dashboard, Duration.ofMinutes(10)); // TTL 적용
     }
 
-    // 캐시 조회
     public Dashboard get(Player player) {
         return redisTemplate.opsForValue().get(keyOf(player));
     }
 
-    // 존재 여부 확인
     public boolean contains(Player player) {
         return redisTemplate.hasKey(keyOf(player));
     }
