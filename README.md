@@ -1,4 +1,4 @@
-### [[click here to get yout stats! www.chessopeningstat.com]](https://www.chessopeningstat.com)
+### [[click here to get yout stats! www.chessopeningstat.com]](https://www.chessopeningstat.com)  x0gusplaysgroove
 
 <img width="1222" height="915" alt="Image" src="https://github.com/user-attachments/assets/16361590-d00e-4bf6-995d-63892a605ef0" />
 
@@ -18,11 +18,12 @@
 ### Backend
 - **Framework:** [Spring Boot 3.4.1](https://spring.io/projects/spring-boot)
 - **Language:** Java 21
-- **Cache**: Caffeine, In-Memory HashMap
+- **Cache**: Redis, In-Memory HashMap
 - **Task Queue**: In-Memory BlockingQueue
 - **API Docs:** Spring REST Docs
 - **Build Tool:** Gradle
 - **Deploy**: Railway PaaS
+- **Monitor** Grafana, Prometheus
 - **etc:**
 - - **CSV Data Parser:** Apache Commons CSV
   - **Chess EPD Parser:** [chesslib](https://github.com/bhlangonijr/chesslib)
