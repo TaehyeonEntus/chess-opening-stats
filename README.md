@@ -35,9 +35,3 @@
 - **Styling:** [TailwindCSS](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/)
 - **Chess Logic & UI:** [react-chessboard](https://github.com/Clariity/react-chessboard), [chess.js](https://github.com/jhlywa/chess.js)
 - **Deploy**: Railway PaaS
-
-### Etc
-- **Model:** Gemini 3 pro, Gemini 3 flash, Opus 4.5, Sonnet 4.5, Haiku 4.5
-- **IDE:** [VSCode](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/),
-- **Agent:** Gemini CLI, Cursor, Antigravity, Intellij Junie
-- **MCP**: Context7, Playwright(Playwright CLI)
