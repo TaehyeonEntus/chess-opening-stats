@@ -78,7 +78,7 @@
     "loadingData": "Loading data...",
     "errorOccurred": "An error occurred",
     "pleaseEnterUsername": "Please enter a username.",
-    "cacheStatus": "Statistics updated (Cache up to 1 hour)",
+    "cacheStatus": "Statistics updated (Cache up to 10 minutes)",
     "exploreTitle": "Explore Chess Openings",
     "exploreDescription": "Enter your platform and username to visualize your opening performance.",
     "verifyingPlayer": "Verifying player information...",
