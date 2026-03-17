@@ -24,8 +24,11 @@ public class LichessQueue {
         return lichessQueue.contains(player);
     }
 
-
     public int size(){
         return lichessQueue.size();
+    }
+
+    public boolean isEmpty() {
+        return lichessQueue.isEmpty();
     }
 }

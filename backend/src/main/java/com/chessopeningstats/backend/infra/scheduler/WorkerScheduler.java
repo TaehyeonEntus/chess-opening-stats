@@ -1,6 +1,5 @@
 package com.chessopeningstats.backend.infra.scheduler;
 
-import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.infra.queue.ChessComQueue;
 import com.chessopeningstats.backend.infra.queue.LichessQueue;
 import com.chessopeningstats.backend.service.syncgame.GameSyncFacade;
@@ -17,17 +16,15 @@ public class WorkerScheduler {
 
     @Scheduled(fixedDelay = 1000, scheduler = "chessComScheduler")
     public void chessComWorker() {
-        Player player;
-        while ((player = chessComQueue.poll()) != null) {
-            gameSyncFacade.syncPlayer(player).block();
+        while (!chessComQueue.isEmpty()) {
+            gameSyncFacade.syncPlayer(chessComQueue.poll()).block();
         }
     }
 
     @Scheduled(fixedDelay = 1000, scheduler = "lichessScheduler")
     public void lichessWorker() {
-        Player player;
-        while ((player = lichessQueue.poll()) != null) {
-            gameSyncFacade.syncPlayer(player).block();
+        while (!lichessQueue.isEmpty()) {
+            gameSyncFacade.syncPlayer(lichessQueue.poll()).block();
         }
     }
 }

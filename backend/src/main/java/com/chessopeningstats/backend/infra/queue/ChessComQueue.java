@@ -20,11 +20,15 @@ public class ChessComQueue {
         return chessComQueue.poll();
     }
 
-    public boolean contains(Player player){
+    public boolean contains(Player player) {
         return chessComQueue.contains(player);
     }
 
-    public int size(){
+    public int size() {
         return chessComQueue.size();
+    }
+
+    public boolean isEmpty() {
+        return chessComQueue.isEmpty();
     }
 }
