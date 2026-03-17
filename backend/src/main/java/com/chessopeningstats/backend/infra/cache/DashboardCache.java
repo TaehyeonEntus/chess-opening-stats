@@ -15,7 +15,7 @@ public class DashboardCache {
 
     // 캐시 저장
     public void cache(Player player, Dashboard dashboard) {
-        redisTemplate.opsForValue().set(keyOf(player), dashboard, Duration.ofMinutes(60)); // TTL 적용
+        redisTemplate.opsForValue().set(keyOf(player), dashboard, Duration.ofMinutes(10)); // TTL 적용
     }
 
     // 캐시 조회
