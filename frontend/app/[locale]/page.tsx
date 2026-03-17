@@ -73,7 +73,7 @@ export default function HomePage() {
       loadData(platform, playerInfo.username)
     } catch (err) {
       console.error("Sync failed", err)
-      toast.error("Failed to start synchronization.")
+      toast.error(t("syncFailed"))
       setStatus('confirming')
     }
   }, [platform, playerInfo, loadData, t])
@@ -110,7 +110,7 @@ export default function HomePage() {
     try {
       const info = await checkPlayerExists(queryPlatform, queryUsername)
       if (!info.exists) {
-        if (!autoSync) toast.error(tCommon("failed"))
+        if (!autoSync) toast.error(t("playerNotFound"))
         setStatus('idle')
         return
       }
@@ -132,7 +132,7 @@ export default function HomePage() {
       }
     } catch (err) {
       console.error("Search failed", err)
-      if (!autoSync) toast.error(tCommon("failed"))
+      if (!autoSync) toast.error(t("playerNotFound"))
       setStatus('idle')
     }
   }, [platform, usernameInput, loadData, updateUrl, tCommon, searchParams, t])

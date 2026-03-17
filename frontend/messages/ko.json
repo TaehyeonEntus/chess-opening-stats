@@ -82,6 +82,7 @@
     "exploreTitle": "체스 오프닝 분석하기",
     "exploreDescription": "플랫폼과 아이디를 입력하여 오프닝 실력을 확인해보세요.",
     "verifyingPlayer": "플레이어 정보를 확인 중...",
+    "playerNotFound": "플레이어를 찾을 수 없습니다",
     "isThisYou": "이 플레이어가 본인인가요?",
     "activeTime": "{time} 전 활동",
     "goBack": "아니요, 뒤로가기",

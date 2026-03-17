@@ -82,6 +82,7 @@
     "exploreTitle": "Explore Chess Openings",
     "exploreDescription": "Enter your platform and username to visualize your opening performance.",
     "verifyingPlayer": "Verifying player information...",
+    "playerNotFound": "Player not found",
     "isThisYou": "Is this you?",
     "activeTime": "Active {time}",
     "goBack": "No, Go Back",
