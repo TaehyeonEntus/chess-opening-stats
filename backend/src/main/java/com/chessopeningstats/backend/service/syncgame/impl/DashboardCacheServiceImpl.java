@@ -99,9 +99,9 @@ public class DashboardCacheServiceImpl implements DashboardCacheService {
                     // 승, 무, 패
                     new Stat(win, draw, lose),
                     // 최다 플레이 오프닝
-                    rankOpenings(lastOpeningMap, byTotal, 10, s -> true),
+                    rankOpenings(lastOpeningMap, byTotal, 5, s -> true),
                     // 최고 승률 오프닝
-                    rankOpenings(lastOpeningMap, byWinRate, 10, s -> s.total() >= 10),
+                    rankOpenings(allOpeningsMap, byWinRate, 5, s -> s.total() >= 10),
                     // 전체 오프닝
                     rankOpenings(allOpeningsMap, byTotal, Integer.MAX_VALUE, s -> true)
             );
