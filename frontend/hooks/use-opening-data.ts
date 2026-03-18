@@ -10,7 +10,9 @@ import type { OpeningStatView, ColorFilter, DisplaySummary, WinRate, SortBy } fr
 function calculateDisplaySummary(
   winRates: WinRate[],
   allOpenings: OpeningStatView[],
-  filter: ColorFilter
+  filter: ColorFilter,
+  providedMostPlayed?: OpeningStatView[],
+  providedBestWinRate?: OpeningStatView[]
 ): DisplaySummary {
   const filteredWinRates = filter === "all" ? winRates : winRates.filter((r) => r.color === filter)
   const totalWins = filteredWinRates.reduce((sum, r) => sum + r.wins, 0)
@@ -20,11 +22,11 @@ function calculateDisplaySummary(
 
   const openingsForFilter = filter === "all" ? allOpenings : allOpenings.filter((op) => op.color === filter)
   
-  const mostPlayedOpenings = [...openingsForFilter]
+  const mostPlayedOpenings = providedMostPlayed || [...openingsForFilter]
     .sort((a, b) => b.totalGames - a.totalGames)
     .slice(0, 5)
 
-  const bestWinRateOpenings = [...openingsForFilter]
+  const bestWinRateOpenings = providedBestWinRate || [...openingsForFilter]
     .filter(op => op.totalGames >= 2) // 최소 2게임 이상인 것 중 승률 높은 순
     .sort((a, b) => b.winRate - a.winRate)
     .slice(0, 5)
@@ -106,6 +108,13 @@ export function useOpeningData() {
 
           const whiteOpenings = adaptColorOpeningStat(dashboard.white?.openings || [], "white", dictionary)
           const blackOpenings = adaptColorOpeningStat(dashboard.black?.openings || [], "black", dictionary)
+          
+          const whiteMostPlayed = adaptColorOpeningStat(dashboard.white?.mostPlayedOpenings || [], "white", dictionary)
+          const whiteBestWinRate = adaptColorOpeningStat(dashboard.white?.highestWinRateOpenings || [], "white", dictionary)
+          
+          const blackMostPlayed = adaptColorOpeningStat(dashboard.black?.mostPlayedOpenings || [], "black", dictionary)
+          const blackBestWinRate = adaptColorOpeningStat(dashboard.black?.highestWinRateOpenings || [], "black", dictionary)
+
           const combined = [...whiteOpenings, ...blackOpenings]
           setAllOpenings(combined)
           
@@ -126,8 +135,8 @@ export function useOpeningData() {
           
           setSummaries({
             all: calculateDisplaySummary(winRates, combined, "all"),
-            white: calculateDisplaySummary(winRates, combined, "white"),
-            black: calculateDisplaySummary(winRates, combined, "black"),
+            white: calculateDisplaySummary(winRates, whiteOpenings, "white", whiteMostPlayed, whiteBestWinRate),
+            black: calculateDisplaySummary(winRates, blackOpenings, "black", blackMostPlayed, blackBestWinRate),
           })
         } catch (err) {
           console.error("Poll failed", err)
