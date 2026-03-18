@@ -16,8 +16,8 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { syncGames, type PlayerInfo } from "@/lib/api/api"
-import { provideCheckPlayerExists } from "@/lib/provide/provideFacade"
+import { syncGames, checkPlayerExists } from "@/lib/api/api"
+import type { PlayerInfo } from "@/lib/types"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
@@ -109,7 +109,7 @@ export default function HomePage() {
 
     setStatus('checking')
     try {
-      const info = await provideCheckPlayerExists(queryPlatform, queryUsername)
+      const info = await checkPlayerExists(queryPlatform, queryUsername)
       if (!info.exists) {
         if (!autoSync) toast.error(t("playerNotFound"))
         setStatus('idle')

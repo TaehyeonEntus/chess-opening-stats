@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useDeferredValue, useCallback, useRef } from "react"
 import { fetchDashboard } from "@/lib/api/api"
-import { adaptColorOpeningStat } from "@/lib/provide/internel/adapter"
+import { adaptColorOpeningStat } from "@/lib/adapters"
 import { parseOpeningCsv, type OpeningDictionary } from "@/lib/openings/csv-parser"
 import { calculateRatesFromCounts } from "@/lib/stats"
 import type { OpeningStatView, ColorFilter, DisplaySummary, WinRate, SortBy } from "@/lib/types"
@@ -147,6 +147,18 @@ export function useOpeningData() {
     return () => stopPolling()
   }, [stopPolling])
 
+  const epdMap = useMemo(() => {
+    if (!openingDictionary) return new Map<string, { id: number; eco: string; name: string; epd: string }>()
+    const map = new Map<string, { id: number; eco: string; name: string; epd: string }>()
+    Object.entries(openingDictionary).forEach(([idStr, data]) => {
+      const id = Number(idStr)
+      if (data.epd) {
+        map.set(data.epd, { ...data, id })
+      }
+    })
+    return map
+  }, [openingDictionary])
+
   const filteredAndSortedOpenings = useMemo(() => {
     let list = [...allOpenings]
     if (colorFilter !== "all") list = list.filter((s) => s.color === colorFilter)
@@ -173,6 +185,7 @@ export function useOpeningData() {
   return {
     allOpenings,
     openingDictionary,
+    epdMap,
     filteredAndSortedOpenings,
     summaries,
     currentSummary: summaries ? summaries[colorFilter] : null,

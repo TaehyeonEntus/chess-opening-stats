@@ -1,4 +1,4 @@
-import type { OpeningStat, OpeningStatView, Color } from "../../types"
+import type { OpeningStat, OpeningStatView, Color } from "./types"
 import { calculateRatesFromCounts } from "@/lib/stats"
 import type { OpeningDictionary } from "@/lib/openings/csv-parser"
 
