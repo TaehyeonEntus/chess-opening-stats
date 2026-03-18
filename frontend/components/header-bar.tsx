@@ -8,12 +8,12 @@ export function HeaderBar() {
   const t = useTranslations("home")
 
   return (
-    <div className="mb-8 flex items-center justify-between">
+    <header className="mb-8 flex items-center justify-between">
       <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-      <div className="flex items-center gap-2">
+      <nav className="flex items-center gap-2" aria-label="Quick Settings">
         <ThemeToggle />
         <LanguageToggle />
-      </div>
-    </div>
+      </nav>
+    </header>
   )
 }

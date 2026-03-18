@@ -49,7 +49,7 @@ export function OpeningGrid({ stats }: OpeningGridProps) {
   const visibleItems = stats.slice(0, visibleCount)
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 min-h-[600px]">
       {/* 결과 영역 */}
       {visibleItems.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">

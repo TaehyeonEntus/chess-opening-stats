@@ -50,8 +50,14 @@ export default async function LocaleLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className="scroll-smooth">
       <body className={`${_inter.variable} ${_jetbrainsMono.variable} font-sans antialiased`}>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          Skip to content
+        </a>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"

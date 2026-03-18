@@ -16,7 +16,8 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { checkPlayerExists, syncGames, type PlayerInfo } from "@/lib/api/api"
+import { syncGames, type PlayerInfo } from "@/lib/api/api"
+import { provideCheckPlayerExists } from "@/lib/provide/provideFacade"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
@@ -108,7 +109,7 @@ export default function HomePage() {
 
     setStatus('checking')
     try {
-      const info = await checkPlayerExists(queryPlatform, queryUsername)
+      const info = await provideCheckPlayerExists(queryPlatform, queryUsername)
       if (!info.exists) {
         if (!autoSync) toast.error(t("playerNotFound"))
         setStatus('idle')
@@ -156,20 +157,23 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background">
-      <main className="mx-auto max-w-screen-2xl px-4 py-6 lg:px-6">
+      <main id="main-content" className="mx-auto max-w-screen-2xl px-4 py-6 lg:px-6">
         <HeaderBar />
 
         {/* Step 1: Initial Search Input */}
         {status === 'idle' && !isDataReady && (
-          <div className="flex flex-col items-center justify-center py-32 space-y-10">
+          <section className="flex flex-col items-center justify-center py-32 space-y-10" aria-labelledby="explore-title">
             <div className="text-center space-y-4 max-w-2xl">
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">{t("exploreTitle")}</h2>
+              <h2 id="explore-title" className="text-4xl md:text-5xl font-extrabold tracking-tight">{t("exploreTitle")}</h2>
               <p className="text-xl text-muted-foreground">{t("exploreDescription")}</p>
             </div>
             
             <div className="flex flex-col md:flex-row gap-4 w-full max-w-2xl p-2 bg-card rounded-2xl border shadow-xl">
               <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger className="h-14 w-full md:w-[200px] border-none bg-transparent text-lg focus:ring-0">
+                <SelectTrigger 
+                  className="h-14 w-full md:w-[200px] border-none bg-transparent text-lg focus:ring-0"
+                  aria-label={tCommon("platform")}
+                >
                   <SelectValue placeholder={tCommon("platform")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -178,29 +182,37 @@ export default function HomePage() {
                 </SelectContent>
               </Select>
               
-              <div className="h-14 hidden md:block w-[1px] bg-border my-auto" />
+              <div className="h-14 hidden md:block w-[1px] bg-border my-auto" aria-hidden="true" />
               
               <div className="relative flex-1">
                 <Input
-                  placeholder={tCommon("username")}
+                  placeholder={tCommon("username") + "…"}
                   value={usernameInput}
                   onChange={(e) => setUsernameInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   className="h-14 border-none bg-transparent text-lg focus-visible:ring-0 px-4"
+                  aria-label={tCommon("username")}
+                  autoComplete="username"
+                  spellCheck={false}
                 />
               </div>
               
-              <Button onClick={() => handleSearch()} size="lg" className="h-14 px-8 rounded-xl font-bold transition-all hover:scale-105">
-                <Search className="mr-2 h-5 w-5" />
+              <Button 
+                onClick={() => handleSearch()} 
+                size="lg" 
+                className="h-14 px-8 rounded-xl font-bold transition-all hover:scale-105 active:scale-95"
+                aria-label={tCommon("search")}
+              >
+                <Search className="mr-2 h-5 w-5" aria-hidden="true" />
                 {tCommon("search")}
               </Button>
             </div>
-          </div>
+          </section>
         )}
 
         {/* Step 2: Confirmation / Checking */}
         {(status === 'checking' || status === 'confirming') && !isDataReady && (
-          <div className="flex flex-col items-center justify-center py-32 space-y-8 animate-in fade-in zoom-in duration-300">
+          <section className="flex flex-col items-center justify-center py-32 space-y-8 animate-in fade-in zoom-in duration-300" aria-live="polite">
             {status === 'checking' ? (
               <div className="flex flex-col items-center gap-4">
                 <RefreshCw className="h-12 w-12 animate-spin text-primary" />
@@ -236,7 +248,7 @@ export default function HomePage() {
                         {playerInfo?.last_online !== undefined && (
                           <div className="flex items-center text-xs gap-1">
                             <Clock className="h-3 w-3" />
-                            <span>{t("activeTime", { time: formatLastOnline(playerInfo.last_online) })}</span>
+                            <span>{t("activeTime", { time: formatLastOnline(Math.floor((Date.now() - playerInfo.last_online) / 1000)) })}</span>
                           </div>
                         )}
                       </div>
@@ -256,12 +268,12 @@ export default function HomePage() {
                 </div>
               </div>
             )}
-          </div>
+          </section>
         )}
 
         {/* Step 3: Syncing / Polling */}
         {status === 'syncing' && !isDataReady && (
-          <div className="flex flex-col items-center justify-center py-32 text-center space-y-8">
+          <section className="flex flex-col items-center justify-center py-32 text-center space-y-8" aria-live="polite">
             <div className="relative">
               <div className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
               <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary shadow-inner">
@@ -292,12 +304,12 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-          </div>
+          </section>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="max-w-md mx-auto mt-8">
+          <aside className="max-w-md mx-auto mt-8" aria-live="assertive">
              <Alert variant="destructive">
               <AlertTitle>{tCommon("error")}</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
@@ -305,13 +317,14 @@ export default function HomePage() {
             <Button className="w-full mt-4" variant="outline" onClick={handleCancel}>
               {tCommon("tryAgain")}
             </Button>
-          </div>
+          </aside>
         )}
 
         {/* Step 4: Dashboard Content */}
         {isDataReady && (
           <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="flex items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
+            <section className="flex items-center justify-between bg-card p-4 rounded-xl border shadow-sm" aria-labelledby="player-profile-title">
+              <h2 id="player-profile-title" className="sr-only">{t("profile")}</h2>
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12 border shadow-sm">
                   <AvatarImage src={playerInfo?.image_url} />
@@ -319,7 +332,7 @@ export default function HomePage() {
                 </Avatar>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-xl font-bold">{playerInfo?.username}</h2>
+                    <p className="text-xl font-bold">{playerInfo?.username}</p>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase leading-none">
                       {platform.replace('_', '.')}
                     </span>
@@ -332,35 +345,49 @@ export default function HomePage() {
                   {t("changePlayer")}
                 </Button>
               </div>
-            </div>
+            </section>
 
             {isPolling ? (
-              <Alert className="bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/50 animate-pulse">
-                <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />
-                <AlertTitle className="text-blue-700 dark:text-blue-400 font-semibold">{t("bgSyncTitle")}</AlertTitle>
-                <AlertDescription className="text-blue-600 dark:text-blue-500">
-                  {t("bgSyncDescription")}
-                </AlertDescription>
-              </Alert>
+              <aside aria-live="polite">
+                <Alert className="bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/50 animate-pulse">
+                  <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />
+                  <AlertTitle className="text-blue-700 dark:text-blue-400 font-semibold">{t("bgSyncTitle")}</AlertTitle>
+                  <AlertDescription className="text-blue-600 dark:text-blue-500">
+                    {t("bgSyncDescription")}
+                  </AlertDescription>
+                </Alert>
+              </aside>
             ) : null}
 
-            <OpeningFilter
-              colorFilter={colorFilter}
-              onColorFilterChange={setColorFilter}
-              sortBy={sortBy}
-              onSortByChange={setSortBy}
-              minGames={minGames}
-              onMinGamesChange={setMinGames}
-              maxGames={maxGames}
-              onMaxGamesChange={setMaxGames}
-              allOpenings={allOpenings}
-              epdMap={epdMap}
-              search={search}
-              onSearchChange={setSearch}
-            />
+            <section aria-labelledby="filter-title">
+              <h2 id="filter-title" className="sr-only">{tCommon("filter")}</h2>
+              <OpeningFilter
+                colorFilter={colorFilter}
+                onColorFilterChange={setColorFilter}
+                sortBy={sortBy}
+                onSortByChange={setSortBy}
+                minGames={minGames}
+                onMinGamesChange={setMinGames}
+                maxGames={maxGames}
+                onMaxGamesChange={setMaxGames}
+                allOpenings={allOpenings}
+                epdMap={epdMap}
+                search={search}
+                onSearchChange={setSearch}
+              />
+            </section>
 
-            {currentSummary && <OpeningSummary summary={currentSummary} colorFilter={colorFilter} />}
-            <OpeningGrid stats={filteredAndSortedOpenings} />
+            {currentSummary && (
+              <aside aria-labelledby="summary-title">
+                <h2 id="summary-title" className="sr-only">{t("overallStats")}</h2>
+                <OpeningSummary summary={currentSummary} colorFilter={colorFilter} />
+              </aside>
+            )}
+            
+            <section aria-labelledby="grid-title">
+              <h2 id="grid-title" className="sr-only">{t("exploreTitle")}</h2>
+              <OpeningGrid stats={filteredAndSortedOpenings} />
+            </section>
           </div>
         )}
       </main>

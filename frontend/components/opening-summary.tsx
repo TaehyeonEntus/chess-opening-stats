@@ -174,7 +174,7 @@ function FeaturedOpeningSection({ title, openings }: FeaturedOpeningSectionProps
       </div>
 
       <div className="flex gap-4 min-w-0 overflow-hidden min-h-[6rem]">
-        <div className="pointer-events-none aspect-square w-20 flex-none overflow-hidden rounded-md border bg-muted/50 sm:w-24">
+        <div className="pointer-events-none aspect-square w-20 flex-none overflow-hidden rounded-md border bg-muted/50 sm:w-24" aria-hidden="true">
           <Chessboard
             key={topOpening.epd}
             options={{

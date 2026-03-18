@@ -35,12 +35,11 @@ export interface AddPlayerRequest {
 
 /**
  * 플레이어 존재 여부 확인 및 정보 조회
- * GET /player?platform=...&username=...
+ * GET /player/{platform}/{username}
  */
 export async function checkPlayerExists(platform: string, username: string): Promise<PlayerInfo> {
-  const res = await apiClient.get<PlayerInfo>(`/player`, {
-    params: { platform, username }
-  }).then(res => extractData<PlayerInfo>(res))
+  const res = await apiClient.get<PlayerInfo>(`/player/${platform}/${username}`)
+    .then(res => extractData<PlayerInfo>(res))
   
   // If we got a valid response object with data (like image_url or username),
   // consider the player as existing even if the 'exists' field is missing or false.
