@@ -1,4 +1,4 @@
-import type { ColorOpeningStat, OpeningStatView, Color, Stat } from "../../types"
+import type { OpeningStat, OpeningStatView, Color } from "../../types"
 import { calculateRatesFromCounts } from "@/lib/stats"
 import type { OpeningDictionary } from "@/lib/openings/csv-parser"
 
@@ -14,7 +14,7 @@ export function calcOpeningRates(totalGames: number, wins: number, draws: number
 }
 
 export function adaptColorOpeningStat(
-    stats: ColorOpeningStat[], 
+    stats: OpeningStat[], 
     color: Color, 
     dictionary?: OpeningDictionary
 ): OpeningStatView[] {
@@ -23,9 +23,9 @@ export function adaptColorOpeningStat(
     }
     
     return stats
-        .filter(stat => stat && (typeof stat.id !== 'undefined' || typeof stat.openingId !== 'undefined'))
+        .filter(stat => stat && typeof stat.openingId !== 'undefined')
         .map((stat): OpeningStatView => {
-            const actualId = stat.id ?? stat.openingId!;
+            const actualId = stat.openingId;
             const metadata = dictionary ? dictionary[actualId] : null;
             const wins = stat.stat?.win || 0;
             const draws = stat.stat?.draw || 0;
@@ -42,33 +42,6 @@ export function adaptColorOpeningStat(
                 draws,
                 losses,
                 ...calcOpeningRates(totalGames, wins, draws, losses)
-            }
-        })
-}
-
-export function adaptStat(
-    stats: ColorOpeningStat[], 
-    color: Color, 
-    dictionary?: OpeningDictionary
-): Stat[] {
-    if (!Array.isArray(stats)) {
-        return [];
-    }
-    
-    return stats
-        .filter(stat => stat && (typeof stat.id !== 'undefined' || typeof stat.openingId !== 'undefined'))
-        .map((stat): Stat => {
-            const actualId = stat.id ?? stat.openingId!;
-            const metadata = dictionary ? dictionary[actualId] : null;
-            
-            return {
-                eco: metadata?.eco || "---",
-                name: metadata?.name || `Opening #${actualId}`,
-                epd: metadata?.epd || "",
-                color: color,
-                wins: stat.stat?.win || 0,
-                draws: stat.stat?.draw || 0,
-                losses: stat.stat?.lose || 0,
             }
         })
 }

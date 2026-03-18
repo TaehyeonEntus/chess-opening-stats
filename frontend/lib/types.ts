@@ -3,95 +3,52 @@ export type Platform = "chess_com" | "lichess"
 export type ColorFilter = "all" | "white" | "black"
 export type SortBy = "winRate" | "totalGames" | "name"
 
-export interface ApiResponseDto<T> {
-  code: string;
-  message: string;
-  data: T;
-}
-
-// ----------------------------------------------------------------------
-// 1. Account / Player API Types
-// ----------------------------------------------------------------------
-
+/**
+ * 1. Player API Types (GET /player)
+ */
 export interface PlayerInfo {
-    id: number
+    exists: boolean
     username: string
-    platform: Platform
-    lastPlayedAt: string // ISO 8601 datetime string
+    image_url?: string
+    last_online?: number
 }
 
-export interface AccountSummary {
-    id: number
-    nickname: string
-    lastSyncedAt: string // ISO 8601 datetime string
+/**
+ * 2. Sync API Types (POST /sync)
+ */
+export interface SyncGameResponse {
+    waiting: number
 }
 
-// Previously AccountInfoResponse
-export interface AccountInfoResponse {
-    nickname: string
-    lastSyncedAt: string 
-    players: PlayerInfo[]
-}
-
-export type SyncGameResponse = Record<string, number>
-
-export interface SyncGameStatus {
-  status: boolean
-}
-
-// ----------------------------------------------------------------------
-// 2. Statistics API Types (Dashboard / Records)
-// ----------------------------------------------------------------------
-
+/**
+ * 3. Dashboard API Types (GET /dashboard)
+ */
 export interface StatDto {
-  win: number
-  draw: number
-  lose: number
+    win: number
+    draw: number
+    lose: number
 }
 
-export interface ColorRecord {
-  color: Color | "unknown"
-  stat: StatDto
-}
-
-export interface ColorOpeningStat {
-  color: Color
-  id?: number
-  openingId?: number // Backend might use openingId instead of id
-  stat: StatDto
+export interface OpeningStat {
+    openingId: number
+    stat: StatDto
 }
 
 export interface ColorDashboard {
-  record: ColorRecord | null
-  mostPlayedOpenings: ColorOpeningStat[]
-  highestWinRateOpenings: ColorOpeningStat[]
-  openings: ColorOpeningStat[] | null
+    stat: StatDto
+    mostPlayedOpenings: OpeningStat[]
+    highestWinRateOpenings: OpeningStat[]
+    openings: OpeningStat[]
 }
 
-export interface HomeView {
-  account: AccountSummary
-  players: PlayerInfo[]
-  white: ColorDashboard
-  black: ColorDashboard
+export interface DashboardResponse {
+    white: ColorDashboard
+    black: ColorDashboard
 }
 
-export interface WinRate {
-  color: Color
-  wins: number
-  draws: number
-  losses: number
-}
-
-// ----------------------------------------------------------------------
-// 3. Frontend Internal Display Types
-// ----------------------------------------------------------------------
-
-export interface OpeningRate {
-    winRate: number
-    drawRate: number
-    lossRate: number
-}
-
+/**
+ * Frontend Internal Display Types
+ */
 export interface OpeningStatView {
     id: number
     eco: string
@@ -107,10 +64,7 @@ export interface OpeningStatView {
     lossRate: number
 }
 
-export interface Stat {
-    eco: string
-    name: string
-    epd: string
+export interface WinRate {
     color: Color
     wins: number
     draws: number
@@ -125,6 +79,6 @@ export interface DisplaySummary {
     winRate: number;
     drawRate: number;
     lossRate: number;
-    bestWinRateOpenings: Stat[];
-    mostPlayedOpenings: Stat[];
+    bestWinRateOpenings: OpeningStatView[];
+    mostPlayedOpenings: OpeningStatView[];
 }

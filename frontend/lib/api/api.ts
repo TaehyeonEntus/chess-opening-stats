@@ -1,63 +1,41 @@
-import type {
-  Platform,
-  ColorDashboard,
-  AccountInfoResponse,
-  HomeView,
-} from "@/lib/types"
 import { apiClient } from "@/lib/api/apiClient"
-
-export interface DashboardResponse {
-  white: ColorDashboard
-  black: ColorDashboard
-}
-
-/**
- * 백엔드 응답에서 실제 데이터를 추출하는 헬퍼 함수입니다.
- */
-function extractData<T>(response: any): T {
-  if (response && typeof response === 'object' && 'data' in response && response.data !== null) {
-    return response.data as T;
-  }
-  return response as T;
-}
-
-export interface PlayerInfo {
-  exists?: boolean
-  username?: string
-  image_url?: string
-  last_online?: number // Seconds ago (상대적인 초 단위 값)
-}
-
-export interface AddPlayerRequest {
-  platform: Platform
-  username: string
-}
+import type { 
+  PlayerInfo, 
+  SyncGameResponse, 
+  DashboardResponse 
+} from "@/lib/types"
 
 /**
  * 플레이어 존재 여부 확인 및 정보 조회
  * GET /player?platform=...&username=...
  */
 export async function checkPlayerExists(platform: string, username: string): Promise<PlayerInfo> {
-  const res = await apiClient.get<PlayerInfo>(`/player`, {
+  const res = await apiClient.get<any>(`/player`, {
     params: { platform, username }
-  }).then(res => extractData<PlayerInfo>(res))
+  });
   
-  // 백엔드 응답에는 exists 필드가 없으므로, 데이터(image_url, last_online 등)가 있으면 존재하는 것으로 간주합니다.
-  if (res && (res.image_url || res.username || res.last_online !== undefined)) {
-    return { ...res, exists: true, username: res.username || username }
+  // 백엔드가 데이터를 직접 반환함 (image_url, last_online)
+  // 데이터가 있으면 존재하는 것으로 간주
+  if (res && (res.image_url || res.last_online !== undefined)) {
+    return {
+      exists: true,
+      username: username,
+      image_url: res.image_url,
+      last_online: res.last_online
+    }
   }
   
-  return { ...res, exists: false }
+  return { exists: false, username }
 }
 
 /**
  * 게임 동기화 요청
  * POST /sync?platform=...&username=...
  */
-export function syncGames(platform: string, username: string): Promise<{ waiting: number }> {
-  return apiClient.post<{ waiting: number }>(`/sync`, null, {
+export function syncGames(platform: string, username: string): Promise<SyncGameResponse> {
+  return apiClient.post<SyncGameResponse>(`/sync`, null, {
     params: { platform, username }
-  }).then(res => extractData<{ waiting: number }>(res))
+  });
 }
 
 /**
@@ -67,47 +45,5 @@ export function syncGames(platform: string, username: string): Promise<{ waiting
 export function fetchDashboard(platform: string, username: string): Promise<DashboardResponse | null> {
   return apiClient.get<DashboardResponse | null>(`/dashboard`, {
     params: { platform, username }
-  }).then(res => extractData<DashboardResponse | null>(res))
-}
-
-/**
- * 어카운트 정보 가져오기
- */
-export function fetchAccountInfo(): Promise<AccountInfoResponse> {
-  return apiClient.get<AccountInfoResponse>("/account").then(res => extractData<AccountInfoResponse>(res))
-}
-
-/**
- * 어카운트 전체 동기화
- */
-export function syncAccount(): Promise<{ waiting: number }> {
-  return apiClient.post<{ waiting: number }>("/account/sync", {}).then(res => extractData<{ waiting: number }>(res))
-}
-
-/**
- * 플레이어 연결 해제
- */
-export function deletePlayer(playerId: number): Promise<void> {
-  return apiClient.delete<void>(`/player/${playerId}`).then(res => extractData<void>(res))
-}
-
-/**
- * 플레이어 추가
- */
-export function addPlayer(data: AddPlayerRequest): Promise<void> {
-  return apiClient.post<void>("/player", data).then(res => extractData<void>(res))
-}
-
-/**
- * 홈 뷰 데이터 조회
- */
-export function fetchHomeView(): Promise<HomeView> {
-  return apiClient.get<HomeView>("/home").then(res => extractData<HomeView>(res))
-}
-
-/**
- * 헬스 체크 (필요 시 유지)
- */
-export function healthCheck(): Promise<void> {
-  return apiClient.get<void>("/health")
+  });
 }

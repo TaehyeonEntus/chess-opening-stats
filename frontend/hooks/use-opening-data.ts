@@ -1,17 +1,15 @@
 "use client"
 
 import { useState, useEffect, useMemo, useDeferredValue, useCallback, useRef } from "react"
-import { fetchDashboard, type DashboardResponse } from "@/lib/api/api"
-import { adaptColorOpeningStat, adaptStat } from "@/lib/provide/internel/adapter"
+import { fetchDashboard } from "@/lib/api/api"
+import { adaptColorOpeningStat } from "@/lib/provide/internel/adapter"
 import { parseOpeningCsv, type OpeningDictionary } from "@/lib/openings/csv-parser"
 import { calculateRatesFromCounts } from "@/lib/stats"
-import { toast } from "sonner"
-import type { OpeningStatView, ColorFilter, DisplaySummary, WinRate, Stat, SortBy } from "@/lib/types"
+import type { OpeningStatView, ColorFilter, DisplaySummary, WinRate, SortBy } from "@/lib/types"
 
 function calculateDisplaySummary(
   winRates: WinRate[],
-  bestWinRateOpenings: Stat[],
-  mostPlayedOpenings: Stat[],
+  allOpenings: OpeningStatView[],
   filter: ColorFilter
 ): DisplaySummary {
   const filteredWinRates = filter === "all" ? winRates : winRates.filter((r) => r.color === filter)
@@ -19,6 +17,17 @@ function calculateDisplaySummary(
   const totalDraws = filteredWinRates.reduce((sum, r) => sum + r.draws, 0)
   const totalLosses = filteredWinRates.reduce((sum, r) => sum + r.losses, 0)
   const rates = calculateRatesFromCounts(totalWins, totalDraws, totalLosses)
+
+  const openingsForFilter = filter === "all" ? allOpenings : allOpenings.filter((op) => op.color === filter)
+  
+  const mostPlayedOpenings = [...openingsForFilter]
+    .sort((a, b) => b.totalGames - a.totalGames)
+    .slice(0, 5)
+
+  const bestWinRateOpenings = [...openingsForFilter]
+    .filter(op => op.totalGames >= 2) // 최소 2게임 이상인 것 중 승률 높은 순
+    .sort((a, b) => b.winRate - a.winRate)
+    .slice(0, 5)
 
   return {
     totalWins,
@@ -28,8 +37,8 @@ function calculateDisplaySummary(
     winRate: rates.winRate,
     drawRate: rates.drawRate,
     lossRate: rates.lossRate,
-    bestWinRateOpenings: filter === "all" ? bestWinRateOpenings : bestWinRateOpenings.filter((op) => op.color === filter),
-    mostPlayedOpenings: filter === "all" ? mostPlayedOpenings : mostPlayedOpenings.filter((op) => op.color === filter),
+    bestWinRateOpenings,
+    mostPlayedOpenings,
   }
 }
 
@@ -41,7 +50,6 @@ export function useOpeningData() {
   const [isPolling, setIsPolling] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Filter state
   const [colorFilter, setColorFilter] = useState<ColorFilter>("all")
   const [sortBy, setSortBy] = useState<SortBy>("totalGames")
   const [minGames, setMinGames] = useState("")
@@ -51,16 +59,14 @@ export function useOpeningData() {
 
   const pollingTimerRef = useRef<NodeJS.Timeout | null>(null)
   const pollCountRef = useRef(0)
-  const initialPollCountRef = useRef(0)
 
   const stopPolling = useCallback(() => {
     if (pollingTimerRef.current) {
       clearTimeout(pollingTimerRef.current)
       pollingTimerRef.current = null
     }
-    pollCountRef.current = 0
-    initialPollCountRef.current = 0
     setIsPolling(false)
+    pollCountRef.current = 0
   }, [])
 
   const loadData = useCallback(async (platform: string, username: string) => {
@@ -69,100 +75,69 @@ export function useOpeningData() {
     stopPolling()
 
     try {
-      // 1. Fetch CSV Dictionary first
       const csvResponse = await fetch('/data/openings/OPENING.csv')
         .then(res => {
           if (!res.ok) throw new Error("CSV file not found")
           return res.text()
         })
-        .catch(e => {
-          console.error("CSV fetch failed", e)
-          return ""
-        })
       const dictionary = parseOpeningCsv(csvResponse)
       setOpeningDictionary(dictionary)
 
-      // 2. Start polling for dashboard
       const poll = async () => {
         try {
           const dashboard = await fetchDashboard(platform, username)
           
-          // Data is not ready if response is null, empty string, or missing both white and black data
-          const isNotReady = !dashboard || 
-                           (typeof dashboard === 'object' && Object.keys(dashboard).length === 0) ||
-                           (dashboard.white === undefined && dashboard.black === undefined);
-
-          if (isNotReady) {
-            // Data not ready yet, continue polling (max 30 seconds)
-            initialPollCountRef.current += 1
-            if (initialPollCountRef.current < 30) {
+          if (!dashboard || (!dashboard.white && !dashboard.black)) {
+            pollCountRef.current += 1
+            if (pollCountRef.current < 30) {
               setIsPolling(true)
-              pollingTimerRef.current = setTimeout(poll, 1000) // Poll every 1 second
+              pollingTimerRef.current = setTimeout(poll, 1500)
             } else {
               setIsPolling(false)
               setLoading(false)
-              setError("Data synchronization is taking longer than expected. Please try again later.")
+              setError("Data not ready yet.")
             }
             return
           }
 
-          // Data received! Stop everything.
           setLoading(false)
           setIsPolling(false)
-          if (pollingTimerRef.current) {
-            clearTimeout(pollingTimerRef.current)
-            pollingTimerRef.current = null
-          }
+          stopPolling()
 
-          const whiteStats = dashboard.white?.openings || []
-          const blackStats = dashboard.black?.openings || []
+          const whiteOpenings = adaptColorOpeningStat(dashboard.white?.openings || [], "white", dictionary)
+          const blackOpenings = adaptColorOpeningStat(dashboard.black?.openings || [], "black", dictionary)
+          const combined = [...whiteOpenings, ...blackOpenings]
+          setAllOpenings(combined)
           
-          const whiteOpenings = adaptColorOpeningStat(whiteStats, "white", dictionary)
-          const blackOpenings = adaptColorOpeningStat(blackStats, "black", dictionary)
-          setAllOpenings([...whiteOpenings, ...blackOpenings])
-          
-          // ... (win rates, best win rate, most played calculation unchanged) ...
           const winRates: WinRate[] = [
             { 
               color: "white", 
-              wins: dashboard.white?.record?.stat?.win || 0, 
-              draws: dashboard.white?.record?.stat?.draw || 0, 
-              losses: dashboard.white?.record?.stat?.lose || 0 
+              wins: dashboard.white?.stat?.win || 0, 
+              draws: dashboard.white?.stat?.draw || 0, 
+              losses: dashboard.white?.stat?.lose || 0 
             },
             { 
               color: "black", 
-              wins: dashboard.black?.record?.stat?.win || 0, 
-              draws: dashboard.black?.record?.stat?.draw || 0, 
-              losses: dashboard.black?.record?.stat?.lose || 0 
+              wins: dashboard.black?.stat?.win || 0, 
+              draws: dashboard.black?.stat?.draw || 0, 
+              losses: dashboard.black?.stat?.lose || 0 
             },
           ]
           
-          const bestWinRateOpenings: Stat[] = [
-            ...adaptStat(dashboard.white?.highestWinRateOpenings || [], "white", dictionary),
-            ...adaptStat(dashboard.black?.highestWinRateOpenings || [], "black", dictionary)
-          ]
-          
-          const mostPlayedOpenings: Stat[] = [
-            ...adaptStat(dashboard.white?.mostPlayedOpenings || [], "white", dictionary),
-            ...adaptStat(dashboard.black?.mostPlayedOpenings || [], "black", dictionary)
-          ]
-
           setSummaries({
-            all: calculateDisplaySummary(winRates, bestWinRateOpenings, mostPlayedOpenings, "all"),
-            white: calculateDisplaySummary(winRates, bestWinRateOpenings, mostPlayedOpenings, "white"),
-            black: calculateDisplaySummary(winRates, bestWinRateOpenings, mostPlayedOpenings, "black"),
+            all: calculateDisplaySummary(winRates, combined, "all"),
+            white: calculateDisplaySummary(winRates, combined, "white"),
+            black: calculateDisplaySummary(winRates, combined, "black"),
           })
         } catch (err) {
-          console.error("Dashboard poll failed", err)
+          console.error("Poll failed", err)
           setIsPolling(false)
           setLoading(false)
         }
       }
 
       await poll()
-
     } catch (err) {
-       console.error("Failed to load data", err)
        setError(err instanceof Error ? err.message : "An error occurred")
        setLoading(false)
     }
@@ -174,24 +149,15 @@ export function useOpeningData() {
 
   const filteredAndSortedOpenings = useMemo(() => {
     let list = [...allOpenings]
-
-    if (colorFilter !== "all") {
-      list = list.filter((s) => s.color === colorFilter)
-    }
-
+    if (colorFilter !== "all") list = list.filter((s) => s.color === colorFilter)
     if (deferredSearch.trim()) {
       const q = deferredSearch.toLowerCase()
       list = list.filter((s) => s.name.toLowerCase().includes(q) || s.eco.toLowerCase().includes(q))
     }
-
     const parsedMin = Number(minGames)
     const parsedMax = Number(maxGames)
-    if (minGames.trim() !== "" && !Number.isNaN(parsedMin)) {
-      list = list.filter((s) => s.totalGames >= parsedMin)
-    }
-    if (maxGames.trim() !== "" && !Number.isNaN(parsedMax)) {
-      list = list.filter((s) => s.totalGames <= parsedMax)
-    }
+    if (minGames.trim() !== "" && !Number.isNaN(parsedMin)) list = list.filter((s) => s.totalGames >= parsedMin)
+    if (maxGames.trim() !== "" && !Number.isNaN(parsedMax)) list = list.filter((s) => s.totalGames <= parsedMax)
 
     list.sort((a, b) => {
       switch (sortBy) {
@@ -201,44 +167,26 @@ export function useOpeningData() {
         default: return 0
       }
     })
-
     return list
   }, [allOpenings, colorFilter, deferredSearch, minGames, maxGames, sortBy])
-
-  const currentSummary = summaries ? summaries[colorFilter] : null
-
-  const epdMap = useMemo(() => {
-    if (!openingDictionary) return new Map<string, { id: number; eco: string; name: string; epd: string }>()
-    const map = new Map<string, { id: number; eco: string; name: string; epd: string }>()
-    Object.entries(openingDictionary).forEach(([idStr, meta]) => {
-      const id = parseInt(idStr)
-      map.set(meta.epd, { id, ...meta })
-    })
-    return map
-  }, [openingDictionary])
-
-  const clearData = useCallback(() => {
-    setAllOpenings([])
-    setSummaries(null)
-    setError(null)
-    setLoading(false)
-    stopPolling()
-    pollCountRef.current = 0
-  }, [stopPolling])
 
   return {
     allOpenings,
     openingDictionary,
-    epdMap,
     filteredAndSortedOpenings,
     summaries,
-    currentSummary,
+    currentSummary: summaries ? summaries[colorFilter] : null,
     loading,
     isPolling,
     error,
     loadData,
-    clearData,
-    // filter state
+    clearData: () => {
+      setAllOpenings([])
+      setSummaries(null)
+      setError(null)
+      setLoading(false)
+      stopPolling()
+    },
     colorFilter,
     setColorFilter,
     sortBy,
