@@ -43,20 +43,22 @@ export interface SyncGameStatus {
 // 2. Statistics API Types (Dashboard / Records)
 // ----------------------------------------------------------------------
 
-export interface ColorRecord {
-  color: Color | "unknown"
+export interface StatDto {
   win: number
   draw: number
   lose: number
+}
+
+export interface ColorRecord {
+  color: Color | "unknown"
+  stat: StatDto
 }
 
 export interface ColorOpeningStat {
   color: Color
   id?: number
   openingId?: number // Backend might use openingId instead of id
-  win: number
-  draw: number
-  lose: number
+  stat: StatDto
 }
 
 export interface ColorDashboard {

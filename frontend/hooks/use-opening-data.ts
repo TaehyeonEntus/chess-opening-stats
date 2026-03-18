@@ -125,15 +125,15 @@ export function useOpeningData() {
           const winRates: WinRate[] = [
             { 
               color: "white", 
-              wins: dashboard.white?.record?.win || 0, 
-              draws: dashboard.white?.record?.draw || 0, 
-              losses: dashboard.white?.record?.lose || 0 
+              wins: dashboard.white?.record?.stat?.win || 0, 
+              draws: dashboard.white?.record?.stat?.draw || 0, 
+              losses: dashboard.white?.record?.stat?.lose || 0 
             },
             { 
               color: "black", 
-              wins: dashboard.black?.record?.win || 0, 
-              draws: dashboard.black?.record?.draw || 0, 
-              losses: dashboard.black?.record?.lose || 0 
+              wins: dashboard.black?.record?.stat?.win || 0, 
+              draws: dashboard.black?.record?.stat?.draw || 0, 
+              losses: dashboard.black?.record?.stat?.lose || 0 
             },
           ]
           

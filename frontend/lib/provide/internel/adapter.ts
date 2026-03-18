@@ -27,6 +27,10 @@ export function adaptColorOpeningStat(
         .map((stat): OpeningStatView => {
             const actualId = stat.id ?? stat.openingId!;
             const metadata = dictionary ? dictionary[actualId] : null;
+            const wins = stat.stat?.win || 0;
+            const draws = stat.stat?.draw || 0;
+            const losses = stat.stat?.lose || 0;
+            const totalGames = wins + draws + losses;
             
             return {
                 id: actualId,
@@ -34,15 +38,10 @@ export function adaptColorOpeningStat(
                 name: metadata?.name || `Opening #${actualId}`,
                 epd: metadata?.epd || "",
                 color: color,
-                wins: stat.win || 0,
-                draws: stat.draw || 0,
-                losses: stat.lose || 0,
-                ...calcOpeningRates(
-                    (stat.win || 0) + (stat.draw || 0) + (stat.lose || 0), 
-                    stat.win || 0, 
-                    stat.draw || 0, 
-                    stat.lose || 0
-                )
+                wins,
+                draws,
+                losses,
+                ...calcOpeningRates(totalGames, wins, draws, losses)
             }
         })
 }
@@ -67,9 +66,9 @@ export function adaptStat(
                 name: metadata?.name || `Opening #${actualId}`,
                 epd: metadata?.epd || "",
                 color: color,
-                wins: stat.win || 0,
-                draws: stat.draw || 0,
-                losses: stat.lose || 0,
+                wins: stat.stat?.win || 0,
+                draws: stat.stat?.draw || 0,
+                losses: stat.stat?.lose || 0,
             }
         })
 }
