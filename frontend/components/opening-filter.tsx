@@ -214,7 +214,7 @@ export function OpeningFilter({
                 <div className="flex-[2] rounded-lg border bg-muted/30 p-4 flex flex-col justify-center min-h-0 min-w-0 overflow-hidden">
                   <div className="text-[10px] uppercase font-bold text-muted-foreground mb-1 shrink-0">{t("opening")}</div>
                   {currentBoardOpeningName ? (
-                    <div className="flex items-baseline justify-between gap-4 min-w-0">
+                    <div className="flex items-baseline justify-between gap-4 min-w-0 overflow-hidden">
                       <div className="min-w-0 flex-1 overflow-hidden">
                         <h3 className="text-xl font-bold leading-tight truncate" title={currentBoardOpeningName}>
                           {currentBoardOpeningName}
@@ -225,7 +225,7 @@ export function OpeningFilter({
                       </div>
                     </div>
                   ) : (
-                    <div className="text-sm text-muted-foreground italic">{t("unknownOrNoGames")}</div>
+                    <div className="text-sm text-muted-foreground italic shrink-0">{t("unknownOrNoGames")}</div>
                   )}
                 </div>
 

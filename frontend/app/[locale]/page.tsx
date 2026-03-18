@@ -324,25 +324,25 @@ export default function HomePage() {
         {/* Step 4: Dashboard Content */}
         {isDataReady && (
           <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <section className="flex items-center justify-between bg-card p-4 rounded-xl border shadow-sm" aria-labelledby="player-profile-title">
+            <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-4 rounded-xl border shadow-sm" aria-labelledby="player-profile-title">
               <h2 id="player-profile-title" className="sr-only">{t("profile")}</h2>
-              <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12 border shadow-sm">
+              <div className="flex items-center gap-4 min-w-0">
+                <Avatar className="h-12 w-12 border shadow-sm shrink-0">
                   <AvatarImage src={playerInfo?.image_url} />
                   <AvatarFallback className="font-bold">{playerInfo?.username?.[0]?.toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-xl font-bold">{playerInfo?.username}</p>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase leading-none">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <p className="text-xl font-bold truncate">{playerInfo?.username}</p>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase leading-none shrink-0">
                       {platform.replace('_', '.')}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground">{t("cacheStatus")}</p>
+                  <p className="text-xs text-muted-foreground truncate">{t("cacheStatus")}</p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={handleCancel} className="rounded-lg">
+              <div className="flex gap-2 shrink-0">
+                <Button variant="outline" size="sm" onClick={handleCancel} className="flex-1 sm:flex-none rounded-lg">
                   {t("changePlayer")}
                 </Button>
               </div>

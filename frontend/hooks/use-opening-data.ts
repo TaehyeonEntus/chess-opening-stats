@@ -27,7 +27,7 @@ function calculateDisplaySummary(
     .slice(0, 5)
 
   const bestWinRateOpenings = providedBestWinRate || [...openingsForFilter]
-    .filter(op => op.totalGames >= 2) // 최소 2게임 이상인 것 중 승률 높은 순
+    .filter(op => op.totalGames >= 10) // 최소 10게임 이상인 것 중 승률 높은 순
     .sort((a, b) => b.winRate - a.winRate)
     .slice(0, 5)
 
@@ -118,6 +118,16 @@ export function useOpeningData() {
           const combined = [...whiteOpenings, ...blackOpenings]
           setAllOpenings(combined)
           
+          // Combine top openings from both sides for the 'all' summary
+          const combinedMostPlayed = [...whiteMostPlayed, ...blackMostPlayed]
+            .sort((a, b) => b.totalGames - a.totalGames)
+            .slice(0, 5)
+            
+          const combinedBestWinRate = [...whiteBestWinRate, ...blackBestWinRate]
+            .filter(op => op.totalGames >= 10)
+            .sort((a, b) => b.winRate - a.winRate)
+            .slice(0, 5)
+
           const winRates: WinRate[] = [
             { 
               color: "white", 
@@ -134,7 +144,7 @@ export function useOpeningData() {
           ]
           
           setSummaries({
-            all: calculateDisplaySummary(winRates, combined, "all"),
+            all: calculateDisplaySummary(winRates, combined, "all", combinedMostPlayed, combinedBestWinRate),
             white: calculateDisplaySummary(winRates, whiteOpenings, "white", whiteMostPlayed, whiteBestWinRate),
             black: calculateDisplaySummary(winRates, blackOpenings, "black", blackMostPlayed, blackBestWinRate),
           })

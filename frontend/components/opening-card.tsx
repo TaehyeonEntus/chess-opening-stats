@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { WinRateBar } from "@/components/win-rate-bar"
 import { Chessboard } from "react-chessboard"
 import type { OpeningStatView } from "@/lib/types"
+import { cn, getWinRateColor } from "@/lib/utils"
 
 interface OpeningCardProps {
   stat: OpeningStatView
@@ -97,7 +98,7 @@ export function OpeningCard({ stat }: OpeningCardProps) {
           <div className="text-right">
             <div className="flex items-start justify-end gap-4">
               <div className="text-right">
-                <p className="text-2xl font-bold tabular-nums text-foreground">
+                <p className={cn("text-2xl font-bold tabular-nums", getWinRateColor(stat.winRate))}>
                   {stat.winRate}%
                 </p>
                 <p className="text-xs text-muted-foreground">{t("winRate")}</p>
@@ -140,7 +141,7 @@ export function OpeningCard({ stat }: OpeningCardProps) {
         <WinRateBar winRate={stat.winRate} drawRate={stat.drawRate} lossRate={stat.lossRate} />
         <div className="mt-3 flex justify-between text-xs tabular-nums text-muted-foreground">
           <span className="flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
+            <span className={cn("inline-block h-2 w-2 rounded-full", getWinRateColor(stat.winRate, "bg"))} aria-hidden />
             {stat.wins}W
           </span>
           <span className="flex items-center gap-1">
