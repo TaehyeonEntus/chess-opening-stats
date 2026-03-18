@@ -21,17 +21,6 @@ import { provideCheckPlayerExists } from "@/lib/provide/provideFacade"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
-// Format last_online (seconds ago)
-const formatLastOnline = (seconds: number) => {
-  if (seconds < 60) return `${seconds}s ago`
-  const mins = Math.floor(seconds / 60)
-  if (mins < 60) return `${mins}m ago`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  return `${days}d ago`
-}
-
 export default function HomePage() {
   const t = useTranslations("home")
   const tCommon = useTranslations("common")
@@ -39,6 +28,17 @@ export default function HomePage() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  // Format last_online (seconds ago) with localized units
+  const formatLastOnline = useCallback((seconds: number) => {
+    if (seconds < 60) return t("unitSecond", { count: seconds })
+    const mins = Math.floor(seconds / 60)
+    if (mins < 60) return t("unitMinute", { count: mins })
+    const hours = Math.floor(mins / 60)
+    if (hours < 24) return t("unitHour", { count: hours })
+    const days = Math.floor(hours / 24)
+    return t("unitDay", { count: days })
+  }, [t])
 
   const [platform, setPlatform] = useState<string>(searchParams.get("platform") || "CHESS_COM")
   const [usernameInput, setUsernameInput] = useState<string>(searchParams.get("username") || "")
@@ -247,10 +247,11 @@ export default function HomePage() {
                         </span>
                         {playerInfo?.last_online !== undefined && (
                           <div className="flex items-center text-xs gap-1">
-                            <Clock className="h-3 w-3" />
-                            <span>{t("activeTime", { time: formatLastOnline(Math.floor((Date.now() - playerInfo.last_online) / 1000)) })}</span>
+                            <Clock className="h-3 w-3" aria-hidden="true" />
+                            <span>{t("activeTime", { time: formatLastOnline(playerInfo.last_online) })}</span>
                           </div>
                         )}
+
                       </div>
                     </div>
                   </CardContent>

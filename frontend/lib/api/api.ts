@@ -25,7 +25,7 @@ export interface PlayerInfo {
   exists?: boolean
   username?: string
   image_url?: string
-  last_online?: number // Unix Timestamp (ms)
+  last_online?: number // Seconds ago (상대적인 초 단위 값)
 }
 
 export interface AddPlayerRequest {
@@ -35,15 +35,15 @@ export interface AddPlayerRequest {
 
 /**
  * 플레이어 존재 여부 확인 및 정보 조회
- * GET /player/{platform}/{username}
+ * GET /player?platform=...&username=...
  */
 export async function checkPlayerExists(platform: string, username: string): Promise<PlayerInfo> {
-  const res = await apiClient.get<PlayerInfo>(`/player/${platform}/${username}`)
-    .then(res => extractData<PlayerInfo>(res))
+  const res = await apiClient.get<PlayerInfo>(`/player`, {
+    params: { platform, username }
+  }).then(res => extractData<PlayerInfo>(res))
   
-  // If we got a valid response object with data (like image_url or username),
-  // consider the player as existing even if the 'exists' field is missing or false.
-  if (res && (res.exists || res.image_url || res.username || res.last_online !== undefined)) {
+  // 백엔드 응답에는 exists 필드가 없으므로, 데이터(image_url, last_online 등)가 있으면 존재하는 것으로 간주합니다.
+  if (res && (res.image_url || res.username || res.last_online !== undefined)) {
     return { ...res, exists: true, username: res.username || username }
   }
   
