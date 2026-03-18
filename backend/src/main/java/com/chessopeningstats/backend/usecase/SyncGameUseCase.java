@@ -23,6 +23,6 @@ public class SyncGameUseCase {
     }
 
     private boolean isCached(Player player) {
-        return !dashboardCache.contains(player) || !syncQueue.contains(player);
+        return dashboardCache.contains(player) || syncQueue.contains(player);
     }
 }

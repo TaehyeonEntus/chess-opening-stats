@@ -1,11 +1,10 @@
 package com.chessopeningstats.backend.web;
 
-import com.chessopeningstats.backend.domain.Color;
 import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.service.syncgame.dto.ColorDashboard;
-import com.chessopeningstats.backend.service.syncgame.dto.ColorOpeningStat;
-import com.chessopeningstats.backend.service.syncgame.dto.ColorRecord;
 import com.chessopeningstats.backend.service.syncgame.dto.Dashboard;
+import com.chessopeningstats.backend.service.syncgame.dto.OpeningStat;
+import com.chessopeningstats.backend.service.syncgame.dto.Stat;
 import com.chessopeningstats.backend.usecase.ExistsPlayerUseCase;
 import com.chessopeningstats.backend.usecase.GetDashboardUseCase;
 import com.chessopeningstats.backend.usecase.SyncGameUseCase;
@@ -51,16 +50,16 @@ class HomeControllerTest {
     void getDashboard() throws Exception {
         Dashboard dashboard = new Dashboard(
                 new ColorDashboard(
-                        new ColorRecord(Color.WHITE, 10, 2, 3),
-                        List.of(new ColorOpeningStat(1L, Color.WHITE, 5, 1, 0)),
-                        List.of(new ColorOpeningStat(1L, Color.WHITE, 5, 1, 0)),
-                        List.of(new ColorOpeningStat(1L, Color.WHITE, 5, 1, 0))
+                        new Stat(10, 2, 3),
+                        List.of(new OpeningStat(1L, new Stat(5, 1, 0))),
+                        List.of(new OpeningStat(1L, new Stat(5, 1, 0))),
+                        List.of(new OpeningStat(1L, new Stat(5, 1, 0)))
                 ),
                 new ColorDashboard(
-                        new ColorRecord(Color.BLACK, 8, 1, 6),
-                        List.of(new ColorOpeningStat(2L, Color.BLACK, 4, 0, 2)),
-                        List.of(new ColorOpeningStat(2L, Color.BLACK, 4, 0, 2)),
-                        List.of(new ColorOpeningStat(2L, Color.BLACK, 4, 0, 2))
+                        new Stat(8, 1, 6),
+                        List.of(new OpeningStat(2L, new Stat(4, 0, 2))),
+                        List.of(new OpeningStat(2L, new Stat(4, 0, 2))),
+                        List.of(new OpeningStat(2L, new Stat(4, 0, 2)))
                 )
         );
 
@@ -76,44 +75,36 @@ class HomeControllerTest {
                                 parameterWithName("username").description("플레이어 사용자 이름")
                         ),
                         responseFields(
-                                fieldWithPath("white.record.color").description("기물 색상"),
-                                fieldWithPath("white.record.win").description("승리 횟수"),
-                                fieldWithPath("white.record.draw").description("무승부 횟수"),
-                                fieldWithPath("white.record.lose").description("패배 횟수"),
+                                fieldWithPath("white.stat.win").description("승리 횟수"),
+                                fieldWithPath("white.stat.draw").description("무승부 횟수"),
+                                fieldWithPath("white.stat.lose").description("패배 횟수"),
                                 fieldWithPath("white.mostPlayedOpenings[].openingId").description("오프닝 ID"),
-                                fieldWithPath("white.mostPlayedOpenings[].color").description("기물 색상"),
-                                fieldWithPath("white.mostPlayedOpenings[].win").description("승리 횟수"),
-                                fieldWithPath("white.mostPlayedOpenings[].draw").description("무승부 횟수"),
-                                fieldWithPath("white.mostPlayedOpenings[].lose").description("패배 횟수"),
+                                fieldWithPath("white.mostPlayedOpenings[].stat.win").description("승리 횟수"),
+                                fieldWithPath("white.mostPlayedOpenings[].stat.draw").description("무승부 횟수"),
+                                fieldWithPath("white.mostPlayedOpenings[].stat.lose").description("패배 횟수"),
                                 fieldWithPath("white.highestWinRateOpenings[].openingId").description("오프닝 ID"),
-                                fieldWithPath("white.highestWinRateOpenings[].color").description("기물 색상"),
-                                fieldWithPath("white.highestWinRateOpenings[].win").description("승리 횟수"),
-                                fieldWithPath("white.highestWinRateOpenings[].draw").description("무승부 횟수"),
-                                fieldWithPath("white.highestWinRateOpenings[].lose").description("패배 횟수"),
+                                fieldWithPath("white.highestWinRateOpenings[].stat.win").description("승리 횟수"),
+                                fieldWithPath("white.highestWinRateOpenings[].stat.draw").description("무승부 횟수"),
+                                fieldWithPath("white.highestWinRateOpenings[].stat.lose").description("패배 횟수"),
                                 fieldWithPath("white.openings[].openingId").description("오프닝 ID"),
-                                fieldWithPath("white.openings[].color").description("기물 색상"),
-                                fieldWithPath("white.openings[].win").description("승리 횟수"),
-                                fieldWithPath("white.openings[].draw").description("무승부 횟수"),
-                                fieldWithPath("white.openings[].lose").description("패배 횟수"),
-                                fieldWithPath("black.record.color").description("기물 색상"),
-                                fieldWithPath("black.record.win").description("승리 횟수"),
-                                fieldWithPath("black.record.draw").description("무승부 횟수"),
-                                fieldWithPath("black.record.lose").description("패배 횟수"),
+                                fieldWithPath("white.openings[].stat.win").description("승리 횟수"),
+                                fieldWithPath("white.openings[].stat.draw").description("무승부 횟수"),
+                                fieldWithPath("white.openings[].stat.lose").description("패배 횟수"),
+                                fieldWithPath("black.stat.win").description("승리 횟수"),
+                                fieldWithPath("black.stat.draw").description("무승부 횟수"),
+                                fieldWithPath("black.stat.lose").description("패배 횟수"),
                                 fieldWithPath("black.mostPlayedOpenings[].openingId").description("오프닝 ID"),
-                                fieldWithPath("black.mostPlayedOpenings[].color").description("기물 색상"),
-                                fieldWithPath("black.mostPlayedOpenings[].win").description("승리 횟수"),
-                                fieldWithPath("black.mostPlayedOpenings[].draw").description("무승부 횟수"),
-                                fieldWithPath("black.mostPlayedOpenings[].lose").description("패배 횟수"),
+                                fieldWithPath("black.mostPlayedOpenings[].stat.win").description("승리 횟수"),
+                                fieldWithPath("black.mostPlayedOpenings[].stat.draw").description("무승부 횟수"),
+                                fieldWithPath("black.mostPlayedOpenings[].stat.lose").description("패배 횟수"),
                                 fieldWithPath("black.highestWinRateOpenings[].openingId").description("오프닝 ID"),
-                                fieldWithPath("black.highestWinRateOpenings[].color").description("기물 색상"),
-                                fieldWithPath("black.highestWinRateOpenings[].win").description("승리 횟수"),
-                                fieldWithPath("black.highestWinRateOpenings[].draw").description("무승부 횟수"),
-                                fieldWithPath("black.highestWinRateOpenings[].lose").description("패배 횟수"),
+                                fieldWithPath("black.highestWinRateOpenings[].stat.win").description("승리 횟수"),
+                                fieldWithPath("black.highestWinRateOpenings[].stat.draw").description("무승부 횟수"),
+                                fieldWithPath("black.highestWinRateOpenings[].stat.lose").description("패배 횟수"),
                                 fieldWithPath("black.openings[].openingId").description("오프닝 ID"),
-                                fieldWithPath("black.openings[].color").description("기물 색상"),
-                                fieldWithPath("black.openings[].win").description("승리 횟수"),
-                                fieldWithPath("black.openings[].draw").description("무승부 횟수"),
-                                fieldWithPath("black.openings[].lose").description("패배 횟수")
+                                fieldWithPath("black.openings[].stat.win").description("승리 횟수"),
+                                fieldWithPath("black.openings[].stat.draw").description("무승부 횟수"),
+                                fieldWithPath("black.openings[].stat.lose").description("패배 횟수")
                         )
                 ));
     }

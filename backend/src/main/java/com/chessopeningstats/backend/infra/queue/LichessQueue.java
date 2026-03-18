@@ -20,11 +20,11 @@ public class LichessQueue {
         return lichessQueue.poll();
     }
 
-    public boolean contains(Player player){
+    public boolean contains(Player player) {
         return lichessQueue.contains(player);
     }
 
-    public int size(){
+    public int size() {
         return lichessQueue.size();
     }
 

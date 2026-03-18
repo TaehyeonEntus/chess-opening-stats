@@ -14,6 +14,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 오프닝 정보 땡겨오는 클라이언트~ (메모리에 올려놓기 위함)
+ */
 @Component
 @RequiredArgsConstructor
 public class OpeningClient {

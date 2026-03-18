@@ -6,6 +6,7 @@ import com.chessopeningstats.backend.service.syncgame.GameSyncFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
@@ -16,15 +17,17 @@ public class WorkerScheduler {
 
     @Scheduled(fixedDelay = 1000, scheduler = "chessComScheduler")
     public void chessComWorker() {
-        while (!chessComQueue.isEmpty()) {
-            gameSyncFacade.syncPlayer(chessComQueue.poll()).block();
-        }
+        Mono.fromCallable(chessComQueue::poll)
+                .repeat(() -> !chessComQueue.isEmpty())
+                .flatMap(gameSyncFacade::syncPlayer)
+                .blockLast();
     }
 
     @Scheduled(fixedDelay = 1000, scheduler = "lichessScheduler")
     public void lichessWorker() {
-        while (!lichessQueue.isEmpty()) {
-            gameSyncFacade.syncPlayer(lichessQueue.poll()).block();
-        }
+        Mono.fromCallable(lichessQueue::poll)
+                .repeat(() -> !lichessQueue.isEmpty())
+                .flatMap(gameSyncFacade::syncPlayer)
+                .blockLast();
     }
 }
