@@ -15,6 +15,7 @@ import reactor.core.publisher.ParallelFlux;
 @Service
 @RequiredArgsConstructor
 public class GameSyncFacade {
+    //순서대로 진행됩니다
     private final GameFetchServiceRegistry<RawGame> gameFetchServiceRegistry;
     private final GameNormalizeServiceRegistry<RawGame> gameNormalizeServiceRegistry;
     private final GameSanitizeService gameSanitizeService;
@@ -23,27 +24,14 @@ public class GameSyncFacade {
     private final DashboardCacheService dashboardCacheService;
 
     public Mono<Void> syncPlayer(Player player) {
-        GameFetchService<RawGame>
-                gameFetchService = gameFetchServiceRegistry.getService(player.platform());
-        GameNormalizeService<RawGame>
-                gameNormalizeService = gameNormalizeServiceRegistry.getService(player.platform());
+        GameFetchService<RawGame> gameFetchService = gameFetchServiceRegistry.getService(player.platform());
+        GameNormalizeService<RawGame> gameNormalizeService = gameNormalizeServiceRegistry.getService(player.platform());
 
-        //네트워크 바운드
-        ParallelFlux<RawGame>
-                rawGames = gameFetchService.fetch(player);
-
-        //CPU 바운드
-        ParallelFlux<NormalizedGame>
-                normalizedGames = gameNormalizeService.normalize(rawGames, player);
-        ParallelFlux<NormalizedGame>
-                sanitizedGames = gameSanitizeService.sanitize(normalizedGames);
-        ParallelFlux<AnalyzedGame>
-                analyzedGames = gameAnalyzeService.analyze(sanitizedGames);
-        Mono<Dashboard>
-                dashboard = dashboardConvertService.convertDashboard(analyzedGames, player);
-
-        //I/O 바운드 ( 캐시라 짧음 )
-        return
-                dashboardCacheService.cacheDashboard(player, dashboard);
+        return gameFetchService.fetch(player)
+                .transform(rawGames -> gameNormalizeService.normalize(rawGames, player))
+                .transform(gameSanitizeService::sanitize)
+                .transform(gameAnalyzeService::analyze)
+                .as(analyzedGames -> dashboardConvertService.convertDashboard(analyzedGames, player))
+                .as(dashboard -> dashboardCacheService.cacheDashboard(player, dashboard));
     }
 }

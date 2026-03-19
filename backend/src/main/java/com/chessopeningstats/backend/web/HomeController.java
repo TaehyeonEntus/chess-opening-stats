@@ -7,7 +7,7 @@ import com.chessopeningstats.backend.usecase.ExistsPlayerUseCase;
 import com.chessopeningstats.backend.usecase.GetDashboardUseCase;
 import com.chessopeningstats.backend.usecase.EnqueuePlayerUseCase;
 import com.chessopeningstats.backend.web.dto.PlayerExistenceResponse;
-import com.chessopeningstats.backend.web.dto.SyncGameResponse;
+import com.chessopeningstats.backend.web.dto.EnqueuePlayerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +32,7 @@ public class HomeController {
     }
 
     @PostMapping("/sync")
-    public SyncGameResponse sync(@RequestParam Platform platform, @RequestParam String username) {
-        return enqueuePlayerUseCase.syncGame(Player.of(platform, username));
+    public EnqueuePlayerResponse sync(@RequestParam Platform platform, @RequestParam String username) {
+        return enqueuePlayerUseCase.enqueuePlayer(Player.of(platform, username));
     }
 }

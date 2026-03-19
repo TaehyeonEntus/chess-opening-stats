@@ -81,9 +81,7 @@ public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGam
                 .bodyToMono(MonthlyArchiveResponse.class)
                 .flatMapIterable(MonthlyArchiveResponse::games)
                 .retryWhen(retryPolicy())
-                .onErrorMap(WebClientResponseException.NotFound.class, PlayerNotFoundException::new)
-                .onErrorMap(WebClientResponseException.TooManyRequests.class, RateLimitExceededException::new)
-                .onErrorMap(ExternalServiceException::new);
+                .onErrorContinue((e, game) -> log.debug(e.getMessage()));
     }
 
     // Player의 모든 Archive Url
