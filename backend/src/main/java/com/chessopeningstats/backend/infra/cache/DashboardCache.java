@@ -9,20 +9,20 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class DashboardCache {
-    private final Cache<Player, Dashboard> caffeine;
+    private final Cache<Player, Dashboard> cache;
 
     //파이프라인만 비동기로 일단 구현하자....
     public void put(Player player, Dashboard dashboard) {
-        caffeine.put(player, dashboard);
+        cache.put(player, dashboard);
     }
 
     //동기
     public Dashboard get(Player player) {
-        return caffeine.getIfPresent(player);
+        return cache.getIfPresent(player);
     }
 
     //동기
     public boolean contains(Player player) {
-        return caffeine.asMap().containsKey(player);
+        return cache.asMap().containsKey(player);
     }
 }
