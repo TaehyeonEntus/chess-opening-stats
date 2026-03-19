@@ -164,7 +164,7 @@ export function OpeningFilter({
             <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6 p-1 h-full min-h-0">
               {/* Left Column: Board and Controls */}
               <div className="flex flex-col gap-4 h-full">
-                <div className="aspect-square rounded-lg border bg-card p-4 shrink-0">
+                <div className="aspect-square rounded-lg border bg-card shrink-0">
                   <Chessboard
                     key={fen + boardOrientation}
                     options={{
