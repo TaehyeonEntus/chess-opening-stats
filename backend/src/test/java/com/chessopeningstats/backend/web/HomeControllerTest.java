@@ -9,7 +9,7 @@ import com.chessopeningstats.backend.usecase.ExistsPlayerUseCase;
 import com.chessopeningstats.backend.usecase.GetDashboardUseCase;
 import com.chessopeningstats.backend.usecase.EnqueuePlayerUseCase;
 import com.chessopeningstats.backend.web.dto.PlayerExistenceResponse;
-import com.chessopeningstats.backend.web.dto.SyncGameResponse;
+import com.chessopeningstats.backend.web.dto.EnqueuePlayerResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -131,7 +131,7 @@ class HomeControllerTest {
 
     @Test
     void syncGames() throws Exception {
-        given(enqueuePlayerUseCase.syncGame(any(Player.class))).willReturn(new SyncGameResponse(1));
+        given(enqueuePlayerUseCase.enqueuePlayer(any(Player.class))).willReturn(new EnqueuePlayerResponse(1));
 
         mockMvc.perform(post("/sync")
                         .queryParam("platform", "CHESS_COM")
