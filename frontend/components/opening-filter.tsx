@@ -214,16 +214,16 @@ export function OpeningFilter({
                 <div className="flex-[2] rounded-lg border bg-muted/30 p-4 flex flex-col justify-center min-h-0 min-w-0 overflow-hidden">
                   <div className="text-[10px] uppercase font-bold text-muted-foreground mb-1 shrink-0">{t("opening")}</div>
                   {currentBoardOpeningName ? (
-                    <div className="flex items-baseline justify-between gap-4 min-w-0 overflow-hidden">
-                      <div className="min-w-0 flex-1 overflow-hidden">
-                        <h3 className="text-xl font-bold leading-tight truncate" title={currentBoardOpeningName}>
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="text-sm font-mono text-primary font-semibold shrink-0">
+                            {currentBoardOpeningEco}
+                          </div>
+                        </div>
+                        <h3 className="text-xl font-bold leading-tight break-words">
                           {currentBoardOpeningName}
                         </h3>
                       </div>
-                      <div className="text-sm font-mono text-primary font-semibold shrink-0">
-                        {currentBoardOpeningEco}
-                      </div>
-                    </div>
                   ) : (
                     <div className="text-sm text-muted-foreground italic shrink-0">{t("unknownOrNoGames")}</div>
                   )}
