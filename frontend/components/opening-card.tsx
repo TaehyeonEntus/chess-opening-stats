@@ -78,7 +78,7 @@ export function OpeningCard({ stat }: OpeningCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
-            <CardTitle className="truncate text-sm font-semibold leading-tight">
+            <CardTitle className="truncate block text-sm font-semibold leading-tight">
               {stat.name}
             </CardTitle>
             <div className="mt-1.5 flex items-center gap-2">
@@ -98,7 +98,7 @@ export function OpeningCard({ stat }: OpeningCardProps) {
           <div className="text-right">
             <div className="flex items-start justify-end gap-4">
               <div className="text-right">
-                <p className={cn("text-2xl font-bold tabular-nums", getWinRateColor(stat.winRate))}>
+                <p className={cn("text-2xl font-bold tabular-nums", getWinRateColor(stat.winRate, "text"))}>
                   {stat.winRate}%
                 </p>
                 <p className="text-xs text-muted-foreground">{t("winRate")}</p>
@@ -140,8 +140,8 @@ export function OpeningCard({ stat }: OpeningCardProps) {
         </div>
         <WinRateBar winRate={stat.winRate} drawRate={stat.drawRate} lossRate={stat.lossRate} />
         <div className="mt-3 flex justify-between text-xs tabular-nums text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <span className={cn("inline-block h-2 w-2 rounded-full", getWinRateColor(stat.winRate, "bg"))} aria-hidden />
+          <span className="flex items-center gap-1 font-medium text-emerald-600 dark:text-emerald-400">
+            <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
             {stat.wins}W
           </span>
           <span className="flex items-center gap-1">

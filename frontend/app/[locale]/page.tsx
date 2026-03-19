@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils"
 export default function HomePage() {
   const t = useTranslations("home")
   const tCommon = useTranslations("common")
+  const tOpening = useTranslations("opening")
 
   const router = useRouter()
   const pathname = usePathname()
@@ -380,7 +381,7 @@ export default function HomePage() {
 
             {currentSummary && (
               <aside aria-labelledby="summary-title">
-                <h2 id="summary-title" className="sr-only">{t("overallStats")}</h2>
+                <h2 id="summary-title" className="sr-only">{tOpening("overallStats")}</h2>
                 <OpeningSummary summary={currentSummary} colorFilter={colorFilter} />
               </aside>
             )}

@@ -13,11 +13,10 @@ export function cn(...inputs: ClassValue[]) {
 export function getWinRateColor(winRate: number, type: 'text' | 'bg' = 'text'): string {
   if (winRate === 100) return type === 'text' ? 'animate-rainbow font-black' : 'bg-rainbow'
 
-  if (winRate >= 70) return type === 'text' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'bg-emerald-600'
-  if (winRate >= 55) return type === 'text' ? 'text-emerald-500 font-semibold' : 'bg-emerald-500'
-  if (winRate >= 45) return type === 'text' ? 'text-blue-500 font-medium' : 'bg-blue-500'
-  if (winRate >= 35) return type === 'text' ? 'text-orange-500' : 'bg-orange-500'
+  if (winRate >= 60) return type === 'text' ? 'text-blue-600 dark:text-blue-400 font-bold' : 'bg-blue-600'
+  if (winRate > 45) return type === 'text' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'bg-emerald-600'
+  if (winRate > 40) return type === 'text' ? 'text-orange-500 dark:text-orange-400 font-semibold' : 'bg-orange-500'
 
-  return type === 'text' ? 'text-rose-500' : 'bg-rose-500'
+  return type === 'text' ? 'text-rose-500 dark:text-rose-400 font-semibold' : 'bg-rose-500'
 }
 

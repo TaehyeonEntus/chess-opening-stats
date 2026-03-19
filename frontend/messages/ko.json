@@ -95,7 +95,8 @@
     "syncDescription": "{platform}에서 최신 게임 데이터를 가져오고 있습니다. 잠시만 기다려 주세요.",
     "changePlayer": "플레이어 변경",
     "bgSyncTitle": "백그라운드 동기화 중...",
-    "bgSyncDescription": "새로운 게임 데이터를 처리하고 있습니다. 통계는 자동으로 업데이트됩니다."
+    "bgSyncDescription": "새로운 게임 데이터를 처리하고 있습니다. 통계는 자동으로 업데이트됩니다.",
+    "profile": "프로필"
   },
   "opening": {
     "name": "오프닝 이름",

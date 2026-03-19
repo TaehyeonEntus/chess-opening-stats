@@ -95,7 +95,8 @@
     "syncDescription": "We are fetching your latest games from {platform}. This will take a few moments.",
     "changePlayer": "Change Player",
     "bgSyncTitle": "Background Syncing...",
-    "bgSyncDescription": "New games are still being processed. Your stats will refresh automatically."
+    "bgSyncDescription": "New games are still being processed. Your stats will refresh automatically.",
+    "profile": "Profile"
   },
   "opening": {
     "name": "Opening Name",

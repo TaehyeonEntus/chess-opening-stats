@@ -9,7 +9,7 @@ interface WinRateBarProps {
 
 export function WinRateBar({ winRate, drawRate, lossRate, size = "sm" }: WinRateBarProps) {
   const height = size === "sm" ? "h-2" : "h-3"
-  const winColorClass = getWinRateColor(winRate, "bg")
+  const winColorClass = "bg-emerald-500"
 
   return (
     <div className={`flex w-full overflow-hidden rounded-full ${height}`}>
