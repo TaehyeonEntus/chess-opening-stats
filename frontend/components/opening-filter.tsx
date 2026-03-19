@@ -155,7 +155,7 @@ export function OpeningFilter({
               <Grid2X2 className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl h-[100dvh] sm:h-auto sm:max-h-[95vh] overflow-y-auto p-4 sm:p-6">
             <DialogHeader>
               <DialogTitle>{t("boardSearchTitle")}</DialogTitle>
               <DialogDescription>{t("boardSearchDescription")}</DialogDescription>
@@ -164,7 +164,7 @@ export function OpeningFilter({
             <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6 p-1 h-full min-h-0">
               {/* Left Column: Board and Controls */}
               <div className="flex flex-col gap-4 h-full">
-                <div className="aspect-square rounded-lg border bg-card shrink-0">
+                <div className="aspect-square shrink-0">
                   <Chessboard
                     key={fen + boardOrientation}
                     options={{
