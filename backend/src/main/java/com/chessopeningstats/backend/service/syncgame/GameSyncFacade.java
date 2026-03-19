@@ -3,6 +3,7 @@ package com.chessopeningstats.backend.service.syncgame;
 import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.infra.client.playergames.dto.RawGame;
 import com.chessopeningstats.backend.service.syncgame.dto.AnalyzedGame;
+import com.chessopeningstats.backend.service.syncgame.dto.Dashboard;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import com.chessopeningstats.backend.service.syncgame.registry.GameFetchServiceRegistry;
 import com.chessopeningstats.backend.service.syncgame.registry.GameNormalizeServiceRegistry;
@@ -18,16 +19,26 @@ public class GameSyncFacade {
     private final GameNormalizeServiceRegistry<RawGame> gameNormalizeServiceRegistry;
     private final GameSanitizeService gameSanitizeService;
     private final GameAnalyzeService gameAnalyzeService;
+    private final DashboardConvertService dashboardConvertService;
     private final DashboardCacheService dashboardCacheService;
 
     public Mono<Void> syncPlayer(Player player) {
-        GameFetchService<RawGame> gameFetchService = gameFetchServiceRegistry.getService(player.platform());
-        GameNormalizeService<RawGame> gameNormalizeService = gameNormalizeServiceRegistry.getService(player.platform());
+        GameFetchService<RawGame>
+                gameFetchService = gameFetchServiceRegistry.getService(player.platform());
+        GameNormalizeService<RawGame>
+                gameNormalizeService = gameNormalizeServiceRegistry.getService(player.platform());
 
-        ParallelFlux<RawGame> rawGames = gameFetchService.fetch(player);
-        ParallelFlux<NormalizedGame> normalizedGames = gameNormalizeService.normalize(rawGames, player);
-        ParallelFlux<NormalizedGame> sanitizedGames = gameSanitizeService.sanitize(normalizedGames);
-        ParallelFlux<AnalyzedGame> analyzedGames = gameAnalyzeService.analyze(sanitizedGames);
-        return dashboardCacheService.cacheDashboard(analyzedGames, player).then();
+        ParallelFlux<RawGame>
+                rawGames = gameFetchService.fetch(player);
+        ParallelFlux<NormalizedGame>
+                normalizedGames = gameNormalizeService.normalize(rawGames, player);
+        ParallelFlux<NormalizedGame>
+                sanitizedGames = gameSanitizeService.sanitize(normalizedGames);
+        ParallelFlux<AnalyzedGame>
+                analyzedGames = gameAnalyzeService.analyze(sanitizedGames);
+        Mono<Dashboard>
+                dashboard = dashboardConvertService.convertDashboard(analyzedGames, player);
+        return
+                dashboardCacheService.cacheDashboard(player, dashboard);
     }
 }
