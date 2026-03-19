@@ -19,8 +19,7 @@ x0gusplaysgroove<< MY ACCOUNT
 ### Backend
 - **Framework:** [Spring Boot 3.4.1](https://spring.io/projects/spring-boot)
 - **Language:** Java 21
-- **Cache**: Redis, In-Memory HashMap
-- **Task Queue**: In-Memory BlockingQueue
+- **Cache**: Caffeine Cache
 - **API Docs:** Spring REST Docs
 - **Build Tool:** Gradle
 - **Deploy**: Railway PaaS
