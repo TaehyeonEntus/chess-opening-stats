@@ -209,9 +209,9 @@ export function OpeningFilter({
               </div>
 
               {/* Right Column: Stacked Info and Stats (2:4:4 Ratio) */}
-              <div className="flex flex-col gap-4 h-full min-h-0">
+              <div className="flex flex-col gap-4 h-full min-h-0 overflow-hidden">
                 {/* Row 1: Opening Info (Flex 2) */}
-                <div className="flex-[2] rounded-lg border bg-muted/30 p-4 flex flex-col justify-center min-h-0 min-w-0 overflow-hidden">
+                <div className="rounded-lg border bg-muted/30 p-4 flex flex-col justify-center min-w-0">
                   <div className="text-[10px] uppercase font-bold text-muted-foreground mb-1 shrink-0">{t("opening")}</div>
                   {currentBoardOpeningName ? (
                       <div className="flex flex-col gap-1 min-w-0">
@@ -220,7 +220,7 @@ export function OpeningFilter({
                             {currentBoardOpeningEco}
                           </div>
                         </div>
-                        <h3 className="text-xl font-bold leading-tight break-words">
+                        <h3 className="text-xl font-bold leading-tight truncate">
                           {currentBoardOpeningName}
                         </h3>
                       </div>
