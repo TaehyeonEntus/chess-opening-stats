@@ -1,7 +1,7 @@
 ### [[click here to get yout stats! www.chessopeningstat.com]](https://www.chessopeningstat.com)  
 x0gusplaysgroove<< MY ACCOUNT
 
-<img width="1222" height="915" alt="Image" src="https://github.com/user-attachments/assets/16361590-d00e-4bf6-995d-63892a605ef0" />
+![Image](https://github.com/user-attachments/assets/cbe7005a-a975-455b-a8e9-2a7a16604c79)
 
 ## 🚀 Key Features (주요 기능)
 - **Account Linking & Data Sync:** Link your chess platform accounts to automatically fetch your latest game data.
