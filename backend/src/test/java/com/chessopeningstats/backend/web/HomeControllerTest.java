@@ -7,7 +7,7 @@ import com.chessopeningstats.backend.service.syncgame.dto.OpeningStat;
 import com.chessopeningstats.backend.service.syncgame.dto.Stat;
 import com.chessopeningstats.backend.usecase.ExistsPlayerUseCase;
 import com.chessopeningstats.backend.usecase.GetDashboardUseCase;
-import com.chessopeningstats.backend.usecase.SyncGameUseCase;
+import com.chessopeningstats.backend.usecase.EnqueuePlayerUseCase;
 import com.chessopeningstats.backend.web.dto.PlayerExistenceResponse;
 import com.chessopeningstats.backend.web.dto.SyncGameResponse;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class HomeControllerTest {
     private ExistsPlayerUseCase existsPlayerUseCase;
 
     @MockitoBean
-    private SyncGameUseCase syncGameUseCase;
+    private EnqueuePlayerUseCase enqueuePlayerUseCase;
 
     @Test
     void getDashboard() throws Exception {
@@ -131,7 +131,7 @@ class HomeControllerTest {
 
     @Test
     void syncGames() throws Exception {
-        given(syncGameUseCase.syncGame(any(Player.class))).willReturn(new SyncGameResponse(1));
+        given(enqueuePlayerUseCase.syncGame(any(Player.class))).willReturn(new SyncGameResponse(1));
 
         mockMvc.perform(post("/sync")
                         .queryParam("platform", "CHESS_COM")

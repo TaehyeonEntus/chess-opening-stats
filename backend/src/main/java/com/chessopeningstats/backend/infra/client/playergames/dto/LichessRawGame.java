@@ -18,20 +18,10 @@ public class LichessRawGame implements RawGame {
 //    private String source;
     private String winner;
 
-    /**
-     * PGN 텍스트: ECO, Opening 정보 등이 여기에 문자열로 포함되어 있습니다.
-     * 나중에 이 텍스트를 파싱하여 ECO 등을 추출해야 합니다.
-     */
     private String pgn;
 
-    /**
-     * 참가자 정보 (White, Black)
-     */
     private Players players;
 
-    /**
-     * 시간 설정 정보
-     */
 //    private Clock clock;
 
     @Data

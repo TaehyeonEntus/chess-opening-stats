@@ -42,6 +42,9 @@ public class LichessPlayerGameClient implements PlayerGameClient<LichessRawGame>
                 .toString();
     }
 
+    /**
+     * 스트리밍!!!!!!!!
+     */
     @Override
     public ParallelFlux<LichessRawGame> fetchGames(Player player) {
         return lichessPlayerGameWebClient

@@ -7,22 +7,17 @@ import com.chessopeningstats.backend.exception.PlayerNotFoundException;
 import com.chessopeningstats.backend.exception.RateLimitExceededException;
 import com.chessopeningstats.backend.infra.client.playergames.PlayerGameClient;
 import com.chessopeningstats.backend.infra.client.playergames.dto.ChessComRawGame;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.publisher.ParallelFlux;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 @Component
 @RequiredArgsConstructor
@@ -49,55 +44,57 @@ public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGam
                 .toString();
     }
 
+    /**
+     * 1. 전체 아카이브 가져오기
+     * 2. 월별 아카이브 가져오기
+     * 3. 월별 아카이브로부터 게임 기록 파싱
+     * 4. Flux로 흘려보내기
+     */
     @Override
     public ParallelFlux<ChessComRawGame> fetchGames(Player player) {
-        return getArchiveUrls(player)
+        return getMonthlyArchiveUrls(player)
                 .flatMap(this::fetchMonthlyArchiveGames, FETCH_CONCURRENCY)
                 .parallel()
-                .runOn(Schedulers.parallel())
-                .flatMap(archive -> Flux.fromIterable(archive.getGames()));
+                .runOn(Schedulers.parallel());
     }
 
-    private Flux<String> getArchiveUrls(Player player) {
+    // 월별 아카이브 URL 가져오기
+    private Flux<String> getMonthlyArchiveUrls(Player player) {
         return client()
                 .get()
                 .uri(uri(player))
                 .retrieve()
                 .bodyToMono(ArchivesResponse.class)
+                .flatMapIterable(ArchivesResponse::archives)
                 .retryWhen(retryPolicy())
                 .onErrorMap(WebClientResponseException.NotFound.class, PlayerNotFoundException::new)
-                .onErrorMap(ExternalServiceException::new)
-                .flatMapIterable(ArchivesResponse::getArchives);
+                .onErrorMap(WebClientResponseException.TooManyRequests.class, RateLimitExceededException::new)
+                .onErrorMap(ExternalServiceException::new);
     }
 
-    // url로부터 게임 가져오기 (monthly)
-    private Mono<ChessComArchiveResponse> fetchMonthlyArchiveGames(String url) {
+    // 해당 월 URL로부터 게임 가져오기 (monthly)
+    private Flux<ChessComRawGame> fetchMonthlyArchiveGames(String url) {
         return client()
                 .get()
                 .uri(url)
                 .retrieve()
-                .bodyToMono(ChessComArchiveResponse.class)
+                .bodyToMono(MonthlyArchiveResponse.class)
+                .flatMapIterable(MonthlyArchiveResponse::games)
                 .retryWhen(retryPolicy())
                 .onErrorMap(WebClientResponseException.NotFound.class, PlayerNotFoundException::new)
                 .onErrorMap(WebClientResponseException.TooManyRequests.class, RateLimitExceededException::new)
-                .onErrorReturn(is5xxError(), new ChessComArchiveResponse());
-
+                .onErrorMap(ExternalServiceException::new);
     }
 
-    private Predicate<Throwable> is5xxError() {
-        return e -> e instanceof WebClientResponseException w &&
-                w.getStatusCode().is5xxServerError();
-    }
-
-    @Data
     // Player의 모든 Archive Url
-    private static class ArchivesResponse {
-        private List<String> archives = new ArrayList<>();
+    private record ArchivesResponse(
+            List<String> archives
+    ) {
     }
 
     // 해당 Archive에 포함된 모든 게임
-    @Data
-    private static class ChessComArchiveResponse {
-        private List<ChessComRawGame> games = new ArrayList<>();
+    private record MonthlyArchiveResponse(
+            List<ChessComRawGame> games
+    ) {
     }
 }

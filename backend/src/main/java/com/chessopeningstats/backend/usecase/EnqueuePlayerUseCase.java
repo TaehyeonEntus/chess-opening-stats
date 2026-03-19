@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SyncGameUseCase {
+public class EnqueuePlayerUseCase {
     private final DashboardCache dashboardCache;
     private final SyncQueue syncQueue;
 

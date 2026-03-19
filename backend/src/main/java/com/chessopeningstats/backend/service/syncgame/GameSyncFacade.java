@@ -28,8 +28,11 @@ public class GameSyncFacade {
         GameNormalizeService<RawGame>
                 gameNormalizeService = gameNormalizeServiceRegistry.getService(player.platform());
 
+        //네트워크 바운드
         ParallelFlux<RawGame>
                 rawGames = gameFetchService.fetch(player);
+
+        //CPU 바운드
         ParallelFlux<NormalizedGame>
                 normalizedGames = gameNormalizeService.normalize(rawGames, player);
         ParallelFlux<NormalizedGame>
@@ -38,6 +41,8 @@ public class GameSyncFacade {
                 analyzedGames = gameAnalyzeService.analyze(sanitizedGames);
         Mono<Dashboard>
                 dashboard = dashboardConvertService.convertDashboard(analyzedGames, player);
+
+        //I/O 바운드 ( 캐시라 짧음 )
         return
                 dashboardCacheService.cacheDashboard(player, dashboard);
     }
