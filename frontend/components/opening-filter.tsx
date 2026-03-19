@@ -155,7 +155,7 @@ export function OpeningFilter({
               <Grid2X2 className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-6xl h-[100dvh] sm:h-auto sm:max-h-[95vh] overflow-y-auto p-4 sm:p-6">
+          <DialogContent className="max-w-6xl h-[100dvh] sm:h-auto sm:max-h-[95vh] overflow-y-hidden p-4 sm:p-6">
             <DialogHeader>
               <DialogTitle>{t("boardSearchTitle")}</DialogTitle>
               <DialogDescription>{t("boardSearchDescription")}</DialogDescription>
