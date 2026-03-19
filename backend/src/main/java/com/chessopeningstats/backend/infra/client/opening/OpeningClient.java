@@ -36,8 +36,9 @@ public class OpeningClient {
                                     Long.parseLong(record.get("id")),
                                     record.get("eco"),
                                     record.get("name"),
+                                    record.get("epd"),
                                     record.get("pgn"),
-                                    record.get("epd")
+                                    Long.parseLong(record.get("key"))
                             )
                     )
             );

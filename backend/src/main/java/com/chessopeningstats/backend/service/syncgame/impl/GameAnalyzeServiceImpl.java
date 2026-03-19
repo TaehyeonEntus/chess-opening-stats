@@ -1,11 +1,11 @@
 package com.chessopeningstats.backend.service.syncgame.impl;
 
-import com.chessopeningstats.backend.domain.Opening;
 import com.chessopeningstats.backend.infra.cache.OpeningCache;
 import com.chessopeningstats.backend.service.syncgame.GameAnalyzeService;
 import com.chessopeningstats.backend.service.syncgame.dto.AnalyzedGame;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import com.github.bhlangonijr.chesslib.Board;
+import com.github.bhlangonijr.chesslib.game.Game;
 import com.github.bhlangonijr.chesslib.move.MoveList;
 import com.github.bhlangonijr.chesslib.pgn.PgnHolder;
 import lombok.RequiredArgsConstructor;
@@ -43,26 +43,29 @@ public class GameAnalyzeServiceImpl implements GameAnalyzeService {
      * 첫번째 부터 N번째 수까지의 포지션에 해당하는 오프닝 ID를 반환
      */
     private List<Long> getOpeningIds(String pgn) {
-        List<String> epds = new ArrayList<>();
+        List<Long> keys = new ArrayList<>();
         try {
+            //PGN 로드
             PgnHolder pgnHolder = new PgnHolder();
             pgnHolder.loadPgn(pgn);
-            com.github.bhlangonijr.chesslib.game.Game game = pgnHolder.getGames().getFirst();
 
+            //게임 추출
+            Game game = pgnHolder.getGames().getFirst();
             Board board = new Board();
             if (game.getFen() != null)
                 board.loadFromFen(game.getFen());
 
+            //착수 정보 추출
             MoveList moves = game.getHalfMoves();
 
             for (int i = 0; i < Math.min(moves.size(), MAX_OPENING_MOVES); i++) {
                 board.doMove(moves.get(i));
-                epds.add(board.getFen(false, true));
+                keys.add(board.getIncrementalHashKey());
             }
         } catch (Exception e) {
         }
 
-        return openingCache.getOpeningsByEpds(epds).stream().map(Opening::id).toList();
+        return openingCache.getOpeningsIdsByKeys(keys);
     }
 }
 

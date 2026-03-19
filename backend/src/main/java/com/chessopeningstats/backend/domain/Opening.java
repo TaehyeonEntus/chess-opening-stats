@@ -4,7 +4,8 @@ public record Opening(
         Long id,
         String eco,
         String name,
+        String epd,
         String pgn,
-        String epd
+        long key
 ) {
 }
