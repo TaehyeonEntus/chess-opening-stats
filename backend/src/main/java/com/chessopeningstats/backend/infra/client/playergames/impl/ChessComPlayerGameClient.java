@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGame> {
     private final WebClient chessComPlayerGameWebClient;
-    private static final int FETCH_CONCURRENCY = 100;
+    private static final int FETCH_CONCURRENCY = 30;
 
     @Override
     public Platform platform() {

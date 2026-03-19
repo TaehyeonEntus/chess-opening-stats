@@ -15,7 +15,7 @@ public class PlayerGameClientConfig {
     @Value("${api.chesscom.base-url}")
     private String chessComBaseUrl;
 
-    private static final int BUFFER_SIZE = 20 * 1024 * 1024;
+    private static final int BUFFER_SIZE = 10 * 1024 * 1024;
     private static final ExchangeStrategies bufferStrategy =
             ExchangeStrategies.builder()
                     .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(BUFFER_SIZE))
