@@ -33,7 +33,7 @@ public interface PlayerExistenceClient<T extends PlayerExistence> {
 
         return switch (statusCode) {
             case HttpStatus.OK -> entity.getBody();
-            case HttpStatus.NOT_FOUND -> throw new UsernameNotFoundOnPlatformException(username, platform());
+            case HttpStatus.GONE, HttpStatus.NOT_FOUND -> throw new UsernameNotFoundOnPlatformException(username, platform());
             case HttpStatus.TOO_MANY_REQUESTS ->
                     throw new RateLimitExceededException("Too many requests. Try again later.");
             default -> throw new ExternalServiceException("Unexpected status code: " + statusCode);
