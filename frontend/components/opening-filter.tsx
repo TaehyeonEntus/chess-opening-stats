@@ -230,7 +230,7 @@ export function OpeningFilter({
                 </div>
 
                 {/* Row 2: White Stats (Flex 4) */}
-                <div className="flex-[4] rounded-lg border bg-card p-4 shadow-sm flex flex-col justify-center min-h-0 min-w-0 overflow-hidden">
+                <div className="rounded-lg border bg-card p-4 shadow-sm flex flex-col justify-center min-w-0">
                   <div className="mb-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="inline-block h-3.5 w-3.5 rounded-full border border-gray-300 bg-white" />
