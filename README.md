@@ -17,7 +17,7 @@ x0gusplaysgroove<< MY ACCOUNT
 
 ## 🛠 Tech Stack
 ### Backend
-- **Framework:** [Spring Boot 3.4.1](https://spring.io/projects/spring-boot)
+- **Framework:** Spring Boot 3
 - **Language:** Java 21
 - **Cache**: Caffeine Cache
 - **API Docs:** Spring REST Docs
