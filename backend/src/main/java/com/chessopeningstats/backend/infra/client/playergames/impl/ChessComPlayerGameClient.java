@@ -14,8 +14,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.ParallelFlux;
-import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -45,17 +43,14 @@ public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGam
     }
 
     /**
-     * 1. 전체 아카이브 가져오기
+     * 1. 전체 아카이브 URL 가져오기
      * 2. 월별 아카이브 가져오기
-     * 3. 월별 아카이브로부터 게임 기록 파싱
-     * 4. Flux로 흘려보내기
      */
     @Override
-    public ParallelFlux<ChessComRawGame> fetchGames(Player player) {
-        return getMonthlyArchiveUrls(player)
-                .flatMap(this::fetchMonthlyArchiveGames, FETCH_CONCURRENCY)
-                .parallel()
-                .runOn(Schedulers.parallel());
+    public Flux<ChessComRawGame> fetchGames(Player player) {
+        return Flux.just(player)
+                .concatMap(this::getMonthlyArchiveUrls)
+                .flatMap(this::fetchMonthlyArchiveGames, FETCH_CONCURRENCY);
     }
 
     // 월별 아카이브 URL 가져오기

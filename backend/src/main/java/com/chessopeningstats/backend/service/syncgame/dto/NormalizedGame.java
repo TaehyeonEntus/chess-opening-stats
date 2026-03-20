@@ -1,9 +1,6 @@
 package com.chessopeningstats.backend.service.syncgame.dto;
 
-import com.chessopeningstats.backend.domain.Color;
-import com.chessopeningstats.backend.domain.Result;
-import com.chessopeningstats.backend.domain.Time;
-import com.chessopeningstats.backend.domain.Type;
+import com.chessopeningstats.backend.domain.*;
 
 import java.time.Instant;
 
@@ -17,6 +14,7 @@ public record NormalizedGame(
         Type type,
         Instant playedAt,
         Color color,
-        Result result
+        Result result,
+        Player player
 ) {
 }

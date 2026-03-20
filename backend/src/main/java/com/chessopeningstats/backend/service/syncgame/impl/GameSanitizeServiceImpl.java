@@ -8,18 +8,13 @@ import com.chessopeningstats.backend.service.syncgame.GameSanitizeService;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.ParallelFlux;
 
 @Service
 @RequiredArgsConstructor
 public class GameSanitizeServiceImpl implements GameSanitizeService {
 
     @Override
-    public ParallelFlux<NormalizedGame> sanitize(ParallelFlux<NormalizedGame> normalizedGames) {
-        return normalizedGames.filter(this::isValid);
-    }
-
-    private boolean isValid(NormalizedGame normalizedGame) {
+    public boolean sanitize(NormalizedGame normalizedGame) {
         return validType(normalizedGame.type()) &&
                 validTime(normalizedGame.time()) &&
                 validColor(normalizedGame.color()) &&

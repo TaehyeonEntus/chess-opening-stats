@@ -7,7 +7,6 @@ import com.chessopeningstats.backend.service.syncgame.GameNormalizeService;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.ParallelFlux;
 
 import java.time.Instant;
 
@@ -20,15 +19,11 @@ public class LichessGameNormalizeService implements GameNormalizeService<Lichess
     }
 
     @Override
-    public ParallelFlux<NormalizedGame> normalize(ParallelFlux<LichessRawGame> rawGames, Player player) {
-        return rawGames.map(dto -> normalizeOne(dto, player.username()));
-    }
-
-    public NormalizedGame normalizeOne(LichessRawGame rawGame, String username) {
+    public NormalizedGame normalize(LichessRawGame rawGame) {
         String pgn = rawGame.getPgn();
         Time time = parseGameTime(rawGame);
         Type type = parseGameType(rawGame);
-        Color color = parseGameColor(rawGame, username);
+        Color color = parseGameColor(rawGame, rawGame.getPlayer().username());
         Result result = parseGameResult(rawGame, color);
         Instant playedAt = Instant.ofEpochMilli(rawGame.getCreatedAt());
 
@@ -38,7 +33,8 @@ public class LichessGameNormalizeService implements GameNormalizeService<Lichess
                 type,
                 playedAt,
                 color,
-                result
+                result,
+                rawGame.getPlayer()
         );
     }
 

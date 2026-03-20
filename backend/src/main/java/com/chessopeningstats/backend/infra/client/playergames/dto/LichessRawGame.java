@@ -1,5 +1,6 @@
 package com.chessopeningstats.backend.infra.client.playergames.dto;
 
+import com.chessopeningstats.backend.domain.Player;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
@@ -55,4 +56,12 @@ public class LichessRawGame implements RawGame {
 //        private int increment; // 증가분(초)
 //        private int totalTime; // 전체 시간
 //    }
+
+    private Player player;
+
+    @Override
+    public LichessRawGame withPlayer(Player player) {
+        setPlayer(player);
+        return this;
+    }
 }

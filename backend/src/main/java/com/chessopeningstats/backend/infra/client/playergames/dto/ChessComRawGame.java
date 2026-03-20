@@ -1,15 +1,14 @@
 package com.chessopeningstats.backend.infra.client.playergames.dto;
 
+import com.chessopeningstats.backend.domain.Player;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.time.Instant;
-
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChessComRawGame implements RawGame {
-//    private String url;
+    //    private String url;
     private String pgn;
 //    private String fen;
 
@@ -24,7 +23,7 @@ public class ChessComRawGame implements RawGame {
     @JsonProperty("time_class")
     private String timeClass;
 
-//    private boolean rated;
+    //    private boolean rated;
     private String uuid;
 
 //    @JsonProperty("initial_setup")
@@ -42,7 +41,7 @@ public class ChessComRawGame implements RawGame {
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PlayerDetail {
-//        private String username;
+        //        private String username;
         private String result;
 //        private int rating;
 
@@ -52,9 +51,11 @@ public class ChessComRawGame implements RawGame {
 //        private String uuid;
     }
 
-    public boolean isAfter(Instant lastPlayedAt) {
-        if(lastPlayedAt == null)
-            return true;
-        return Instant.ofEpochSecond(getEndTime()).isAfter(lastPlayedAt);
+    private Player player;
+
+    @Override
+    public ChessComRawGame withPlayer(Player player) {
+        setPlayer(player);
+        return this;
     }
 }

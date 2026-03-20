@@ -1,8 +1,9 @@
 package com.chessopeningstats.backend.usecase;
 
 import com.chessopeningstats.backend.domain.Player;
-import com.chessopeningstats.backend.infra.cache.DashboardCache;
-import com.chessopeningstats.backend.infra.queue.SyncQueue;
+import com.chessopeningstats.backend.exception.PlayerAlreadyInQueueException;
+import com.chessopeningstats.backend.infra.queue.PlayerQueue;
+import com.chessopeningstats.backend.infra.queue.registry.PlayerQueueRegistry;
 import com.chessopeningstats.backend.web.dto.EnqueuePlayerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,19 +11,17 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EnqueuePlayerUseCase {
-    private final DashboardCache dashboardCache;
-    private final SyncQueue syncQueue;
+    private final PlayerQueueRegistry playerQueueRegistry;
 
     public EnqueuePlayerResponse enqueuePlayer(Player player) {
-        int size = syncQueue.size(player.platform());
+        PlayerQueue queue = playerQueueRegistry.getQueue(player.platform());
 
-        if (!isCached(player))
-            syncQueue.add(player);
+        if (queue.contains(player))
+            throw new PlayerAlreadyInQueueException();
 
-        return new EnqueuePlayerResponse(size);
-    }
+        int sizeBeforeEnqueue = queue.size();
+        queue.enqueue(player);
 
-    private boolean isCached(Player player) {
-        return dashboardCache.contains(player) || syncQueue.contains(player);
+        return new EnqueuePlayerResponse(sizeBeforeEnqueue);
     }
 }

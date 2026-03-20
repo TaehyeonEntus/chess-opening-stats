@@ -3,8 +3,8 @@ package com.chessopeningstats.backend.infra.cache;
 import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.service.syncgame.dto.Dashboard;
 import com.github.benmanes.caffeine.cache.Cache;
-import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -19,9 +19,5 @@ public class DashboardCache {
 
     public Dashboard get(Player player) {
         return cache.getIfPresent(player);
-    }
-
-    public boolean contains(Player player) {
-        return cache.asMap().containsKey(player);
     }
 }

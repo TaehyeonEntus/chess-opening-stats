@@ -10,11 +10,9 @@ import com.github.bhlangonijr.chesslib.move.MoveList;
 import com.github.bhlangonijr.chesslib.pgn.PgnHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.ParallelFlux;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +20,7 @@ public class GameAnalyzeServiceImpl implements GameAnalyzeService {
     private final OpeningCache openingCache;
     private static final int MAX_OPENING_MOVES = 25;
 
-    @Override
-    public ParallelFlux<AnalyzedGame> analyze(ParallelFlux<NormalizedGame> sanitizedGames) {
-        return sanitizedGames.map(this::analyzeOne).filter(analyzedGame -> Objects.nonNull(analyzedGame.lastOpeningId()));
-    }
-
-    public AnalyzedGame analyzeOne(NormalizedGame normalizedGame) {
+    public AnalyzedGame analyze(NormalizedGame normalizedGame) {
         List<Long> openingIds = getOpeningIds(normalizedGame.pgn());
         return new AnalyzedGame(
                 normalizedGame.color(),
@@ -35,7 +28,8 @@ public class GameAnalyzeServiceImpl implements GameAnalyzeService {
                 openingIds,
                 openingIds.isEmpty()
                         ? null
-                        : openingIds.getLast()
+                        : openingIds.getLast(),
+                normalizedGame.player()
         );
     }
 

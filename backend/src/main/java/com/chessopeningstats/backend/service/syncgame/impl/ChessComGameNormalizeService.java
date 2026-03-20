@@ -7,7 +7,6 @@ import com.chessopeningstats.backend.service.syncgame.GameNormalizeService;
 import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.ParallelFlux;
 
 import java.time.Instant;
 
@@ -20,17 +19,13 @@ public class ChessComGameNormalizeService implements GameNormalizeService<ChessC
     }
 
     @Override
-    public ParallelFlux<NormalizedGame> normalize(ParallelFlux<ChessComRawGame> rawGames, Player player) {
-        return rawGames.map(dto -> normalizeOne(dto, player.username()));
-    }
-
-    public NormalizedGame normalizeOne(ChessComRawGame dto, String username) {
-        String pgn = dto.getPgn();
-        Time time = parseGameTime(dto);
-        Type type = parseGameType(dto);
-        Color color = parseGameColor(dto, username);
-        Result result = parseGameResult(dto, color);
-        Instant playedAt = Instant.ofEpochSecond(dto.getEndTime());
+    public NormalizedGame normalize(ChessComRawGame rawGame) {
+        String pgn = rawGame.getPgn();
+        Time time = parseGameTime(rawGame);
+        Type type = parseGameType(rawGame);
+        Color color = parseGameColor(rawGame, rawGame.getPlayer().username());
+        Result result = parseGameResult(rawGame, color);
+        Instant playedAt = Instant.ofEpochSecond(rawGame.getEndTime());
 
         return new NormalizedGame(
                 pgn,
@@ -38,7 +33,8 @@ public class ChessComGameNormalizeService implements GameNormalizeService<ChessC
                 type,
                 playedAt,
                 color,
-                result
+                result,
+                rawGame.getPlayer()
         );
     }
 
