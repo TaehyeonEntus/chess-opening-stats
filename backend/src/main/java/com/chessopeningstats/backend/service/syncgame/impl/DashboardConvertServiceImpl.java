@@ -67,6 +67,7 @@ public class DashboardConvertServiceImpl implements DashboardConvertService {
 
         List<OpeningStat> highestWinrateOpeningStats = allOpeningsMap.values().stream()
                 .sorted(Comparator.comparingDouble(OpeningRecord::winRate).thenComparing(OpeningRecord::total).reversed())
+                .filter(openingRecord -> openingRecord.total() >= 10)
                 .limit(5)
                 .map(OpeningRecord::toOpeningStat)
                 .toList();
