@@ -74,7 +74,6 @@ public class DashboardConvertServiceImpl implements DashboardConvertService {
 
         List<OpeningStat> openingStats = allOpeningsMap.values().stream()
                 .sorted(Comparator.comparingLong(OpeningRecord::total).reversed())
-                .limit(5)
                 .map(OpeningRecord::toOpeningStat)
                 .toList();
 
