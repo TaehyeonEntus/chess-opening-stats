@@ -7,18 +7,20 @@ import com.chessopeningstats.backend.service.syncgame.dto.NormalizedGame;
 import com.github.bhlangonijr.chesslib.Board;
 import com.github.bhlangonijr.chesslib.game.Game;
 import com.github.bhlangonijr.chesslib.move.MoveList;
-import com.github.bhlangonijr.chesslib.pgn.PgnHolder;
+import com.github.bhlangonijr.chesslib.pgn.GameLoader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class GameAnalyzeServiceImpl implements GameAnalyzeService {
     private final OpeningCache openingCache;
-    private static final int MAX_OPENING_MOVES = 25;
+    private static final int MAX_OPENING_MOVES = 30;
 
     public AnalyzedGame analyze(NormalizedGame normalizedGame) {
         List<Long> openingIds = getOpeningIds(normalizedGame.pgn());
@@ -38,20 +40,10 @@ public class GameAnalyzeServiceImpl implements GameAnalyzeService {
      */
     private List<Long> getOpeningIds(String pgn) {
         List<Long> keys = new ArrayList<>();
+
         try {
-            //PGN 로드
-            PgnHolder pgnHolder = new PgnHolder();
-            pgnHolder.loadPgn(pgn);
-
-            //게임 추출
-            Game game = pgnHolder.getGames().getFirst();
             Board board = new Board();
-            if (game.getFen() != null)
-                board.loadFromFen(game.getFen());
-
-            //착수 정보 추출
-            MoveList moves = game.getHalfMoves();
-
+            MoveList moves = GameLoader.loadNextGame(Arrays.asList(pgn.split("\n")).iterator()).getHalfMoves();
             for (int i = 0; i < Math.min(moves.size(), MAX_OPENING_MOVES); i++) {
                 board.doMove(moves.get(i));
                 keys.add(board.getIncrementalHashKey());

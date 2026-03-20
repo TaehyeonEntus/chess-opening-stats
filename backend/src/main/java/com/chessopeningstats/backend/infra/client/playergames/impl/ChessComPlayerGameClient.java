@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGame> {
     private final WebClient chessComPlayerGameWebClient;
-    private static final int FETCH_CONCURRENCY = 50;
+    private static final int FETCH_CONCURRENCY = 30;
 
     @Override
     public Platform platform() {
@@ -76,7 +76,7 @@ public class ChessComPlayerGameClient implements PlayerGameClient<ChessComRawGam
                 .bodyToMono(MonthlyArchiveResponse.class)
                 .flatMapIterable(MonthlyArchiveResponse::games)
                 .retryWhen(retryPolicy())
-                .onErrorContinue((e, game) -> log.debug(e.getMessage()));
+                .onErrorResume(e -> Flux.empty());
     }
 
     // Player의 모든 Archive Url
