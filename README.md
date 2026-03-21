@@ -19,7 +19,6 @@ x0gusplaysgroove<< MY ACCOUNT
 ### Backend
 - **Framework:** Spring Boot 3
 - **Language:** Java 21
-- **Cache**: Caffeine Cache
 - **API Docs:** Spring REST Docs
 - **Build Tool:** Gradle
 - **Deploy**: Railway PaaS
