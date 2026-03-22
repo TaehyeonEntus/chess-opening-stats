@@ -29,6 +29,8 @@ public class WorkerScheduler {
 
     @Scheduled(fixedDelay = 1000, scheduler = "lichessScheduler")
     public void lichessWorker() {
-        gameSyncFacade.syncGames(lichessPlayerQueue.dequeue()).block();
+        while (!lichessPlayerQueue.isEmpty()) {
+            gameSyncFacade.syncGames(lichessPlayerQueue.dequeue()).block();
+        }
     }
 }
