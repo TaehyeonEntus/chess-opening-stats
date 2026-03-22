@@ -6,11 +6,8 @@ import com.chessopeningstats.backend.infra.queue.PlayerQueue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 @RequiredArgsConstructor
@@ -33,17 +30,17 @@ public class ChessComPlayerQueue implements PlayerQueue {
     }
 
     @Override
-    public void enqueue(Player player){
+    public void enqueue(Player player) {
         chessComQueue.add(player);
     }
 
     @Override
-    public Player dequeue(){
+    public Player dequeue() {
         return chessComQueue.poll();
     }
 
     @Override
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return chessComQueue.isEmpty();
     }
 }
