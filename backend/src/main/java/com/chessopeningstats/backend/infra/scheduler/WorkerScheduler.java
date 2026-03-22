@@ -14,22 +14,18 @@ import org.springframework.stereotype.Component;
 public class WorkerScheduler {
     private final ChessComPlayerQueue chessComPlayerQueue;
     private final LichessPlayerQueue lichessPlayerQueue;
-
     private final GameSyncFacade gameSyncFacade;
 
-    //직렬화는 됐는데 gameSyncFacade 밖으로 Fetch를 빼야함...
-    //네트워크 I/O 시간동안 CPU를 굴리긴 하는데 syncFacade 외부까지 파이프라인으로 동작해야함
-
     @Scheduled(fixedDelay = 1000, scheduler = "chessComScheduler")
-    public void chessComWorker() {
-        while (!chessComPlayerQueue.isEmpty()) {
+    public void chessComWorker() throws InterruptedException {
+        while (true) {
             gameSyncFacade.syncGames(chessComPlayerQueue.dequeue()).block();
         }
     }
 
     @Scheduled(fixedDelay = 1000, scheduler = "lichessScheduler")
-    public void lichessWorker() {
-        while (!lichessPlayerQueue.isEmpty()) {
+    public void lichessWorker() throws InterruptedException {
+        while (true) {
             gameSyncFacade.syncGames(lichessPlayerQueue.dequeue()).block();
         }
     }
