@@ -30,7 +30,7 @@ public class GameSyncFacade {
         GameFetchService<RawGame> gameFetchService = gameFetchServiceRegistry.getService(platform);
         GameNormalizeService<RawGame> gameNormalizeService = gameNormalizeServiceRegistry.getService(platform);
 
-        return Flux.fromIterable(playerPublishService.publishPlayer())
+        return playerPublishService.publishPlayer()
                 //fetch 직렬화 안하면 429 error 터집니다
                 .concatMap(gameFetchService::fetch)
                 .parallel()

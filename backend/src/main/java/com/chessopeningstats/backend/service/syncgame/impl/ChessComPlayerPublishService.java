@@ -6,8 +6,7 @@ import com.chessopeningstats.backend.infra.queue.impl.ChessComPlayerQueue;
 import com.chessopeningstats.backend.service.syncgame.PlayerPublishService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,12 @@ public class ChessComPlayerPublishService implements PlayerPublishService {
     }
 
     @Override
-    public List<Player> publishPlayer() {
-        return chessComPlayerQueue.dequeueAll();
+    public Flux<Player> publishPlayer() {
+        return Flux.generate(sink -> {
+            if (chessComPlayerQueue.isEmpty())
+                sink.complete();
+            else
+                sink.next(chessComPlayerQueue.dequeue());
+        });
     }
 }

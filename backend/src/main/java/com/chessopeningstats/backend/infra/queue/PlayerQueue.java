@@ -16,5 +16,5 @@ public interface PlayerQueue {
 
     boolean contains(Player player);
 
-    List<Player> dequeueAll();
+    boolean isEmpty();
 }

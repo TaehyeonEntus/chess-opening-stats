@@ -6,10 +6,10 @@ import com.chessopeningstats.backend.infra.queue.PlayerQueue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 @RequiredArgsConstructor
@@ -19,16 +19,6 @@ public class LichessPlayerQueue implements PlayerQueue {
     @Override
     public Platform platform() {
         return Platform.LICHESS;
-    }
-
-    @Override
-    public void enqueue(Player player) {
-        lichessQueue.add(player);
-    }
-
-    @Override
-    public Player dequeue() {
-        return lichessQueue.poll();
     }
 
     @Override
@@ -42,10 +32,17 @@ public class LichessPlayerQueue implements PlayerQueue {
     }
 
     @Override
-    public List<Player> dequeueAll() {
-        List<Player> list = new ArrayList<>();
-        while (!lichessQueue.isEmpty())
-            list.add(dequeue());
-        return list;
+    public void enqueue(Player player){
+        lichessQueue.add(player);
+    }
+
+    @Override
+    public Player dequeue(){
+        return lichessQueue.poll();
+    }
+
+    @Override
+    public boolean isEmpty(){
+        return lichessQueue.isEmpty();
     }
 }
