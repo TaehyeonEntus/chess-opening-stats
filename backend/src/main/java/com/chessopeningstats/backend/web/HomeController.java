@@ -32,7 +32,7 @@ public class HomeController {
     }
 
     @PostMapping("/sync")
-    public EnqueuePlayerResponse sync(@RequestParam Platform platform, @RequestParam String username) {
+    public EnqueuePlayerResponse sync(@RequestParam Platform platform, @RequestParam String username) throws InterruptedException {
         return enqueuePlayerUseCase.enqueuePlayer(Player.of(platform, username));
     }
 }

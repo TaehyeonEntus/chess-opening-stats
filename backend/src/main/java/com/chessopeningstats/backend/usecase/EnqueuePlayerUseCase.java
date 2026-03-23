@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class EnqueuePlayerUseCase {
     private final PlayerQueueRegistry playerQueueRegistry;
 
-    public EnqueuePlayerResponse enqueuePlayer(Player player) {
+    public EnqueuePlayerResponse enqueuePlayer(Player player) throws InterruptedException {
         PlayerQueue queue = playerQueueRegistry.getQueue(player.platform());
 
         if (queue.contains(player))
