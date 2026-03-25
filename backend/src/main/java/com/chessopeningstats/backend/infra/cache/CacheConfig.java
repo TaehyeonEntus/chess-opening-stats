@@ -14,8 +14,8 @@ public class CacheConfig {
     @Bean
     public Cache<Player, Dashboard> cache() {
         return Caffeine.newBuilder()
-                .maximumSize(1000)               // 최대 엔트리 수
-                .expireAfterWrite(10, TimeUnit.MINUTES) // 쓰기 후 TTL
+                .maximumSize(1000)
+                .expireAfterWrite(10, TimeUnit.MINUTES)
                 .build();
     }
 }

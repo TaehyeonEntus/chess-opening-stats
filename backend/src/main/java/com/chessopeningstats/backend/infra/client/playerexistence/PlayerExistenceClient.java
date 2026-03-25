@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 
 /**
- * Platform으로부터 유저 여부를 확인할 수 있는 클라이언트
+ * Platform으로부터 유저 유무를 확인할 수 있는 클라이언트
  */
 public interface PlayerExistenceClient<T extends PlayerExistence> {
     Platform platform();
