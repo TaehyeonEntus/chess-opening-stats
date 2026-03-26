@@ -2,6 +2,9 @@ package com.chessopeningstats.backend.service.syncgame;
 
 import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.infra.client.playergames.dto.RawGame;
+import com.chessopeningstats.backend.infra.repository.EmitterRepository;
+import com.chessopeningstats.backend.service.syncgame.dto.Dashboard;
+import com.chessopeningstats.backend.service.syncgame.dto.PlayerDashboard;
 import com.chessopeningstats.backend.service.syncgame.registry.GameFetchServiceRegistry;
 import com.chessopeningstats.backend.service.syncgame.registry.GameNormalizeServiceRegistry;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +24,9 @@ public class GameSyncFacade {
     private final DashboardConvertService dashboardConvertService;
     private final DashboardCacheService dashboardCacheService;
 
-    public Mono<Void> syncGames(Player player) {
+    public Mono<PlayerDashboard> syncGames(Player player) {
         GameFetchService<RawGame> gameFetchService = gameFetchServiceRegistry.getService(player.platform());
         GameNormalizeService<RawGame> gameNormalizeService = gameNormalizeServiceRegistry.getService(player.platform());
-
         //네트워크 바운드
         return gameFetchService.fetch(player)
 
@@ -42,7 +44,6 @@ public class GameSyncFacade {
 
                 //I/O 바운드 (현재는 캐시만 DB X)
                 .publishOn(Schedulers.boundedElastic())
-                .doOnNext(dashboardCacheService::cacheDashboard)
-                .then();
+                .doOnNext(dashboardCacheService::cacheDashboard);
     }
 }

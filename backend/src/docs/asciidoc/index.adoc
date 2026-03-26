@@ -12,13 +12,6 @@
 [[Chess-Opening-Stats-API]]
 == Chess Opening Stats API
 
-[[Get-Dashboard]]
-=== Dashboard 조회
-플레이어의 색상별(White, Black) 전적과 자주 사용한 오프닝, 승률이 높은 오프닝 등의 통계 정보를 조회합니다.
-데이터는 캐시되어 있을 수 있으며, 최신 데이터를 원할 경우 게임 동기화 요청(`/sync`)을 먼저 수행해야 합니다.
-
-operation::get-dashboard[snippets='http-request,query-parameters,http-response,response-fields']
-
 [[Exists-Player]]
 === 플레이어 존재 여부 확인
 특정 체스 플랫폼(Chess.com, Lichess)에 해당 사용자 아이디를 가진 플레이어가 실제로 존재하는지 확인합니다.
@@ -27,8 +20,28 @@ operation::get-dashboard[snippets='http-request,query-parameters,http-response,r
 operation::exists-player[snippets='http-request,query-parameters,http-response,response-fields']
 
 [[Sync-Games]]
-=== 게임 동기화 요청
-플레이어의 최근 게임 데이터를 외부 플랫폼으로부터 가져와 분석 및 저장하도록 요청합니다.
-이 작업은 비동기로 처리되며, 응답으로 현재 동기화 대기열에 머물고 있는 총 플레이어 수를 반환합니다.
+=== 게임 동기화 및 대시보드 수신 (SSE)
+플레이어의 최근 게임 데이터를 외부 플랫폼으로부터 가져와 분석하고, 완료 시 대시보드 데이터를 Server-Sent Events(SSE)로 전송합니다.
+클라이언트는 이 엔드포인트를 통해 연결을 유지하며, 서버가 분석을 마치는 대로 `dashboard` 이벤트 명으로 데이터를 수신하게 됩니다.
 
-operation::sync-games[snippets='http-request,query-parameters,http-response,response-fields']
+operation::sync-games[snippets='http-request,query-parameters,http-response']
+
+==== SSE 이벤트 구조
+[source,json]
+----
+event: dashboard
+data: {
+    "white": {
+        "stat": { "win": 10, "draw": 2, "lose": 3 },
+        "mostPlayedOpenings": [...],
+        "highestWinRateOpenings": [...],
+        "openings": [...]
+    },
+    "black": {
+        "stat": { "win": 8, "draw": 1, "lose": 6 },
+        "mostPlayedOpenings": [...],
+        "highestWinRateOpenings": [...],
+        "openings": [...]
+    }
+}
+----

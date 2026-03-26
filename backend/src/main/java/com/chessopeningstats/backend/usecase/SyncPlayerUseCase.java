@@ -4,24 +4,20 @@ import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.exception.PlayerAlreadyInQueueException;
 import com.chessopeningstats.backend.infra.queue.PlayerQueue;
 import com.chessopeningstats.backend.infra.queue.registry.PlayerQueueRegistry;
-import com.chessopeningstats.backend.web.dto.EnqueuePlayerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EnqueuePlayerUseCase {
+public class SyncPlayerUseCase {
     private final PlayerQueueRegistry playerQueueRegistry;
 
-    public EnqueuePlayerResponse enqueuePlayer(Player player) throws InterruptedException {
+    public void syncPlayer(Player player) throws InterruptedException {
         PlayerQueue queue = playerQueueRegistry.getQueue(player.platform());
 
         if (queue.contains(player))
             throw new PlayerAlreadyInQueueException();
-
-        int sizeBeforeEnqueue = queue.size();
-        queue.enqueue(player);
-
-        return new EnqueuePlayerResponse(sizeBeforeEnqueue);
+        else
+            queue.enqueue(player);
     }
 }
