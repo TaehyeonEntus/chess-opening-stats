@@ -1,6 +1,7 @@
 package com.chessopeningstats.backend.web;
 
 import com.chessopeningstats.backend.domain.Player;
+import com.chessopeningstats.backend.infra.cache.DashboardCache;
 import com.chessopeningstats.backend.infra.repository.EmitterRepository;
 import com.chessopeningstats.backend.usecase.ExistsPlayerUseCase;
 import com.chessopeningstats.backend.usecase.SyncPlayerUseCase;
@@ -37,6 +38,9 @@ class HomeControllerTest {
 
     @MockitoBean
     private EmitterRepository emitterRepository;
+
+    @MockitoBean
+    private DashboardCache dashboardCache;
 
     @Test
     void existsPlayer() throws Exception {
