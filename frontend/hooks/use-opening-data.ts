@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useDeferredValue, useCallback, useRef } from "react"
 import { getSyncEventSourceUrl } from "@/lib/api/api"
+import { MOCK_DASHBOARD_DATA } from "@/lib/api/mock-data"
 import { adaptColorOpeningStat } from "@/lib/adapters"
 import { parseOpeningCsv, type OpeningDictionary } from "@/lib/openings/csv-parser"
 import { calculateRatesFromCounts } from "@/lib/stats"
