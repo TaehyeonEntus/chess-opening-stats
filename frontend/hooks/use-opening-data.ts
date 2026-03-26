@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useDeferredValue, useCallback, useRef } from "react"
-import { fetchDashboard } from "@/lib/api/api"
+import { getSyncEventSourceUrl } from "@/lib/api/api"
 import { adaptColorOpeningStat } from "@/lib/adapters"
 import { parseOpeningCsv, type OpeningDictionary } from "@/lib/openings/csv-parser"
 import { calculateRatesFromCounts } from "@/lib/stats"
@@ -59,21 +59,69 @@ export function useOpeningData() {
   const [search, setSearch] = useState("")
   const deferredSearch = useDeferredValue(search)
 
-  const pollingTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const pollCountRef = useRef(0)
+  const eventSourceRef = useRef<EventSource | null>(null)
+  const hasDataRef = useRef(false)
 
   const stopPolling = useCallback(() => {
-    if (pollingTimerRef.current) {
-      clearTimeout(pollingTimerRef.current)
-      pollingTimerRef.current = null
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close()
+      eventSourceRef.current = null
     }
     setIsPolling(false)
-    pollCountRef.current = 0
+  }, [])
+
+  const processDashboardData = useCallback((dashboard: any, dictionary: OpeningDictionary) => {
+    if (!dashboard || (!dashboard.white && !dashboard.black)) return
+
+    hasDataRef.current = true
+    const whiteOpenings = adaptColorOpeningStat(dashboard.white?.openings || [], "white", dictionary)
+    const blackOpenings = adaptColorOpeningStat(dashboard.black?.openings || [], "black", dictionary)
+    
+    const whiteMostPlayed = adaptColorOpeningStat(dashboard.white?.mostPlayedOpenings || [], "white", dictionary)
+    const whiteBestWinRate = adaptColorOpeningStat(dashboard.white?.highestWinRateOpenings || [], "white", dictionary)
+    
+    const blackMostPlayed = adaptColorOpeningStat(dashboard.black?.mostPlayedOpenings || [], "black", dictionary)
+    const blackBestWinRate = adaptColorOpeningStat(dashboard.black?.highestWinRateOpenings || [], "black", dictionary)
+
+    const combined = [...whiteOpenings, ...blackOpenings]
+    setAllOpenings(combined)
+    
+    // Combine top openings from both sides for the 'all' summary
+    const combinedMostPlayed = [...whiteMostPlayed, ...blackMostPlayed]
+      .sort((a, b) => b.totalGames - a.totalGames)
+      .slice(0, 5)
+      
+    const combinedBestWinRate = [...whiteBestWinRate, ...blackBestWinRate]
+      .filter(op => op.totalGames >= 10)
+      .sort((a, b) => b.winRate - a.winRate)
+      .slice(0, 5)
+
+    const winRates: WinRate[] = [
+      { 
+        color: "white", 
+        wins: dashboard.white?.stat?.win || 0, 
+        draws: dashboard.white?.stat?.draw || 0, 
+        losses: dashboard.white?.stat?.lose || 0 
+      },
+      { 
+        color: "black", 
+        wins: dashboard.black?.stat?.win || 0, 
+        draws: dashboard.black?.stat?.draw || 0, 
+        losses: dashboard.black?.stat?.lose || 0 
+      },
+    ]
+    
+    setSummaries({
+      all: calculateDisplaySummary(winRates, combined, "all", combinedMostPlayed, combinedBestWinRate),
+      white: calculateDisplaySummary(winRates, whiteOpenings, "white", whiteMostPlayed, whiteBestWinRate),
+      black: calculateDisplaySummary(winRates, blackOpenings, "black", blackMostPlayed, blackBestWinRate),
+    })
   }, [])
 
   const loadData = useCallback(async (platform: string, username: string) => {
     setLoading(true)
     setError(null)
+    hasDataRef.current = false
     stopPolling()
 
     try {
@@ -85,82 +133,44 @@ export function useOpeningData() {
       const dictionary = parseOpeningCsv(csvResponse)
       setOpeningDictionary(dictionary)
 
-      const poll = async () => {
-        try {
-          const dashboard = await fetchDashboard(platform, username)
-          
-          if (!dashboard || (!dashboard.white && !dashboard.black)) {
-            pollCountRef.current += 1
-            if (pollCountRef.current < 30) {
-              setIsPolling(true)
-              pollingTimerRef.current = setTimeout(poll, 1500)
-            } else {
-              setIsPolling(false)
-              setLoading(false)
-              setError("Data not ready yet.")
-            }
-            return
-          }
-
-          setLoading(false)
-          setIsPolling(false)
-          stopPolling()
-
-          const whiteOpenings = adaptColorOpeningStat(dashboard.white?.openings || [], "white", dictionary)
-          const blackOpenings = adaptColorOpeningStat(dashboard.black?.openings || [], "black", dictionary)
-          
-          const whiteMostPlayed = adaptColorOpeningStat(dashboard.white?.mostPlayedOpenings || [], "white", dictionary)
-          const whiteBestWinRate = adaptColorOpeningStat(dashboard.white?.highestWinRateOpenings || [], "white", dictionary)
-          
-          const blackMostPlayed = adaptColorOpeningStat(dashboard.black?.mostPlayedOpenings || [], "black", dictionary)
-          const blackBestWinRate = adaptColorOpeningStat(dashboard.black?.highestWinRateOpenings || [], "black", dictionary)
-
-          const combined = [...whiteOpenings, ...blackOpenings]
-          setAllOpenings(combined)
-          
-          // Combine top openings from both sides for the 'all' summary
-          const combinedMostPlayed = [...whiteMostPlayed, ...blackMostPlayed]
-            .sort((a, b) => b.totalGames - a.totalGames)
-            .slice(0, 5)
-            
-          const combinedBestWinRate = [...whiteBestWinRate, ...blackBestWinRate]
-            .filter(op => op.totalGames >= 10)
-            .sort((a, b) => b.winRate - a.winRate)
-            .slice(0, 5)
-
-          const winRates: WinRate[] = [
-            { 
-              color: "white", 
-              wins: dashboard.white?.stat?.win || 0, 
-              draws: dashboard.white?.stat?.draw || 0, 
-              losses: dashboard.white?.stat?.lose || 0 
-            },
-            { 
-              color: "black", 
-              wins: dashboard.black?.stat?.win || 0, 
-              draws: dashboard.black?.stat?.draw || 0, 
-              losses: dashboard.black?.stat?.lose || 0 
-            },
-          ]
-          
-          setSummaries({
-            all: calculateDisplaySummary(winRates, combined, "all", combinedMostPlayed, combinedBestWinRate),
-            white: calculateDisplaySummary(winRates, whiteOpenings, "white", whiteMostPlayed, whiteBestWinRate),
-            black: calculateDisplaySummary(winRates, blackOpenings, "black", blackMostPlayed, blackBestWinRate),
-          })
-        } catch (err) {
-          console.error("Poll failed", err)
-          setIsPolling(false)
-          setLoading(false)
-        }
+      if (username === "demo") {
+        processDashboardData(MOCK_DASHBOARD_DATA, dictionary)
+        setLoading(false)
+        return
       }
 
-      await poll()
+      const url = getSyncEventSourceUrl(platform, username)
+      const eventSource = new EventSource(url)
+      eventSourceRef.current = eventSource
+      setIsPolling(true)
+
+      eventSource.addEventListener('dashboard', (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data)
+          processDashboardData(data, dictionary)
+          setLoading(false)
+          // We don't stop polling (close SSE) yet, because backend might send more updates?
+          // Actually, usually SSE is closed by the server or when the user leaves.
+          // For now, let's keep it open to receive updates.
+        } catch (err) {
+          console.error("Failed to parse SSE data", err)
+        }
+      })
+
+      eventSource.onerror = (err) => {
+        console.error("SSE error", err)
+        // Only show error if we haven't received any data yet
+        if (!hasDataRef.current) {
+          setError("Connection failed. Please try again.")
+        }
+        stopPolling()
+        setLoading(false)
+      }
     } catch (err) {
        setError(err instanceof Error ? err.message : "An error occurred")
        setLoading(false)
     }
-  }, [stopPolling])
+  }, [stopPolling, processDashboardData])
 
   useEffect(() => {
     return () => stopPolling()
@@ -217,6 +227,7 @@ export function useOpeningData() {
       setSummaries(null)
       setError(null)
       setLoading(false)
+      hasDataRef.current = false
       stopPolling()
     },
     colorFilter,

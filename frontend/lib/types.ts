@@ -14,13 +14,6 @@ export interface PlayerInfo {
 }
 
 /**
- * 2. Sync API Types (POST /sync)
- */
-export interface SyncGameResponse {
-    waiting: number
-}
-
-/**
  * 3. Dashboard API Types (GET /dashboard)
  */
 export interface StatDto {

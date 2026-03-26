@@ -1,8 +1,6 @@
 import { apiClient } from "@/lib/api/apiClient"
 import type { 
-  PlayerInfo, 
-  SyncGameResponse, 
-  DashboardResponse 
+  PlayerInfo 
 } from "@/lib/types"
 import { MOCK_DASHBOARD_DATA } from "./mock-data"
 
@@ -39,29 +37,12 @@ export async function checkPlayerExists(platform: string, username: string): Pro
 }
 
 /**
- * 게임 동기화 요청
- * POST /sync?platform=...&username=...
+ * 게임 동기화 SSE URL 가져오기
+ * GET /sync?platform=...&username=...
  */
-export async function syncGames(platform: string, username: string): Promise<SyncGameResponse> {
+export function getSyncEventSourceUrl(platform: string, username: string): string {
   if (username === "demo") {
-    return { waiting: 0 }
+    return ""; // Special case for demo
   }
-
-  return apiClient.post<SyncGameResponse>(`/sync`, null, {
-    params: { platform, username }
-  });
-}
-
-/**
- * 대시보드 데이터 조회
- * GET /dashboard?platform=...&username=...
- */
-export async function fetchDashboard(platform: string, username: string): Promise<DashboardResponse | null> {
-  if (username === "demo") {
-    return MOCK_DASHBOARD_DATA
-  }
-
-  return apiClient.get<DashboardResponse | null>(`/dashboard`, {
-    params: { platform, username }
-  });
+  return `/api/sync?platform=${platform}&username=${username}`;
 }

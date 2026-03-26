@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { syncGames, checkPlayerExists } from "@/lib/api/api"
+import { checkPlayerExists } from "@/lib/api/api"
 import type { PlayerInfo } from "@/lib/types"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -70,8 +70,6 @@ export default function HomePage() {
     
     setStatus('syncing')
     try {
-      const response = await syncGames(platform, playerInfo.username)
-      toast.success(t("syncSuccess", { count: response.waiting }))
       loadData(platform, playerInfo.username)
     } catch (err) {
       console.error("Sync failed", err)
@@ -121,8 +119,6 @@ export default function HomePage() {
       if (autoSync) {
         setStatus('syncing')
         try {
-          const response = await syncGames(queryPlatform, info.username || "")
-          toast.success(t("syncSuccess", { count: response.waiting }))
           loadData(queryPlatform, info.username || "")
         } catch (err) {
           console.error("Auto-sync failed", err)
