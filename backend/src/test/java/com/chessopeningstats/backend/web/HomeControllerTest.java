@@ -1,10 +1,6 @@
 package com.chessopeningstats.backend.web;
 
 import com.chessopeningstats.backend.domain.Player;
-import com.chessopeningstats.backend.service.syncgame.dto.ColorDashboard;
-import com.chessopeningstats.backend.service.syncgame.dto.Dashboard;
-import com.chessopeningstats.backend.service.syncgame.dto.OpeningStat;
-import com.chessopeningstats.backend.service.syncgame.dto.Stat;
 import com.chessopeningstats.backend.infra.repository.EmitterRepository;
 import com.chessopeningstats.backend.usecase.ExistsPlayerUseCase;
 import com.chessopeningstats.backend.usecase.SyncPlayerUseCase;
@@ -16,13 +12,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
