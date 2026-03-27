@@ -6,9 +6,9 @@ import com.chessopeningstats.backend.domain.Player;
 public interface PlayerQueue {
     Platform platform();
 
-    void enqueue(Player player) throws InterruptedException;
+    void enqueue(Player player);
 
-    Player dequeue() throws InterruptedException;
+    Player dequeue();
 
     int size();
 

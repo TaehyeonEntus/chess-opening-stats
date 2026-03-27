@@ -9,11 +9,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class PlayerGameClientConfig {
 
-    @Value("${api.lichess.base-url}")
-    private String lichessBaseUrl;
-
     @Value("${api.chesscom.base-url}")
     private String chessComBaseUrl;
+
+    @Value("${api.lichess.base-url}")
+    private String lichessBaseUrl;
 
     private static final int BUFFER_SIZE = 10 * 1024 * 1024;
     private static final ExchangeStrategies bufferStrategy =
@@ -22,19 +22,19 @@ public class PlayerGameClientConfig {
                     .build();
 
     @Bean
-    public WebClient lichessPlayerGameWebClient() {
+    public WebClient chessComWebClient() {
         return WebClient.builder()
-                .baseUrl(lichessBaseUrl)
+                .baseUrl(chessComBaseUrl)
                 .exchangeStrategies(bufferStrategy)
-                .defaultHeader("Accept", "application/x-ndjson")
                 .build();
     }
 
     @Bean
-    public WebClient chessComPlayerGameWebClient() {
+    public WebClient lichessWebClient() {
         return WebClient.builder()
-                .baseUrl(chessComBaseUrl)
+                .baseUrl(lichessBaseUrl)
                 .exchangeStrategies(bufferStrategy)
+                .defaultHeader("Accept", "application/x-ndjson")
                 .build();
     }
 }

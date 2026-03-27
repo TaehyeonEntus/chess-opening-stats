@@ -1,15 +1,13 @@
 package com.chessopeningstats.backend.infra.scheduler;
 
-import com.chessopeningstats.backend.infra.queue.impl.ChessComPlayerQueue;
-import com.chessopeningstats.backend.infra.queue.impl.LichessPlayerQueue;
-import com.chessopeningstats.backend.infra.repository.EmitterRepository;
-import com.chessopeningstats.backend.service.syncgame.GameSyncFacade;
-import com.chessopeningstats.backend.service.syncgame.dto.PlayerDashboard;
+import com.chessopeningstats.backend.infra.queue.ChessComPlayerQueue;
+import com.chessopeningstats.backend.infra.queue.LichessPlayerQueue;
+import com.chessopeningstats.backend.service.EmitterService;
+import com.chessopeningstats.backend.service.playerdashboard.PlayerDashboardFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 
@@ -19,28 +17,20 @@ import java.io.IOException;
 public class WorkerScheduler {
     private final ChessComPlayerQueue chessComPlayerQueue;
     private final LichessPlayerQueue lichessPlayerQueue;
-    private final GameSyncFacade gameSyncFacade;
-    private final EmitterRepository emitterRepository;
+    private final PlayerDashboardFacade playerDashboardFacade;
+    private final EmitterService emitterService;
 
     @Scheduled(fixedDelay = 1000, scheduler = "chessComScheduler")
-    public void chessComWorker() throws InterruptedException, IOException {
+    public void chessComWorker() throws IOException {
         while (true) {
-            PlayerDashboard playerDashboard = gameSyncFacade.syncGames(chessComPlayerQueue.dequeue()).block();
-            for (SseEmitter emitter : emitterRepository.get(playerDashboard.player())) {
-                emitter.send(SseEmitter.event().name("dashboard").data(playerDashboard.dashboard()));
-                emitter.complete();
-            }
+            emitterService.announce(playerDashboardFacade.syncGames(chessComPlayerQueue.dequeue()).block());
         }
     }
 
     @Scheduled(fixedDelay = 1000, scheduler = "lichessScheduler")
-    public void lichessWorker() throws InterruptedException, IOException {
+    public void lichessWorker() throws IOException {
         while (true) {
-            PlayerDashboard playerDashboard = gameSyncFacade.syncGames(lichessPlayerQueue.dequeue()).block();
-            for (SseEmitter emitter : emitterRepository.get(playerDashboard.player())) {
-                emitter.send(SseEmitter.event().name("dashboard").data(playerDashboard.dashboard()));
-                emitter.complete();
-            }
+            emitterService.announce(playerDashboardFacade.syncGames(lichessPlayerQueue.dequeue()).block());
         }
     }
 }
