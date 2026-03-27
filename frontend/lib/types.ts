@@ -4,7 +4,7 @@ export type ColorFilter = "all" | "white" | "black"
 export type SortBy = "winRate" | "totalGames" | "name"
 
 /**
- * 1. Player API Types (GET /player)
+ * 1. Player API Types (GET /player/profile)
  */
 export interface PlayerInfo {
     exists: boolean
@@ -14,7 +14,7 @@ export interface PlayerInfo {
 }
 
 /**
- * 3. Dashboard API Types (GET /dashboard)
+ * 3. Dashboard API Types (SSE /dashboard)
  */
 export interface StatDto {
     win: number

@@ -6,7 +6,7 @@ import { MOCK_DASHBOARD_DATA } from "./mock-data"
 
 /**
  * 플레이어 존재 여부 확인 및 정보 조회
- * GET /player?platform=...&username=...
+ * GET /player/profile?platform=...&username=...
  */
 export async function checkPlayerExists(platform: string, username: string): Promise<PlayerInfo> {
   if (username === "demo") {
@@ -18,7 +18,7 @@ export async function checkPlayerExists(platform: string, username: string): Pro
     }
   }
 
-  const res = await apiClient.get<any>(`/player`, {
+  const res = await apiClient.get<any>(`/player/profile`, {
     params: { platform, username }
   });
   
@@ -38,11 +38,11 @@ export async function checkPlayerExists(platform: string, username: string): Pro
 
 /**
  * 게임 동기화 SSE URL 가져오기
- * GET /sync?platform=...&username=...
+ * GET /dashboard?platform=...&username=...
  */
 export function getSyncEventSourceUrl(platform: string, username: string): string {
   if (username === "demo") {
     return ""; // Special case for demo
   }
-  return `/api/sync?platform=${platform}&username=${username}`;
+  return `/api/dashboard?platform=${platform}&username=${username}`;
 }

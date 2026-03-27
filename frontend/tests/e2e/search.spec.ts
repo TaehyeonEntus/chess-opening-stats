@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('search for hikaru and verify response', async ({ page }) => {
   // We'll intercept the API call to see what happens
-  await page.route('**/api/player*', async (route) => {
+  await page.route('**/api/player/profile*', async (route) => {
     const response = await route.fetch();
     const json = await response.json();
     console.log('API Response for player:', JSON.stringify(json, null, 2));
