@@ -2,7 +2,6 @@ package com.chessopeningstats.backend.web.dashboard;
 
 import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.service.EmitterService;
-import com.chessopeningstats.backend.service.PlayerQueueService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -29,12 +28,11 @@ class DashboardControllerTest {
     @MockitoBean
     private EmitterService emitterService;
 
-    @MockitoBean
-    private PlayerQueueService playerQueueService;
-
     @Test
     void getDashboard() throws Exception {
-        given(emitterService.createEmitter(any(Player.class))).willReturn(new SseEmitter());
+        SseEmitter emitter = new SseEmitter();
+        emitter.complete();
+        given(emitterService.createEmitter(any(Player.class))).willReturn(emitter);
 
         mockMvc.perform(get("/dashboard")
                         .param("platform", "CHESS_COM")
