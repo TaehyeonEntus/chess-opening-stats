@@ -16,6 +16,7 @@ import java.io.IOException;
 public class EmitterService {
     private final EmitterRepository emitterRepository;
     private final DashboardCache dashboardCache;
+    private final PlayerQueueService playerQueueService;
 
     public SseEmitter createEmitter(Player player) {
         SseEmitter emitter = new SseEmitter(600 * 1000L);
@@ -27,25 +28,27 @@ public class EmitterService {
         return emitterRepository.save(player, emitter);
     }
 
-    public void announce(PlayerDashboard playerDashboard) throws IOException {
+    public void announce(PlayerDashboard playerDashboard) {
         for (SseEmitter emitter : emitterRepository.get(playerDashboard.player())) {
-            emitter.send(SseEmitter.event().name("dashboard").data(playerDashboard.dashboard()));
+            try {
+                emitter.send(SseEmitter.event().name("dashboard").data(playerDashboard.dashboard()));
+            } catch (IOException ignored) {
+            }
             emitter.complete();
         }
     }
 
-    public boolean sendDashboardIfExists(Player player, SseEmitter emitter){
+    public void sendDashboardIfCached(Player player, SseEmitter emitter) {
         Dashboard dashboard = dashboardCache.get(player);
 
         if (dashboard != null) {
             try {
                 emitter.send(SseEmitter.event().name("dashboard").data(dashboard));
-            } catch (IOException ignored){
+            } catch (IOException ignored) {
             }
             emitter.complete();
-            return true;
-        } else{
-            return false;
+        } else {
+            playerQueueService.enqueuePlayer(player);
         }
     }
 }

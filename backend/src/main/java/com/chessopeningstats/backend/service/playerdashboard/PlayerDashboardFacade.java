@@ -24,7 +24,7 @@ public class PlayerDashboardFacade {
     private final DashboardConvertService dashboardConvertService;
     private final DashboardCacheService dashboardCacheService;
 
-    public Mono<PlayerDashboard> syncGames(Player player) {
+    public Mono<PlayerDashboard> getPlayerDashboard(Player player) {
         GameFetchService<RawGame> gameFetchService = gameFetchServiceRegistry.getService(player.platform());
         GameNormalizeService<RawGame> gameNormalizeService = gameNormalizeServiceRegistry.getService(player.platform());
         //네트워크 바운드
