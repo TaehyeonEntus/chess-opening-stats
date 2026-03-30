@@ -2,6 +2,7 @@ package com.chessopeningstats.backend.infra.queue;
 
 import com.chessopeningstats.backend.domain.Platform;
 import com.chessopeningstats.backend.domain.Player;
+import com.chessopeningstats.backend.exception.PlayerDequeueException;
 import com.chessopeningstats.backend.exception.PlayerEnqueueException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,7 @@ public class ChessComPlayerQueue implements PlayerQueue {
         try {
             return chessComQueue.take();
         } catch (InterruptedException e) {
-            throw new PlayerEnqueueException(e);
+            throw new PlayerDequeueException(e);
         }
     }
 }

@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -31,25 +31,23 @@ public class Initializer {
         openingStorage.storeAll(openingsClient.fetchOpenings());
     }
 
-    @Async("chessComScheduler")
-    @EventListener(ApplicationReadyEvent.class)
-    public void chessComWorker() {
-        while (true) {
-            emitterService.announce(
-                    Objects.requireNonNull(playerDashboardFacade
-                            .getPlayerDashboard(chessComPlayerQueue.dequeue())
-                            .block())
-            );
-        }
-    }
-
-    @Async("lichessScheduler")
-    @EventListener(ApplicationReadyEvent.class)
+    @Scheduled(fixedDelay = 1000, scheduler = "lichessScheduler")
     public void lichessWorker() {
         while (true) {
             emitterService.announce(
                     Objects.requireNonNull(playerDashboardFacade
                             .getPlayerDashboard(lichessPlayerQueue.dequeue())
+                            .block())
+            );
+        }
+    }
+
+    @Scheduled(fixedDelay = 1000, scheduler = "chessComScheduler")
+    public void chessComWorker() {
+        while (true) {
+            emitterService.announce(
+                    Objects.requireNonNull(playerDashboardFacade
+                            .getPlayerDashboard(chessComPlayerQueue.dequeue())
                             .block())
             );
         }
