@@ -1,9 +1,9 @@
 package com.chessopeningstats.backend.web.player;
 
 import com.chessopeningstats.backend.domain.Platform;
-import com.chessopeningstats.backend.infra.client.playerprofile.dto.PlayerProfile;
 import com.chessopeningstats.backend.service.PlayerProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +14,7 @@ public class PlayerController {
     private final PlayerProfileService playerProfileService;
 
     @GetMapping("/player/profile")
-    public PlayerProfile getProfile(@RequestParam Platform platform, @RequestParam String username) {
-        return playerProfileService.fetchPlayerProfile(platform, username);
+    public ResponseEntity<?> getProfile(@RequestParam Platform platform, @RequestParam String username) {
+        return ResponseEntity.ok(playerProfileService.fetchPlayerProfile(platform, username));
     }
 }

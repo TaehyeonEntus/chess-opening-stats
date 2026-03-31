@@ -2,7 +2,6 @@ package com.chessopeningstats.backend.service.playerdashboard;
 
 import com.chessopeningstats.backend.domain.Player;
 import com.chessopeningstats.backend.infra.client.playergames.dto.RawGame;
-import com.chessopeningstats.backend.service.playerdashboard.dto.PlayerDashboard;
 import com.chessopeningstats.backend.service.playerdashboard.impl.DashboardCacheService;
 import com.chessopeningstats.backend.service.playerdashboard.impl.DashboardConvertService;
 import com.chessopeningstats.backend.service.playerdashboard.impl.GameAnalyzeService;
@@ -24,7 +23,7 @@ public class PlayerDashboardFacade {
     private final DashboardConvertService dashboardConvertService;
     private final DashboardCacheService dashboardCacheService;
 
-    public Mono<PlayerDashboard> getPlayerDashboard(Player player) {
+    public Mono<Void> getPlayerDashboard(Player player) {
         GameFetchService<RawGame> gameFetchService = gameFetchServiceRegistry.getService(player.platform());
         GameNormalizeService<RawGame> gameNormalizeService = gameNormalizeServiceRegistry.getService(player.platform());
         //네트워크 바운드
@@ -44,6 +43,7 @@ public class PlayerDashboardFacade {
 
                 //I/O 바운드 (현재는 캐시만 DB X)
                 .publishOn(Schedulers.boundedElastic())
-                .doOnNext(dashboardCacheService::cacheDashboard);
+                .doOnNext(dashboardCacheService::cacheDashboard)
+                .then();
     }
 }

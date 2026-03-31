@@ -15,11 +15,11 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
 
-
     // 404 Not Found
     @ExceptionHandler({
             PlayerNotFoundException.class,
-            UsernameNotFoundOnPlatformException.class
+            UsernameNotFoundOnPlatformException.class,
+            DashboardNotFoundException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<?> handleNotFoundException(BusinessException e) {

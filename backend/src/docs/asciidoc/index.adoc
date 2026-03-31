@@ -19,29 +19,16 @@
 
 operation::get-profile[snippets='http-request,query-parameters,http-response,response-fields']
 
+[[Task]]
+=== 게임 분석 대기열 등록
+플레이어의 최근 게임 데이터를 가져와 분석하도록 대기열에 등록합니다.
+등록이 완료되면 200 OK를 반환하며, 이후 `/dashboard` 엔드포인트를 통해 분석 결과를 조회할 수 있습니다.
+
+operation::enqueue-task[snippets='http-request,query-parameters,http-response']
+
 [[Dashboard]]
-=== 게임 동기화 및 대시보드 수신 (SSE)
-플레이어의 최근 게임 데이터를 외부 플랫폼으로부터 가져와 분석하고, 완료 시 대시보드 데이터를 Server-Sent Events(SSE)로 전송합니다.
-클라이언트는 이 엔드포인트를 통해 연결을 유지하며, 서버가 분석을 마치는 대로 `dashboard` 이벤트 명으로 데이터를 수신하게 됩니다.
+=== 대시보드 조회 (Polling)
+분석이 완료된 플레이어의 대시보드 데이터를 조회합니다.
+분석이 진행 중이거나 등록되지 않은 경우 404 Not Found를 반환하므로, 클라이언트는 이 엔드포인트를 주기적으로 호출(Polling)해야 합니다.
 
-operation::get-dashboard[snippets='http-request,query-parameters,http-response']
-
-==== SSE 이벤트 구조
-[source,json]
-----
-event: dashboard
-data: {
-    "white": {
-        "stat": { "win": 10, "draw": 2, "lose": 3 },
-        "mostPlayedOpenings": [...],
-        "highestWinRateOpenings": [...],
-        "openings": [...]
-    },
-    "black": {
-        "stat": { "win": 8, "draw": 1, "lose": 6 },
-        "mostPlayedOpenings": [...],
-        "highestWinRateOpenings": [...],
-        "openings": [...]
-    }
-}
-----
+operation::get-dashboard[snippets='http-request,query-parameters,http-response,response-fields']
