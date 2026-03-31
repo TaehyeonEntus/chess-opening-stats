@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useDeferredValue, useCallback, useRef } from "react"
-import { getSyncEventSourceUrl } from "@/lib/api/api"
+import { addTask, fetchDashboard } from "@/lib/api/api"
 import { MOCK_DASHBOARD_DATA } from "@/lib/api/mock-data"
 import { adaptColorOpeningStat } from "@/lib/adapters"
 import { parseOpeningCsv, type OpeningDictionary } from "@/lib/openings/csv-parser"
@@ -60,19 +60,24 @@ export function useOpeningData() {
   const [search, setSearch] = useState("")
   const deferredSearch = useDeferredValue(search)
 
-  const eventSourceRef = useRef<EventSource | null>(null)
+  const pollingTimerRef = useRef<NodeJS.Timeout | null>(null)
   const hasDataRef = useRef(false)
 
   const stopPolling = useCallback(() => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close()
-      eventSourceRef.current = null
+    if (pollingTimerRef.current) {
+      clearInterval(pollingTimerRef.current)
+      pollingTimerRef.current = null
     }
     setIsPolling(false)
   }, [])
 
   const processDashboardData = useCallback((dashboard: any, dictionary: OpeningDictionary) => {
-    if (!dashboard || (!dashboard.white && !dashboard.black)) return
+    if (!dashboard || (!dashboard.white && !dashboard.black)) return false
+
+    const hasWhiteOpenings = dashboard.white?.openings && dashboard.white.openings.length > 0
+    const hasBlackOpenings = dashboard.black?.openings && dashboard.black.openings.length > 0
+    
+    if (!hasWhiteOpenings && !hasBlackOpenings) return false
 
     hasDataRef.current = true
     const whiteOpenings = adaptColorOpeningStat(dashboard.white?.openings || [], "white", dictionary)
@@ -117,6 +122,7 @@ export function useOpeningData() {
       white: calculateDisplaySummary(winRates, whiteOpenings, "white", whiteMostPlayed, whiteBestWinRate),
       black: calculateDisplaySummary(winRates, blackOpenings, "black", blackMostPlayed, blackBestWinRate),
     })
+    return true
   }, [])
 
   const loadData = useCallback(async (platform: string, username: string) => {
@@ -140,36 +146,47 @@ export function useOpeningData() {
         return
       }
 
-      const url = getSyncEventSourceUrl(platform, username)
-      const eventSource = new EventSource(url)
-      eventSourceRef.current = eventSource
+      // 1. Add task to queue
+      await addTask(platform, username)
+
+      // 2. Start polling for 1 minute (60 seconds)
       setIsPolling(true)
+      let attempts = 0
+      const maxAttempts = 60
 
-      eventSource.addEventListener('dashboard', (event: MessageEvent) => {
-        try {
-          const data = JSON.parse(event.data)
-          processDashboardData(data, dictionary)
+      pollingTimerRef.current = setInterval(async () => {
+        attempts++
+        if (attempts > maxAttempts) {
+          stopPolling()
           setLoading(false)
-          // We don't stop polling (close SSE) yet, because backend might send more updates?
-          // Actually, usually SSE is closed by the server or when the user leaves.
-          // For now, let's keep it open to receive updates.
-        } catch (err) {
-          console.error("Failed to parse SSE data", err)
+          if (!hasDataRef.current) {
+            setError("Request timed out. Please try again.")
+          }
+          return
         }
-      })
 
-      eventSource.onerror = (err) => {
-        console.error("SSE error", err)
-        // Only show error if we haven't received any data yet
-        if (!hasDataRef.current) {
-          setError("Connection failed. Please try again.")
+        try {
+          const dashboardData = await fetchDashboard(platform, username)
+          if (dashboardData) {
+            const success = processDashboardData(dashboardData, dictionary)
+            if (success) {
+              setLoading(false)
+              // Stop polling once we have data
+              stopPolling()
+            }
+          }
+        } catch (err: any) {
+          // 404 is expected while processing
+          if (err?.response?.status !== 404) {
+            console.error("Polling error", err)
+          }
         }
-        stopPolling()
-        setLoading(false)
-      }
+      }, 1000)
+
     } catch (err) {
        setError(err instanceof Error ? err.message : "An error occurred")
        setLoading(false)
+       stopPolling()
     }
   }, [stopPolling, processDashboardData])
 
