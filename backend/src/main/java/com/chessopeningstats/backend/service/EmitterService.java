@@ -33,8 +33,9 @@ public class EmitterService {
             try {
                 emitter.send(SseEmitter.event().name("dashboard").data(playerDashboard.dashboard()));
             } catch (IOException ignored) {
+            } catch (IllegalStateException e) {
+                emitterRepository.delete(playerDashboard.player(), emitter);
             }
-            emitter.complete();
         }
     }
 
